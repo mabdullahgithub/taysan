@@ -427,43 +427,160 @@
     .cursive-text {
         font-size: 1.4rem;
     }
-}
+}    </style>
 
-</style>
-    
-    <!-- Featured Categories Section -->
-    <section class="home-feat pt-5">
+    <!-- Deal of the Day Section -->
+    @if($deals->count() > 0)
+    <section class="deal-of-the-day py-5" style="background: #ffffff;">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="home-feat__card">
-                        <div class="home-feat__content">
-                            <i class="fas fa-soap home-feat__icon"></i>
-                            <h3 class="home-feat__title">Handmade Soaps</h3>
-                            <p class="home-feat__text">Pure & natural ingredients</p>
-                            <a href="/shop" class="home-feat__link">Shop Now →</a>
+            <div class="text-center mb-5">
+                <span class="section-subtitle" style="color: #8D68AD; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Limited Time Offer</span>
+                <h2 class="section-title" style="font-size: 2.5rem; font-weight: 300; margin-bottom: 2rem; color: #333;">
+                    <i class="fas fa-fire" style="color: #ff6b6b; margin-right: 0.5rem;"></i>
+                    Deal of the Day
+                </h2>
+            </div>
+
+            <div class="row justify-content-center">
+                @foreach($deals as $deal)
+                <div class="col-xl-4 col-lg-4 col-md-6 col-6 mb-4" id="deal-{{ $deal->id }}">
+                    <div class="premium-deal-card">
+                        <div class="deal-badge-premium">
+                            @if($deal->discount_percentage > 0)
+                                <span class="discount-percentage">{{ round($deal->discount_percentage) }}%</span>
+                                <span class="discount-text">OFF</span>
+                            @else
+                                <span class="discount-text">SPECIAL</span>
+                            @endif
+                        </div>
+                        
+                        <div class="deal-image-premium">
+                            @if($deal->product->image)
+                                <img src="{{ asset('storage/' . $deal->product->image) }}" 
+                                     alt="{{ $deal->product->name }}" 
+                                     class="img-fluid">
+                            @else
+                                <div class="image-placeholder-premium">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="deal-content-premium">
+                            <h3 class="deal-title-premium">{{ $deal->deal_title ?: $deal->product->name }}</h3>
+                            <div class="deal-description-premium">
+                                {{ Str::limit($deal->deal_description ?: $deal->product->description, 80) }}
+                            </div>
+                            
+                            <div class="deal-pricing-premium">
+                                @if($deal->savings > 0)
+                                    <span class="original-price-premium">PKR {{ number_format($deal->product->price, 0) }}</span>
+                                @endif
+                                <span class="deal-price-premium">PKR {{ number_format($deal->final_price, 0) }}</span>
+                                @if($deal->savings > 0)
+                                    <span class="savings-premium">Save PKR {{ number_format($deal->savings, 0) }}</span>
+                                @endif
+                            </div>
+                            
+                            <div class="deal-timer-premium">
+                                <i class="fas fa-clock"></i>
+                                Ends {{ $deal->end_date->format('M j, Y') }}
+                            </div>
+                            
+                            <div class="deal-buttons-premium">
+                                <button class="deal-view-btn-premium" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#quickViewModal"
+                                        data-id="{{ $deal->product->id }}" 
+                                        data-name="{{ $deal->product->name }}"
+                                        data-price="{{ $deal->final_price }}" 
+                                        data-original-price="{{ $deal->product->price }}"
+                                        data-description="{{ $deal->product->description }}"
+                                        data-category="{{ $deal->product->category->name }}"
+                                        data-image="{{ $deal->product->image ? asset('storage/' . $deal->product->image) : '' }}">
+                                    View
+                                </button>
+                                
+                                <button class="deal-shop-btn-premium" 
+                                        data-id="{{ $deal->product->id }}" 
+                                        data-name="{{ $deal->product->name }}" 
+                                        data-price="{{ $deal->final_price }}" 
+                                        data-image="{{ $deal->product->image ? asset('storage/' . $deal->product->image) : '' }}">
+                                    Shop Now
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="home-feat__card">
-                        <div class="home-feat__content">
-                            <i class="fas fa-seedling home-feat__icon"></i>
-                            <h3 class="home-feat__title">Organic Skincare</h3>
-                            <p class="home-feat__text">Nature's best for your skin</p>
-                            <a href="/shop" class="home-feat__link">Shop Now →</a>
-                        </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Best Selling Products Carousel Section -->
+    <section class="best-selling-products py-5" style="background: #f8f9fa;">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="section-subtitle" style="color: #8D68AD; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Top Picks</span>
+                <h2 class="section-title" style="font-size: 2.5rem; color: #333; font-weight: 300;">Best Selling Products</h2>
+            </div>
+
+            <!-- Best Selling Products Carousel -->
+            <div class="best-selling-carousel-container">
+                <!-- Navigation Arrows -->
+                <button class="carousel-nav carousel-nav-prev" id="bestSellingPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav carousel-nav-next" id="bestSellingNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <!-- Carousel Wrapper -->
+                <div class="products-carousel-wrapper">
+                    <div class="products-carousel" id="bestSellingCarousel">
+                        @foreach ($products->where('flag', 'Featured')->take(8) as $product)
+                            <div class="carousel-product-card">
+                                <div class="ts-product-image-wrapper">
+                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                    
+                                    <!-- Badge for Best Seller -->
+                                    <div class="product-badge">
+                                        <span>Best Seller</span>
+                                    </div>
+
+                                    <button class="ts-quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal"
+                                        data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                        data-price="{{ $product->price }}" data-description="{{ $product->description }}"
+                                        data-category="{{ $product->category->name }}"
+                                        data-image="{{ asset('storage/' . $product->image) }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+
+                                <div class="ts-product-details">
+                                    <h3 class="ts-product-title">{{ $product->name }}</h3>
+
+                                    <div class="ts-product-meta">
+                                        <span class="ts-product-category">{{ $product->category->name }}</span>
+                                        <span class="ts-product-price">${{ number_format($product->price, 2) }}</span>
+                                    </div>
+
+                                    <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                        data-image="{{ asset('storage/' . $product->image) }}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="home-feat__card">
-                        <div class="home-feat__content">
-                            <i class="fas fa-spa home-feat__icon"></i>
-                            <h3 class="home-feat__title">Beauty Essentials</h3>
-                            <p class="home-feat__text">Pamper yourself naturally</p>
-                            <a href="/shop" class="home-feat__link">Shop Now →</a>
-                        </div>
-                    </div>
+
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators" id="bestSellingIndicators">
+                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
         </div>
@@ -548,7 +665,7 @@
         </div>
     </section>
 
-    <!-- Products Section - Using your existing grid -->
+    <!-- Products Section - Carousel Layout -->
     <section class="home-products py-5">
         <div class="container">
             <div class="home-products__header text-center mb-5">
@@ -556,121 +673,62 @@
                 <h2 class="home-products__title">Featured Products</h2>
             </div>
 
-            <!-- Category Filter -->
-            <div class="home-filter mb-4">
-                <div class="home-filter__wrap">
-                    <button class="home-filter__btn active" data-category="all">All Products</button>
-                    <button class="home-filter__btn" data-category="new">New Arrivals</button>
-                    <button class="home-filter__btn" data-category="featured">Best Sellers</button>
-                    <button class="home-filter__btn" data-category="sale">Special Offers</button>
-                </div>
-            </div>
+            <!-- Products Carousel -->
+            <div class="products-carousel-container">
+                <!-- Navigation Arrows -->
+                <button class="carousel-nav carousel-nav-prev" id="carouselPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav carousel-nav-next" id="carouselNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
 
-            <!-- Your existing product grid -->
-            <div class="ts-product-grid"
-                style="flex: 1 !important; display: grid !important; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important; gap: 1.5rem !important; align-content: start !important; margin-left: 0 !important;">
-                @foreach ($products as $product)
-                    <div class="ts-product-card" data-price="{{ $product->price }}"
-                        data-category="{{ $product->category_id }}" data-flag="{{ $product->flag }}"
-                        style="background: #fff !important; border-radius: 12px !important; overflow: hidden !important; transition: all 0.3s ease !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important; display: flex !important; flex-direction: column !important;">
+                <!-- Carousel Wrapper -->
+                <div class="products-carousel-wrapper">
+                    <div class="products-carousel" id="productsCarousel">
+                        @foreach ($products as $product)
+                            <div class="carousel-product-card" data-price="{{ $product->price }}"
+                                data-category="{{ $product->category_id }}" data-flag="{{ $product->flag }}">
 
-                        <div class="ts-product-image-wrapper"
-                            style="position: relative !important; padding-top: 100% !important; background: #f8f9fa !important; overflow: hidden !important;">
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                                style="position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; object-fit: cover !important; transition: transform 0.5s ease !important;">
+                                <div class="ts-product-image-wrapper">
+                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
 
-                            <button class="ts-quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal"
-                                data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                data-price="{{ $product->price }}" data-description="{{ $product->description }}"
-                                data-category="{{ $product->category->name }}"
-                                data-image="{{ asset('storage/' . $product->image) }}"
-                                style="position: absolute !important; top: 1rem !important; right: 1rem !important; width: 35px !important; height: 35px !important; border-radius: 50% !important; background: rgba(255, 255, 255, 0.9) !important; border: none !important; display: flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; transition: all 0.3s ease !important; z-index: 1 !important;">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
+                                    <button class="ts-quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal"
+                                        data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                        data-price="{{ $product->price }}" data-description="{{ $product->description }}"
+                                        data-category="{{ $product->category->name }}"
+                                        data-image="{{ asset('storage/' . $product->image) }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
 
-                        <div class="ts-product-details"
-                            style="padding: 1.25rem !important; display: flex !important; flex-direction: column !important; gap: 0.75rem !important;">
-                            <h3 class="ts-product-title"
-                                style="font-size: 1.1rem !important; font-weight: 600 !important; color: #333 !important; margin: 0 !important; line-height: 1.4 !important;">
-                                {{ $product->name }}
-                            </h3>
+                                <div class="ts-product-details">
+                                    <h3 class="ts-product-title">{{ $product->name }}</h3>
 
-                            <div class="ts-product-meta"
-                                style="display: flex !important; justify-content: space-between !important; align-items: center !important;">
-                                <span class="ts-product-category"
-                                    style="color: #666 !important; font-size: 0.9rem !important;">
-                                    {{ $product->category->name }}
-                                </span>
-                                <span class="ts-product-price"
-                                    style="color: #8D68AD !important; font-weight: 700 !important; font-size: 1.15rem !important;">
-                                    ${{ number_format($product->price, 2) }}
-                                </span>
+                                    <div class="ts-product-meta">
+                                        <span class="ts-product-category">{{ $product->category->name }}</span>
+                                        <span class="ts-product-price">${{ number_format($product->price, 2) }}</span>
+                                    </div>
+
+                                    <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                        data-image="{{ asset('storage/' . $product->image) }}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
                             </div>
-
-                            <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
-                                data-name="{{ $product->name }}" data-price="{{ $product->price }}"
-                                data-image="{{ asset('storage/' . $product->image) }}"
-                                style="width: 100% !important; padding: 0.75rem !important; background: #8D68AD !important; color: #fff !important; border: none !important; border-radius: 6px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; cursor: pointer !important; transition: all 0.3s ease !important; margin-top: auto !important;">
-                                <i class="fas fa-shopping-cart"></i>
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Choose Us Section -->
-    <section class="why-choose-us py-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-        <div class="container">
-            <div class="text-center mb-5">
-                <span class="section-subtitle" style="color: #8D68AD; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Why Choose Us</span>
-                <h2 class="section-title" style="font-size: 2.5rem; color: #333; font-weight: 300;">The Taysan Beauty Difference</h2>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-card text-center" style="background: white; border-radius: 15px; padding: 2rem 1.5rem; height: 100%; transition: all 0.3s ease; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);">
-                        <div class="feature-icon mb-3" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #8D68AD, #A67BC9); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-leaf" style="font-size: 1.8rem; color: white;"></i>
-                        </div>
-                        <h4 style="color: #333; margin-bottom: 1rem;">100% Natural</h4>
-                        <p style="color: #666; font-size: 0.9rem;">Made with pure, organic ingredients sourced from nature's finest</p>
+                        @endforeach
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-card text-center" style="background: white; border-radius: 15px; padding: 2rem 1.5rem; height: 100%; transition: all 0.3s ease; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);">
-                        <div class="feature-icon mb-3" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #8D68AD, #A67BC9); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-hand-sparkles" style="font-size: 1.8rem; color: white;"></i>
-                        </div>
-                        <h4 style="color: #333; margin-bottom: 1rem;">Handcrafted</h4>
-                        <p style="color: #666; font-size: 0.9rem;">Every product is carefully handmade with love and attention to detail</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-card text-center" style="background: white; border-radius: 15px; padding: 2rem 1.5rem; height: 100%; transition: all 0.3s ease; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);">
-                        <div class="feature-icon mb-3" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #8D68AD, #A67BC9); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-recycle" style="font-size: 1.8rem; color: white;"></i>
-                        </div>
-                        <h4 style="color: #333; margin-bottom: 1rem;">Eco-Friendly</h4>
-                        <p style="color: #666; font-size: 0.9rem;">Sustainable packaging and environmentally conscious production</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-card text-center" style="background: white; border-radius: 15px; padding: 2rem 1.5rem; height: 100%; transition: all 0.3s ease; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);">
-                        <div class="feature-icon mb-3" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #8D68AD, #A67BC9); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-heart" style="font-size: 1.8rem; color: white;"></i>
-                        </div>
-                        <h4 style="color: #333; margin-bottom: 1rem;">Skin Loving</h4>
-                        <p style="color: #666; font-size: 0.9rem;">Gentle formulas that nourish and pamper all skin types</p>
-                    </div>
+
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
         </div>
     </section>
-
 
     <style>
         /* Core styles with specific namespacing to avoid conflicts */
@@ -932,6 +990,295 @@
             margin: 0;
             font-size: 1.1rem;
             font-weight: 500;
+        }
+
+        /* Products Carousel Styles */
+        .products-carousel-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(141, 104, 173, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-nav:hover {
+            background: #8D68AD;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-nav-prev {
+            left: -25px;
+        }
+
+        .carousel-nav-next {
+            right: -25px;
+        }
+
+        .products-carousel-wrapper {
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .products-carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 1.5rem;
+        }
+
+        .carousel-product-card {
+            min-width: calc(25% - 1.125rem); /* 4 products on desktop */
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); */
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-product-card .ts-product-image-wrapper {
+            position: relative;
+            padding-top: 100%;
+            background: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .carousel-product-card .ts-product-image-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-product-card:hover .ts-product-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .carousel-product-card .ts-quick-view-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+            opacity: 0;
+        }
+
+        .carousel-product-card:hover .ts-quick-view-btn {
+            opacity: 1;
+        }
+
+        .carousel-product-card .ts-quick-view-btn:hover {
+            background: #8D68AD;
+            color: white;
+        }
+
+        .carousel-product-card .ts-product-details {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        .carousel-product-card .ts-product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .carousel-product-card .ts-product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .carousel-product-card .ts-product-category {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .carousel-product-card .ts-product-price {
+            color: #8D68AD;
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .carousel-product-card .ts-add-to-cart-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #8D68AD;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .carousel-product-card .ts-add-to-cart-btn:hover {
+            background: #7a5a9a;
+            transform: translateY(-1px);
+        }
+
+        /* Carousel Indicators */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            margin-bottom: -3rem;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(141, 104, 173, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-indicator.active {
+            background: #8D68AD;
+            transform: scale(1.2);
+        }
+
+        /* Product Badge Styles */
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 6;
+        }
+
+        .product-badge span {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Best Selling Carousel Container */
+        .best-selling-carousel-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        /* Mobile Responsive Styles for Carousel */
+        @media (max-width: 768px) {
+            .carousel-product-card {
+                min-width: calc(50% - 0.75rem); /* 2 products on mobile */
+            }
+
+            .carousel-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+
+            .carousel-nav-prev {
+                left: -20px;
+            }
+
+            .carousel-nav-next {
+                right: -20px;
+            }
+
+            .products-carousel {
+                gap: 1rem;
+            }
+
+            .carousel-product-card .ts-product-details {
+                padding: 1rem;
+            }
+
+            .carousel-product-card .ts-product-title {
+                font-size: 1rem;
+            }
+
+            .carousel-product-card .ts-product-price {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .carousel-nav-prev {
+                left: -15px;
+            }
+
+            .carousel-nav-next {
+                right: -15px;
+            }
+
+            .carousel-nav {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+
+            .products-carousel {
+                gap: 0.75rem;
+            }
+
+            .carousel-product-card .ts-product-details {
+                padding: 0.75rem;
+                gap: 0.5rem;
+            }
+
+            .carousel-product-card .ts-product-title {
+                font-size: 0.95rem;
+            }
+
+            .carousel-product-card .ts-add-to-cart-btn {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
         }
 
         /* Responsive Adjustments */
@@ -1256,10 +1603,560 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* Premium Deal of the Day Styles */
+        .deal-of-the-day {
+            background: #ffffff;
+            padding: 80px 0;
+        }
+
+        /* Add missing CSS animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .premium-deal-card {
+            position: relative;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            overflow: visible;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 80px; /* Space for elevated image */
+        }
+
+        .premium-deal-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .deal-badge-premium {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            border-radius: 50px;
+            padding: 10px 16px;
+            z-index: 10;
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+            transform: rotate(-3deg);
+            min-width: 70px;
+            text-align: center;
+            animation: badgePulse 2s infinite ease-in-out;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { 
+                transform: rotate(-3deg) scale(1);
+                box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+            }
+            50% { 
+                transform: rotate(-3deg) scale(1.05);
+                box-shadow: 0 12px 35px rgba(255, 71, 87, 0.6);
+            }
+        }
+
+        .discount-text {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: textGlow 2s infinite ease-in-out, textBounce 1.5s infinite ease-in-out;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            50% { 
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        @keyframes textBounce {
+            0%, 100% { 
+                transform: translateY(0px);
+            }
+            50% { 
+                transform: translateY(-2px);
+            }
+        }
+
+        .discount-percentage {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .deal-image-premium {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 160px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border: 6px solid #ffffff;
+            background: #ffffff;
+            z-index: 5;
+        }
+
+        .deal-image-premium img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .premium-deal-card:hover .deal-image-premium img {
+            transform: scale(1.1);
+        }
+
+        .image-placeholder-premium {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8D68AD, #B794C4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .deal-content-premium {
+            padding: 90px 30px 30px; /* Increased top padding to avoid text hiding under image */
+            text-align: center;
+        }
+
+        .deal-title-premium {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            margin-top: 25px; /* Added 15px more margin */
+        }
+
+        .deal-description-premium {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        .deal-pricing-premium {
+            margin-bottom: 20px;
+        }
+
+        .original-price-premium {
+            display: block;
+            color: #a0aec0;
+            text-decoration: line-through;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .deal-price-premium {
+            display: block;
+            color: #2d3748;
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .savings-premium {
+            display: inline-block;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .deal-timer-premium {
+            color: #e53e3e;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .deal-timer-premium i {
+            font-size: 1rem;
+        }
+
+        .deal-buttons-premium {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .deal-view-btn-premium {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.3);
+            flex: 1;
+            max-width: 90px;
+        }
+
+        .deal-view-btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .deal-view-btn-premium:hover::before {
+            left: 100%;
+        }
+
+        .deal-view-btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(66, 153, 225, 0.4);
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+        }
+
+        .deal-shop-btn-premium {
+            background: linear-gradient(135deg, #8D68AD, #B794C4);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(141, 104, 173, 0.3);
+            flex: 1;
+            max-width: 120px;
+            white-space: nowrap;
+        }
+
+        .deal-shop-btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .deal-shop-btn-premium:hover::before {
+            left: 100%;
+        }
+
+        .deal-shop-btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(141, 104, 173, 0.4);
+            background: linear-gradient(135deg, #6B5B7D, #8D68AD);
+        }
+
+        .deal-shop-btn-premium:active {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Premium Design */
+        @media (max-width: 768px) {
+            .premium-deal-card {
+                margin-top: 60px;
+            }
+
+            .deal-image-premium {
+                top: -40px;
+                width: 120px;
+                height: 120px;
+            }
+
+            .deal-content-premium {
+                padding: 70px 15px 25px; /* Adjusted for smaller image */
+            }
+
+            .deal-badge-premium {
+                padding: 8px 12px;
+                min-width: 60px;
+                top: -12px;
+                right: 15px;
+            }
+
+            .deal-title-premium {
+                font-size: 1rem; /* Smaller text for mobile */
+                margin-top: 20px; /* Adjusted margin for mobile */
+            }
+
+            .deal-description-premium {
+                font-size: 0.8rem; /* Smaller description */
+                min-height: 40px;
+                margin-bottom: 20px;
+            }
+
+            .deal-price-premium {
+                font-size: 1.6rem; /* Smaller price */
+            }
+
+            .deal-buttons-premium {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .deal-view-btn-premium {
+                padding: 8px 20px; /* Smaller button */
+                font-size: 0.7rem; /* Smaller text */
+                max-width: 120px;
+            }
+
+            .deal-shop-btn-premium {
+                padding: 8px 20px; /* Smaller button */
+                font-size: 0.7rem; /* Smaller text */
+                max-width: 120px;
+            }
+
+            .discount-percentage {
+                font-size: 1.2rem; /* Smaller percentage */
+            }
+
+            .discount-text {
+                font-size: 0.55rem; /* Smaller OFF text */
+            }
+
+            .deal-timer-premium {
+                font-size: 0.75rem; /* Smaller timer text */
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Additional responsive breakpoints */
+        @media (max-width: 480px) {
+            .deal-of-the-day .col-6 {
+                padding: 0 3px;
+            }
+            
+            .deal-image-premium {
+                width: 75px;
+                height: 75px;
+                top: -20px;
+            }
+            
+            .deal-content-premium {
+                padding: 40px 8px 12px;
+            }
+
+            .deal-badge-premium {
+                padding: 6px 10px;
+                min-width: 50px;
+                top: -10px;
+                right: 10px;
+            }
+            
+            .deal-title-premium {
+                font-size: 0.75rem;
+                margin-top: 15px;
+            }
+            
+            .deal-description-premium {
+                font-size: 0.65rem;
+                min-height: 25px;
+            }
+
+            .deal-buttons-premium {
+                gap: 6px;
+            }
+
+            .deal-view-btn-premium {
+                font-size: 0.6rem;
+                padding: 6px 15px;
+                max-width: 100px;
+            }
+            
+            .deal-shop-btn-premium {
+                font-size: 0.6rem;
+                padding: 6px 15px;
+                max-width: 100px;
+            }
+
+            .discount-percentage {
+                font-size: 1rem;
+            }
+
+            .discount-text {
+                font-size: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .deal-of-the-day {
+                padding: 60px 0;
+            }
+
+            /* Show 2 products on mobile - adjust grid */
+            .deal-of-the-day .row {
+                margin: 0 -5px;
+            }
+
+            .deal-of-the-day .col-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding: 0 5px;
+            }
+
+            .premium-deal-card {
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            .deal-image-premium {
+                top: -25px;
+                width: 80px;
+                height: 80px;
+            }
+
+            .deal-content-premium {
+                padding: 45px 10px 15px; /* Adjusted padding for 2 columns */
+            }
+
+            .deal-badge-premium {
+                top: -8px;
+                right: 8px;
+                padding: 6px 12px;
+                min-width: 50px;
+            }
+
+            .discount-percentage {
+                font-size: 1rem; /* Readable percentage */
+            }
+
+            .discount-text {
+                font-size: 0.5rem; /* Readable OFF text */
+            }
+
+            .deal-title-premium {
+                font-size: 0.8rem; /* Readable title */
+                margin-bottom: 8px;
+                margin-top: 18px; /* Adjusted margin */
+                line-height: 1.2;
+            }
+
+            .deal-description-premium {
+                font-size: 0.7rem; /* Readable description */
+                min-height: 30px;
+                margin-bottom: 12px;
+                line-height: 1.3;
+            }
+
+            .deal-price-premium {
+                font-size: 1.2rem; /* Readable price */
+            }
+
+            .deal-timer-premium {
+                font-size: 0.65rem; /* Readable timer */
+                margin-bottom: 12px;
+            }
+
+            .deal-buttons-premium {
+                flex-direction: row;
+                gap: 6px;
+            }
+
+            .deal-view-btn-premium {
+                padding: 6px 12px; /* Comfortable button size */
+                font-size: 0.65rem; /* Readable button text */
+                max-width: 80px;
+            }
+
+            .deal-shop-btn-premium {
+                padding: 6px 12px; /* Comfortable button size */
+                font-size: 0.65rem; /* Readable button text */
+                max-width: 90px;
+            }
+
+            .original-price-premium {
+                font-size: 0.75rem;
+            }
+
+            .savings-premium {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+        }
     </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if we need to scroll to a specific deal
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#deal-')) {
+                setTimeout(() => {
+                    const element = document.querySelector(hash);
+                    if (element) {
+                        element.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        // Add a highlight effect
+                        element.style.transition = 'all 0.3s ease';
+                        element.style.transform = 'scale(1.02)';
+                        element.style.boxShadow = '0 0 20px rgba(255, 71, 87, 0.3)';
+                        setTimeout(() => {
+                            element.style.transform = '';
+                            element.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }, 1000);
+            }
+            
             // 3D Timer functionality - Always starts from 2 days and counts backwards
             let countdownEndTime;
 
@@ -1301,7 +2198,7 @@
 
             // Category filtering
             const filterBtns = document.querySelectorAll('.home-filter__btn');
-            const products = document.querySelectorAll('.ts-product-card');
+            const products = document.querySelectorAll('.carousel-product-card');
 
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1326,8 +2223,386 @@
                             product.style.display = 'none';
                         }
                     });
+
+                    // Reset carousel position after filtering
+                    currentIndex = 0;
+                    updateCarousel();
+                    updateIndicators();
                 });
             });
+
+            // Products Carousel Functionality
+            const carousel = document.getElementById('productsCarousel');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            const indicatorsContainer = document.getElementById('carouselIndicators');
+            
+            let currentIndex = 0;
+            let itemsPerView = window.innerWidth <= 768 ? 2 : 4; // 2 on mobile, 4 on desktop
+            let totalItems = products.length;
+            let totalSlides = Math.ceil(totalItems / itemsPerView);
+            let autoSlideInterval;
+
+            // Update items per view on window resize
+            window.addEventListener('resize', function() {
+                const newItemsPerView = window.innerWidth <= 768 ? 2 : 4;
+                if (newItemsPerView !== itemsPerView) {
+                    itemsPerView = newItemsPerView;
+                    totalSlides = Math.ceil(totalItems / itemsPerView);
+                    currentIndex = Math.min(currentIndex, totalSlides - 1);
+                    updateCarousel();
+                    createIndicators();
+                    updateIndicators();
+                }
+            });
+
+            function updateCarousel() {
+                const translateX = -(currentIndex * (100 / itemsPerView));
+                carousel.style.transform = `translateX(${translateX}%)`;
+            }
+
+            function createIndicators() {
+                indicatorsContainer.innerHTML = '';
+                for (let i = 0; i < totalSlides; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'carousel-indicator';
+                    indicator.addEventListener('click', () => goToSlide(i));
+                    indicatorsContainer.appendChild(indicator);
+                }
+            }
+
+            function updateIndicators() {
+                const indicators = document.querySelectorAll('.carousel-indicator');
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentIndex);
+                });
+            }
+
+            function goToSlide(index) {
+                currentIndex = index;
+                updateCarousel();
+                updateIndicators();
+                resetAutoSlide();
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateCarousel();
+                updateIndicators();
+            }
+
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateCarousel();
+                updateIndicators();
+            }
+
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextSlide, 3000); // Auto-slide every 3 seconds
+            }
+
+            function resetAutoSlide() {
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            }
+
+            // Event listeners
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoSlide();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetAutoSlide();
+            });
+
+            // Pause auto-slide on hover
+            carousel.addEventListener('mouseenter', () => {
+                clearInterval(autoSlideInterval);
+            });
+
+            carousel.addEventListener('mouseleave', () => {
+                startAutoSlide();
+            });
+
+            // Initialize carousel
+            createIndicators();
+            updateIndicators();
+            startAutoSlide();
+
+            // Best Selling Products Carousel Functionality
+            const bestSellingCarousel = document.getElementById('bestSellingCarousel');
+            const bestSellingPrevBtn = document.getElementById('bestSellingPrev');
+            const bestSellingNextBtn = document.getElementById('bestSellingNext');
+            const bestSellingIndicatorsContainer = document.getElementById('bestSellingIndicators');
+            
+            let bestSellingCurrentIndex = 0;
+            let bestSellingItemsPerView = window.innerWidth <= 768 ? 2 : 4;
+            const bestSellingProducts = document.querySelectorAll('#bestSellingCarousel .carousel-product-card');
+            let bestSellingTotalItems = bestSellingProducts.length;
+            let bestSellingTotalSlides = Math.ceil(bestSellingTotalItems / bestSellingItemsPerView);
+            let bestSellingAutoSlideInterval;
+
+            // Update items per view on window resize for best selling carousel
+            window.addEventListener('resize', function() {
+                const newBestSellingItemsPerView = window.innerWidth <= 768 ? 2 : 4;
+                if (newBestSellingItemsPerView !== bestSellingItemsPerView) {
+                    bestSellingItemsPerView = newBestSellingItemsPerView;
+                    bestSellingTotalSlides = Math.ceil(bestSellingTotalItems / bestSellingItemsPerView);
+                    bestSellingCurrentIndex = Math.min(bestSellingCurrentIndex, bestSellingTotalSlides - 1);
+                    updateBestSellingCarousel();
+                    createBestSellingIndicators();
+                    updateBestSellingIndicators();
+                }
+            });
+
+            function updateBestSellingCarousel() {
+                const translateX = -(bestSellingCurrentIndex * (100 / bestSellingItemsPerView));
+                bestSellingCarousel.style.transform = `translateX(${translateX}%)`;
+            }
+
+            function createBestSellingIndicators() {
+                bestSellingIndicatorsContainer.innerHTML = '';
+                for (let i = 0; i < bestSellingTotalSlides; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'carousel-indicator';
+                    indicator.addEventListener('click', () => goToBestSellingSlide(i));
+                    bestSellingIndicatorsContainer.appendChild(indicator);
+                }
+            }
+
+            function updateBestSellingIndicators() {
+                const indicators = document.querySelectorAll('#bestSellingIndicators .carousel-indicator');
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === bestSellingCurrentIndex);
+                });
+            }
+
+            function goToBestSellingSlide(index) {
+                bestSellingCurrentIndex = index;
+                updateBestSellingCarousel();
+                updateBestSellingIndicators();
+                resetBestSellingAutoSlide();
+            }
+
+            function nextBestSellingSlide() {
+                bestSellingCurrentIndex = (bestSellingCurrentIndex + 1) % bestSellingTotalSlides;
+                updateBestSellingCarousel();
+                updateBestSellingIndicators();
+            }
+
+            function prevBestSellingSlide() {
+                bestSellingCurrentIndex = (bestSellingCurrentIndex - 1 + bestSellingTotalSlides) % bestSellingTotalSlides;
+                updateBestSellingCarousel();
+                updateBestSellingIndicators();
+            }
+
+            function startBestSellingAutoSlide() {
+                bestSellingAutoSlideInterval = setInterval(nextBestSellingSlide, 3500); // Auto-slide every 3.5 seconds
+            }
+
+            function resetBestSellingAutoSlide() {
+                clearInterval(bestSellingAutoSlideInterval);
+                startBestSellingAutoSlide();
+            }
+
+            // Best Selling Event listeners
+            if (bestSellingNextBtn) {
+                bestSellingNextBtn.addEventListener('click', () => {
+                    nextBestSellingSlide();
+                    resetBestSellingAutoSlide();
+                });
+            }
+
+            if (bestSellingPrevBtn) {
+                bestSellingPrevBtn.addEventListener('click', () => {
+                    prevBestSellingSlide();
+                    resetBestSellingAutoSlide();
+                });
+            }
+
+            // Pause auto-slide on hover for best selling carousel
+            if (bestSellingCarousel) {
+                bestSellingCarousel.addEventListener('mouseenter', () => {
+                    clearInterval(bestSellingAutoSlideInterval);
+                });
+
+                bestSellingCarousel.addEventListener('mouseleave', () => {
+                    startBestSellingAutoSlide();
+                });
+
+                // Initialize best selling carousel
+                createBestSellingIndicators();
+                updateBestSellingIndicators();
+                startBestSellingAutoSlide();
+            }
+
+            // Premium Deal of the Day Shop Now functionality
+            document.querySelectorAll('.deal-shop-btn-premium').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    
+                    // Redirect directly to checkout page for this product
+                    window.location.href = `/checkout/product/${productId}`;
+                });
+            });
+
+            // Premium Deal of the Day View functionality
+            document.querySelectorAll('.deal-view-btn-premium').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Get product data from button attributes
+                    const productId = this.getAttribute('data-id');
+                    const productName = this.getAttribute('data-name');
+                    const productPrice = this.getAttribute('data-price');
+                    const originalPrice = this.getAttribute('data-original-price');
+                    const productDescription = this.getAttribute('data-description');
+                    const productCategory = this.getAttribute('data-category');
+                    const productImage = this.getAttribute('data-image');
+
+                    // Populate the quick view modal with product data
+                    const modalImage = document.getElementById('quickViewImage');
+                    const modalTitle = document.getElementById('quickViewTitle');
+                    const modalPrice = document.getElementById('quickViewPrice');
+                    const modalDescription = document.getElementById('quickViewDescription');
+                    const addToCartBtn = document.getElementById('quickViewAddToCart');
+
+                    if (modalImage) {
+                        modalImage.src = productImage || '/logo.png';
+                        modalImage.alt = productName;
+                        // Show image after setting src
+                        modalImage.onload = function() {
+                            this.style.opacity = '1';
+                        };
+                    }
+                    
+                    if (modalTitle) modalTitle.textContent = productName;
+                    
+                    // Show deal pricing if different from original
+                    if (modalPrice) {
+                        if (originalPrice && parseFloat(originalPrice) !== parseFloat(productPrice)) {
+                            modalPrice.innerHTML = `
+                                <span style="text-decoration: line-through; color: #999; font-size: 0.8em;">PKR ${parseFloat(originalPrice).toLocaleString()}</span><br>
+                                <span style="color: #e53e3e; font-weight: 700;">PKR ${parseFloat(productPrice).toLocaleString()}</span>
+                                <span style="background: #48bb78; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; margin-left: 8px;">DEAL</span>
+                            `;
+                        } else {
+                            modalPrice.textContent = `PKR ${parseFloat(productPrice).toLocaleString()}`;
+                        }
+                    }
+                    
+                    if (modalDescription) modalDescription.textContent = productDescription;
+                    
+                    // Update add to cart button with product data
+                    if (addToCartBtn) {
+                        addToCartBtn.setAttribute('data-id', productId);
+                        addToCartBtn.setAttribute('data-name', productName);
+                        addToCartBtn.setAttribute('data-price', productPrice);
+                        addToCartBtn.setAttribute('data-image', productImage);
+                    }
+                });
+            });
+
+            // Helper function to add to cart (if not already defined)
+            function addToCart(product) {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // Check if product already exists in cart
+                const existingItem = cart.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity += product.quantity;
+                } else {
+                    cart.push(product);
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartUI();
+            }
+
+            // Helper function to show toast (if not already defined)
+            function showToast(message, type = 'info') {
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast-notification toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                // Add styles
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#48bb78' : '#4299e1'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 500;
+                    animation: slideInRight 0.3s ease;
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+
+            // Helper function to update cart UI (if not already defined)
+            function updateCartUI() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                
+                // Update cart count in header if element exists
+                const cartCountElement = document.querySelector('.cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = cartCount;
+                    cartCountElement.style.display = cartCount > 0 ? 'inline' : 'none';
+                }
+            }
+
         });
     </script>
+
+    @if(session('success') && session('clear_cart'))
+        <script>
+            // Clear cart on successful order
+            localStorage.removeItem('cart');
+            localStorage.removeItem('ts-cart');
+            
+            // Update cart count displays (multiple cart systems)
+            const cartCountElements = document.querySelectorAll('.cart-count, .ts-cart-count');
+            cartCountElements.forEach(element => {
+                if (element) {
+                    element.textContent = '0';
+                    element.style.display = 'none';
+                }
+            });
+            
+            // Update global cart objects if they exist
+            if (typeof window.cart !== 'undefined') {
+                window.cart = {};
+            }
+            if (typeof window.shopManager !== 'undefined' && window.shopManager.cart) {
+                window.shopManager.cart = [];
+                if (typeof window.shopManager.updateCartUI === 'function') {
+                    window.shopManager.updateCartUI();
+                }
+            }
+            if (typeof window.updateCartDisplay === 'function') {
+                window.updateCartDisplay();
+            }
+        </script>
+    @endif
 @endsection

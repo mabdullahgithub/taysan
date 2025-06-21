@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Services\BannerService;
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 
 class BaseController extends Controller
 {
@@ -19,5 +20,24 @@ class BaseController extends Controller
     protected function withBanners($data = [])
     {
         return array_merge($data, $this->banners);
+    }
+
+    /**
+     * Get shipping settings for views
+     */
+    protected function getShippingSettings()
+    {
+        return [
+            'shippingCharges' => Setting::get('shipping_charges', '150.00'),
+            'freeShippingThreshold' => Setting::get('free_shipping_threshold', '5000.00')
+        ];
+    }
+
+    /**
+     * Get data with banners and shipping settings
+     */
+    protected function withBannersAndShipping($data = [])
+    {
+        return array_merge($data, $this->banners, $this->getShippingSettings());
     }
 }

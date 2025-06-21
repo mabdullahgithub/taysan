@@ -542,6 +542,13 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('admin.deals.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.deals.index') }}">
+                    <i class="fa fa-fire d-xl-none"></i>
+                    <span>Deal of the Day</span>
+                </a>
+            </li>
+
             <li class="nav-item {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('admin.orders.index') }}">
                     <i class="fa fa-shopping-cart d-xl-none"></i>

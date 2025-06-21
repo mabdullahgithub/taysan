@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Banner;
 use App\Models\Setting;
+use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
@@ -31,8 +32,11 @@ class SettingsController extends Controller
             'site_description' => Setting::get('site_description', 'Your trusted destination for natural beauty products. We specialize in handcrafted soaps and organic skincare made with love and pure ingredients.'),
             'site_keywords' => Setting::get('site_keywords', 'natural soap, handcrafted skincare, organic beauty products, Taysan Beauty'),
             'site_author' => Setting::get('site_author', 'Taysan Beauty'),
+            'marquee_text' => Setting::get('marquee_text', 'Welcome to Taysan Beauty - Natural Handcrafted Soaps & Skincare Products'),
             'logo' => Setting::get('logo', ''),
             'ceo_image' => Setting::get('ceo_image', ''),
+            'shipping_charges' => Setting::get('shipping_charges', '150.00'),
+            'free_shipping_threshold' => Setting::get('free_shipping_threshold', '5000.00'),
             'footer_company_description' => Setting::get('footer_company_description', 'Your trusted destination for natural beauty products. We specialize in handcrafted soaps and organic skincare made with love and pure ingredients.'),
             'footer_founder_name' => Setting::get('footer_founder_name', 'Muhammad Abdullah'),
             'footer_founder_title' => Setting::get('footer_founder_title', 'Founder & CEO'),
@@ -45,8 +49,11 @@ class SettingsController extends Controller
             'footer_twitter' => Setting::get('footer_twitter', '#'),
             'footer_copyright' => Setting::get('footer_copyright', 'Copyright © 2025 by Taysan Beauty. All Rights Reserved. | Founded by Muhammad Abdullah'),
         ];
+
+        // Get all categories
+        $categories = Category::orderBy('name')->get();
     
-        return view('admin.settings', array_merge($banners, $settings));
+        return view('admin.settings', array_merge($banners, $settings, ['categories' => $categories]));
     }
 
     public function updateBanners(Request $request)
@@ -194,8 +201,11 @@ class SettingsController extends Controller
             'site_description' => 'nullable|string|max:500',
             'site_keywords' => 'nullable|string|max:255',
             'site_author' => 'nullable|string|max:255',
+            'marquee_text' => 'nullable|string|max:500',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:8192',
             'ceo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:8192',
+            'shipping_charges' => 'nullable|numeric|min:0|max:99999.99',
+            'free_shipping_threshold' => 'nullable|numeric|min:0|max:999999.99',
             'footer_company_description' => 'nullable|string|max:500',
             'footer_founder_name' => 'nullable|string|max:255',
             'footer_founder_title' => 'nullable|string|max:255',
@@ -214,6 +224,9 @@ class SettingsController extends Controller
             'site_description' => 'textarea',
             'site_keywords' => 'text',
             'site_author' => 'text',
+            'marquee_text' => 'text',
+            'shipping_charges' => 'number',
+            'free_shipping_threshold' => 'number',
             'footer_company_description' => 'textarea',
             'footer_founder_name' => 'text',
             'footer_founder_title' => 'text',
@@ -263,5 +276,44 @@ class SettingsController extends Controller
         }
 
         return redirect()->back()->with('success', 'Settings have been updated successfully!');
+    }
+
+    // Category CRUD Methods
+    public function storeCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        Category::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->back()->with('success', 'Category created successfully!');
+    }
+
+    public function updateCategory(Request $request, Category $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->back()->with('success', 'Category updated successfully!');
+    }
+
+    public function destroyCategory(Category $category)
+    {
+        // Check if category has products
+        if ($category->products()->exists()) {
+            return redirect()->back()->with('error', 'Cannot delete category with existing products. Please move or delete products first.');
+        }
+
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Category deleted successfully!');
     }
 }

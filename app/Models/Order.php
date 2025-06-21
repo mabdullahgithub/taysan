@@ -17,6 +17,8 @@ class Order extends Model
         'postal_code',
         'city',
         'country',
+        'subtotal',
+        'shipping_cost',
         'total',
         'status'
     ];

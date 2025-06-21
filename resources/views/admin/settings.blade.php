@@ -540,6 +540,106 @@
         display: block;
     }
 
+    /* Categories Table Styles */
+    .table {
+        margin-bottom: 0;
+        color: var(--text-dark);
+    }
+
+    .table th {
+        border-top: none;
+        border-bottom: 2px solid var(--border-light);
+        font-weight: 600;
+        color: var(--text-dark);
+        background-color: var(--primary-lightest);
+        padding: 1rem 0.75rem;
+    }
+
+    .table td {
+        padding: 1rem 0.75rem;
+        border-top: 1px solid var(--border-light);
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--primary-lightest);
+    }
+
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 20px;
+    }
+
+    .badge-info {
+        color: #0c5460;
+        background-color: #bee5eb;
+    }
+
+    .btn-group .btn {
+        margin-right: 0.25rem;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        border-radius: 0.375rem;
+    }
+
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+        color: var(--white);
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-danger {
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .btn-outline-danger:hover {
+        color: var(--white);
+        background-color: var(--danger);
+        border-color: var(--danger);
+    }
+
+    .btn-outline-secondary {
+        color: var(--text-light);
+        border-color: var(--border-light);
+    }
+
+    /* Form Styles */
+    .form-control {
+        border: 1px solid var(--border-light);
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(139, 123, 168, 0.25);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .settings-container {
@@ -616,6 +716,28 @@
 
         .modal-dialog {
             margin: 0.5rem;
+        }
+
+        /* Categories table responsive */
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .btn-group .btn {
+            margin-right: 0;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
         }
     }
 </style>
@@ -1412,6 +1534,172 @@
             </div>
         </div>
 
+        <!-- Categories Management Section -->
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-tags"></i>
+                    Categories Management
+                </h1>
+                <p class="page-subtitle">Manage product categories for your store</p>
+            </div>
+
+            <!-- Add New Category Card -->
+            <div class="banner-card mb-4">
+                <div class="banner-header">
+                    <i class="fas fa-plus"></i>
+                    <h5>Add New Category</h5>
+                </div>
+
+                <form action="{{ route('settings.categories.store') }}" method="POST" id="addCategoryForm">
+                    @csrf
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">
+                                <i class="fas fa-tag"></i>
+                                Category Name
+                            </label>
+                            <input type="text" class="form-control" name="name" placeholder="Enter category name" required>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i>
+                                Add Category
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Categories List Card -->
+            <div class="banner-card">
+                <div class="banner-header">
+                    <i class="fas fa-list"></i>
+                    <h5>Existing Categories</h5>
+                </div>
+
+                @if($categories && $categories->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="10%">#</th>
+                                    <th width="40%">Category Name</th>
+                                    <th width="20%">Products Count</th>
+                                    <th width="20%">Created</th>
+                                    <th width="10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($categories as $index => $category)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>
+                                            <strong>{{ $category->name }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">
+                                                {{ $category->products->count() }} products
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ $category->created_at->format('M d, Y') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                        data-toggle="modal" 
+                                                        data-target="#editCategoryModal{{ $category->id }}"
+                                                        title="Edit Category">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                
+                                                @if($category->products->count() == 0)
+                                                    <form action="{{ route('settings.categories.destroy', $category) }}" 
+                                                          method="POST" 
+                                                          style="display: inline-block;"
+                                                          onsubmit="return confirm('Are you sure you want to delete this category? This action cannot be undone.')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                                title="Delete Category">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                            disabled
+                                                            title="Cannot delete category with products">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-tags text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <h5 class="text-muted mt-3">No Categories Found</h5>
+                        <p class="text-muted">Start by adding your first product category above.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Edit Category Modals -->
+        @if($categories && $categories->count() > 0)
+            @foreach($categories as $category)
+                <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" aria-labelledby="editCategoryModalLabel{{ $category->id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editCategoryModalLabel{{ $category->id }}">
+                                    <i class="fas fa-edit"></i>
+                                    Edit Category
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="{{ route('settings.categories.update', $category) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-tag"></i>
+                                            Category Name
+                                        </label>
+                                        <input type="text" class="form-control" name="name" value="{{ $category->name }}" required>
+                                    </div>
+                                    
+                                    @if($category->products->count() > 0)
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            This category has {{ $category->products->count() }} product(s) associated with it.
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Update Category
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @endif
+
         <!-- General Settings Section -->
         <div class="container">
             <div class="page-header">
@@ -1449,6 +1737,49 @@
                         <div class="col-12">
                             <label class="form-label">Site Keywords (Meta Keywords)</label>
                             <input type="text" class="form-control" name="site_keywords" value="{{ $site_keywords }}" placeholder="keyword1, keyword2, keyword3">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">
+                                <i class="fas fa-bullhorn"></i>
+                                Marquee Text (Announcement Bar)
+                            </label>
+                            <input type="text" class="form-control" name="marquee_text" value="{{ $marquee_text }}" placeholder="Enter announcement text for marquee">
+                            <small class="text-muted">This text will appear as a scrolling announcement on your website</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Settings Card -->
+                <div class="banner-card">
+                    <div class="banner-header">
+                        <i class="fas fa-shipping-fast"></i>
+                        <h5>Shipping Settings</h5>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Shipping Charges (PKR)
+                            </label>
+                            <input type="number" class="form-control" name="shipping_charges" value="{{ $shipping_charges }}" placeholder="150.00" step="0.01" min="0">
+                            <small class="text-muted">Default shipping cost for all orders</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <i class="fas fa-gift"></i>
+                                Free Shipping Threshold (PKR)
+                            </label>
+                            <input type="number" class="form-control" name="free_shipping_threshold" value="{{ $free_shipping_threshold }}" placeholder="5000.00" step="0.01" min="0">
+                            <small class="text-muted">Orders above this amount get free shipping</small>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>How it works:</strong> 
+                                Orders below PKR {{ number_format($free_shipping_threshold ?? 5000, 0) }} will be charged PKR {{ number_format($shipping_charges ?? 150, 0) }} for shipping. 
+                                Orders equal to or above the threshold get free shipping automatically.
+                            </div>
                         </div>
                     </div>
                 </div>

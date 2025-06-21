@@ -29,7 +29,8 @@ class ProductController extends Controller
         'price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale'
+        'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale',
+        'status' => 'required|string|in:active,inactive'
     ]);
     
     try {
@@ -88,7 +89,8 @@ class ProductController extends Controller
         'price' => 'required|numeric|min:0',
         'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale'
+        'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale',
+        'status' => 'required|string|in:active,inactive'
     ]);
 
     try {
@@ -184,9 +186,11 @@ class ProductController extends Controller
     public function toggleStatus(Product $product)
     {
         try {
-            $product->update(['status' => !$product->status]);
+            // Toggle between 'active' and 'inactive'
+            $newStatus = $product->status === 'active' ? 'inactive' : 'active';
+            $product->update(['status' => $newStatus]);
             
-            $status = $product->status ? 'activated' : 'deactivated';
+            $status = $product->status === 'active' ? 'activated' : 'deactivated';
             
             Log::info("Product status changed", [
                 'product_id' => $product->id,

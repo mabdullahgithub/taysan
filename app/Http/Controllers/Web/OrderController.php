@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\DealOfTheDay;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -15,6 +17,36 @@ class OrderController extends BaseController
     public function view()
     {
         return view('web.order', $this->withBanners());
+    }
+    
+    public function checkout()
+    {
+        return view('web.checkout', $this->withBannersAndShipping());
+    }
+    
+    public function checkoutProduct(Product $product)
+    {
+        // Check if product exists and is active
+        if (!$product || $product->status !== 'active') {
+            return redirect()->route('web.view.shop')->with('error', 'Product not available.');
+        }
+        
+        // Check if this product is part of a deal and get the deal price
+        $dealPrice = null;
+        $deal = DealOfTheDay::where('product_id', $product->id)
+            ->where('is_active', 1)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+            
+        if ($deal) {
+            $dealPrice = $deal->final_price;
+        }
+        
+        return view('web.checkout', array_merge($this->withBannersAndShipping(), [
+            'prefilledProduct' => $product,
+            'dealPrice' => $dealPrice
+        ]));
     }
     
     public function storeWebOrders(Request $request)
@@ -54,7 +86,7 @@ class OrderController extends BaseController
 
                 // Verify product exists and is active
                 $product = Product::find($item['id']);
-                if (!$product || !$product->status) {
+                if (!$product || $product->status !== 'active') {
                     return back()->with('error', "Product '{$item['name']}' is no longer available.");
                 }
 
@@ -63,27 +95,54 @@ class OrderController extends BaseController
                     return back()->with('error', "Insufficient stock for '{$product->name}'. Available: {$product->stock}");
                 }
 
-                // Use current product price for security
-                $itemSubtotal = $product->price * $item['quantity'];
+                // Check if product is part of an active deal and get the appropriate price
+                $effectivePrice = $product->price; // Default to regular price
+                $deal = DealOfTheDay::where('product_id', $product->id)
+                    ->where('is_active', 1)
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now())
+                    ->first();
+                    
+                if ($deal) {
+                    $effectivePrice = $deal->final_price; // Use deal price if available
+                }
+
+                // Calculate subtotal using the effective price (deal price or regular price)
+                $itemSubtotal = $effectivePrice * $item['quantity'];
                 $calculatedTotal += $itemSubtotal;
 
                 // Prepare item data for order_items table
                 $validatedItems[] = [
                     'product_id' => $product->id,
                     'product_name' => $product->name,
-                    'product_price' => $product->price,
+                    'product_price' => $effectivePrice, // Use effective price (deal price or regular price)
                     'product_image' => $item['image'] ?? $product->image,
                     'quantity' => (int) $item['quantity'],
                     'subtotal' => $itemSubtotal
                 ];
             }
 
-            // Security check: verify total matches calculated total
-            if (abs($calculatedTotal - $validated['total']) > 0.01) {
+            // Get shipping settings
+            $shippingCharges = (float) Setting::get('shipping_charges', '150.00');
+            $freeShippingThreshold = (float) Setting::get('free_shipping_threshold', '5000.00');
+            
+            // Calculate shipping cost
+            $shippingCost = 0;
+            if ($calculatedTotal >= $freeShippingThreshold) {
+                $shippingCost = 0; // Free shipping
+            } else {
+                $shippingCost = $shippingCharges;
+            }
+            
+            // Calculate final total including shipping
+            $finalTotal = $calculatedTotal + $shippingCost;
+
+            // Security check: verify total matches calculated total (including shipping)
+            if (abs($finalTotal - $validated['total']) > 0.01) {
                 return back()->with('error', 'Price mismatch detected. Please refresh your cart and try again.');
             }
 
-            // Create the order (without order_items field since we'll use separate table)
+            // Create the order (with subtotal, shipping cost, and total)
             $orderData = [
                 'first_name' => $validated['firstName'],
                 'last_name' => $validated['lastName'],
@@ -92,7 +151,9 @@ class OrderController extends BaseController
                 'postal_code' => $validated['postalCode'],
                 'city' => $validated['city'],
                 'country' => $validated['country'],
-                'total' => $calculatedTotal,
+                'subtotal' => $calculatedTotal,
+                'shipping_cost' => $shippingCost,
+                'total' => $finalTotal,
                 'status' => 'pending'
             ];
 
@@ -126,7 +187,8 @@ class OrderController extends BaseController
             ]);
 
             return redirect()->route('web.view.index')
-                ->with('success', "Order #{$order->id} placed successfully! We'll send you a confirmation email shortly.");
+                ->with('success', "Order #{$order->id} placed successfully! We'll send you a confirmation email shortly.")
+                ->with('clear_cart', true);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollback();

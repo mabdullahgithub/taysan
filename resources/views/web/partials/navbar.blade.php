@@ -4,7 +4,10 @@
     <div class="ts-announce">
         <div class="container-fluid">
             <div class="marquee-content">
-                ✨ Embrace Natural Beauty • Handcrafted Luxury Soaps • Pure, Organic Skincare • Premium Quality You Can Feel • Eco-Friendly & Kind to Skin • Free Shipping on $50+ Orders!
+                @php
+                    $marqueeText = \App\Models\Setting::get('marquee_text', 'Welcome to our store!');
+                @endphp
+                {{ $marqueeText }}
             </div>
         </div>
     </div>

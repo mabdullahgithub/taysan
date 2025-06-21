@@ -328,6 +328,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show Laravel session messages
     @if(session('success'))
         showToast('success', 'Success!', '{{ session('success') }}');
+        @if(session('clear_cart'))
+        // Wait a moment for DOM to be ready, then clear cart
+        setTimeout(function() {
+            // Clear cart using the global function if available
+            if (typeof window.clearCart === 'function') {
+                window.clearCart();
+            } else {
+                // Fallback: clear localStorage directly
+                localStorage.removeItem('ts-cart');
+            }
+            
+            // Clear both cart systems manually as backup
+            if (typeof window.shopManager !== 'undefined') {
+                window.shopManager.cart = [];
+                if (typeof window.shopManager.updateCartDisplay === 'function') {
+                    window.shopManager.updateCartDisplay();
+                }
+                if (typeof window.shopManager.saveCartToStorage === 'function') {
+                    window.shopManager.saveCartToStorage();
+                }
+            }
+            
+            if (typeof window.updateCartDisplay === 'function') {
+                // Clear the old cart system too
+                for (let key in window.cart || {}) {
+                    delete window.cart[key];
+                }
+                window.updateCartDisplay();
+            }
+            
+            // Clear any cart count displays
+            const cartCountElements = document.querySelectorAll('.cart-count, .floating-cart-count, .cart-item-count');
+            cartCountElements.forEach(element => {
+                element.textContent = '0';
+                element.style.display = 'none';
+            });
+            
+            // Clear any cart amount displays
+            const cartAmountElements = document.querySelectorAll('.cart-total-amount, .mini-checkout-price span');
+            cartAmountElements.forEach(element => {
+                element.textContent = '$0.00';
+            });
+            
+            // Clear cart items containers
+            const cartItemsContainers = document.querySelectorAll('.mini-cart-items, .cart-items-container, .floating-cart-items');
+            cartItemsContainers.forEach(container => {
+                container.innerHTML = '';
+            });
+        }, 100);
+        @endif
     @endif
     
     @if(session('error'))

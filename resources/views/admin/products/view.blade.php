@@ -379,8 +379,8 @@
                             </span>
                         </td>
                         <td>
-                            <span class="status-badge {{ $product->status ? 'status-active' : 'status-inactive' }}">
-                                {{ $product->status ? 'Active' : 'Inactive' }}
+                            <span class="status-badge {{ $product->status == 'active' ? 'status-active' : 'status-inactive' }}">
+                                {{ $product->status == 'active' ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
                         <td>

@@ -396,20 +396,17 @@
 
                 <!-- Status -->
                 <div class="mb-3">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               id="status" 
-                               name="status" 
-                               value="1"
-                               {{ old('status', true) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="status">
-                            Active Status
-                        </label>
-                    </div>
-                    <small class="text-muted">Product will be active by default</small>
+                    <label for="status" class="form-label">Product Status</label>
+                    <select class="form-control @error('status') is-invalid @enderror" 
+                            id="status" 
+                            name="status" 
+                            required>
+                        <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                    <small class="text-muted">Active products will be visible to customers</small>
                     @error('status')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 

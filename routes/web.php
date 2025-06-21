@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\{
     OrderController,
     SettingsController,
     AuthController,
+    DealOfTheDayController,
 };
 
 /*
@@ -28,6 +29,10 @@ Route::get('/about-us', [AboutController::class, 'view'])->name('web.view.about'
 Route::get('/contact', [ContactController::class, 'view'])->name('web.view.contact');
 Route::post('/contact', [ContactController::class, 'submitContact'])->name('web.contact.submit');
 Route::get('/orders-web', [WebOrderController::class, 'view'])->name('web.orders.index');
+
+// Checkout routes
+Route::get('/checkout', [WebOrderController::class, 'checkout'])->name('web.checkout');
+Route::get('/checkout/product/{product}', [WebOrderController::class, 'checkoutProduct'])->name('web.checkout.product');
 
 // New route to store the order
 Route::post('/orders', [WebOrderController::class, 'storeWebOrders'])->name('web.orders.store');
@@ -56,12 +61,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
 Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
+    // Deal of the Day Management
+    Route::get('/admin/deals', [DealOfTheDayController::class, 'index'])->name('admin.deals.index');
+    Route::post('/admin/deals', [DealOfTheDayController::class, 'store'])->name('admin.deals.store');
+    Route::put('/admin/deals/{deal}', [DealOfTheDayController::class, 'update'])->name('admin.deals.update');
+    Route::delete('/admin/deals/{deal}', [DealOfTheDayController::class, 'destroy'])->name('admin.deals.destroy');
+    Route::post('/admin/deals/{deal}/toggle-status', [DealOfTheDayController::class, 'toggleStatus'])->name('admin.deals.toggleStatus');
+
     // Banners
 
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/banners', [SettingsController::class, 'updateBanners'])->name('settings.update.banners');
     Route::put('/settings/general', [SettingsController::class, 'updateSettings'])->name('settings.update.general');
+    
+    // Category CRUD routes
+    Route::post('/settings/categories', [SettingsController::class, 'storeCategory'])->name('settings.categories.store');
+    Route::put('/settings/categories/{category}', [SettingsController::class, 'updateCategory'])->name('settings.categories.update');
+    Route::delete('/settings/categories/{category}', [SettingsController::class, 'destroyCategory'])->name('settings.categories.destroy');
+    
     Route::get('/queries', [\App\Http\Controllers\QueryController::class, 'index'])->name('admin.queries.index');
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');

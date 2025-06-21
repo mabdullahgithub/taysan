@@ -951,6 +951,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize shop
     window.shopManager = shopManager;
     shopManager.init();
+    
+    // Make cart functions globally available
+    window.clearCart = function() {
+        shopManager.cart = [];
+        shopManager.updateCartDisplay();
+        shopManager.saveCartToStorage();
+        localStorage.removeItem('ts-cart');
+    };
 });
 </script>
 
@@ -960,9 +968,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // A simple in-memory store for cart items.
     // Key = product ID, Value = { name, price, image, quantity }
     const cart = {};
+    
+    // Make cart globally accessible
+    window.cart = cart;
 
     // Update the mini-cart UI in the navbar
-    function updateCartDisplay() {
+    window.updateCartDisplay = function updateCartDisplay() {
         // Grab the relevant elements in your navbar’s mini-cart
         const $cartCount          = $(".cart-count");
         const $miniCartItems      = $(".mini-cart-items");
