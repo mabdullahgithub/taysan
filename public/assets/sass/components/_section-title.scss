@@ -1,0 +1,48 @@
+.wpo-section-title {
+	margin-bottom: 60px;
+	text-align: center;
+	position: relative;
+
+	@include media-query(767px) {
+		margin-bottom: 40px;
+	}
+
+	&:before {
+		position: absolute;
+		background: $theme-primary-color;
+		left: 50%;
+		width: 106px;
+		height: 3px;
+		content: "";
+		bottom: -15px;
+		transform: translateX(-50%);
+	}
+
+
+	h2 {
+		margin: 0;
+		text-transform: capitalize;
+		font-family: $heading-font;
+		font-weight: 600;
+		font-size: 35px;
+		line-height: 45px;
+
+
+		@include media-query(767px) {
+			font-size: 30px;
+			line-height: 40px;
+		}
+
+		@include media-query(330px) {
+			font-size: 25px;
+		}
+
+	}
+
+	p {
+		font-weight: 400;
+		font-size: 18px;
+		color: $text-color;
+	}
+
+}
