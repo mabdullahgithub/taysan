@@ -370,7 +370,7 @@
                             <span class="category-badge">{{ $product->category->name }}</span>
                         </td>
                         <td>
-                            <div class="price-text">PKR {{ number_format($product->price, 2) }}</div>
+                            <div class="price-text">PKR {{ number_format($product->price, 0) }}</div>
                         </td>
                         <td>
                             <span class="stock-badge 

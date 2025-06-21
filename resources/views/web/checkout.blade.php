@@ -390,8 +390,8 @@
                     <div class="form-section">
                         <h3><i class="fas fa-truck"></i> Shipping Information</h3>
                         <div class="form-group">
-                            <label for="address">Address</label>
-                            <input type="text" id="address" name="address" class="form-control" value="{{ old('address') }}">
+                            <label for="address">Address (Optional)</label>
+                            <input type="text" id="address" name="address" class="form-control" placeholder="Street address, apartment, suite, etc." value="{{ old('address') }}">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -542,27 +542,39 @@
             };
             
             function updateTotals() {
-                const subtotal = cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+                const subtotal = cart.reduce((total, item) => {
+                    const itemPrice = parseFloat(item.price);
+                    const itemQuantity = parseInt(item.quantity);
+                    return total + (itemPrice * itemQuantity);
+                }, 0);
+                
+                // Round subtotal to whole numbers (no decimal points)
+                const roundedSubtotal = Math.round(subtotal);
+                
                 const shippingCharges = {{ $shippingCharges ?? 150 }};
-                const freeShippingThreshold = {{ $freeShippingThreshold ?? 5000 }};
+                const freeShippingThreshold = {{ $freeShippingThreshold ?? 2000 }};
                 
                 // Calculate shipping
                 let shipping = 0;
                 let isFreeShipping = false;
                 
-                if (subtotal >= freeShippingThreshold) {
+                if (roundedSubtotal >= freeShippingThreshold) {
                     shipping = 0;
                     isFreeShipping = true;
-                } else if (subtotal > 0) {
+                } else if (roundedSubtotal > 0) {
                     shipping = shippingCharges;
                 }
                 
-                const total = subtotal + shipping;
+                // Round shipping to whole numbers (no decimal points)
+                shipping = Math.round(shipping);
                 
-                // Update display
-                document.getElementById('subtotal').textContent = `PKR ${subtotal.toLocaleString()}`;
+                // Calculate and round final total to whole numbers
+                const total = Math.round(roundedSubtotal + shipping);
+                
+                // Update display without decimal points
+                document.getElementById('subtotal').textContent = `PKR ${roundedSubtotal.toLocaleString()}`;
                 document.getElementById('total').textContent = `PKR ${total.toLocaleString()}`;
-                document.getElementById('totalInput').value = total;
+                document.getElementById('totalInput').value = total.toString();
                 document.getElementById('orderItems').value = JSON.stringify(cart);
                 
                 // Show/hide shipping rows
@@ -581,8 +593,8 @@
                 // Show free shipping message if close to threshold
                 const freeShippingMessage = document.getElementById('freeShippingMessage');
                 if (freeShippingMessage) {
-                    if (subtotal > 0 && subtotal < freeShippingThreshold) {
-                        const remaining = freeShippingThreshold - subtotal;
+                    if (roundedSubtotal > 0 && roundedSubtotal < freeShippingThreshold) {
+                        const remaining = freeShippingThreshold - roundedSubtotal;
                         freeShippingMessage.innerHTML = `<i class="fas fa-gift"></i> Add PKR ${remaining.toLocaleString()} more to get FREE shipping!`;
                         freeShippingMessage.style.display = 'block';
                     } else {
@@ -612,12 +624,74 @@
                     return;
                 }
                 
-                // Update order items before submission
-                document.getElementById('orderItems').value = JSON.stringify(cart);
-                document.getElementById('totalInput').value = cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+                e.preventDefault(); // Prevent default submission
+                
+                // Show loading state
+                const submitBtn = document.getElementById('submitBtn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validating...';
+                
+                // Validate cart with backend before submission
+                fetch('/api/validate-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        items: cart,
+                        total: parseInt(document.getElementById('totalInput').value)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_valid) {
+                        // If validation passes, update values and submit
+                        document.getElementById('totalInput').value = data.total;
+                        document.getElementById('orderItems').value = JSON.stringify(cart);
+                        
+                        // Submit the form
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        e.target.submit();
+                    } else {
+                        // If validation fails, update cart and totals
+                        console.log('Price validation failed, updating cart...', data);
+                        
+                        // Update the total display with backend calculated values
+                        document.getElementById('subtotal').textContent = `PKR ${data.subtotal.toLocaleString()}`;
+                        document.getElementById('total').textContent = `PKR ${data.total.toLocaleString()}`;
+                        document.getElementById('totalInput').value = data.total;
+                        
+                        // Update shipping display
+                        if (data.shipping_cost === 0) {
+                            document.getElementById('shippingRow').style.display = 'none';
+                            document.getElementById('freeShippingRow').style.display = 'flex';
+                        } else {
+                            document.getElementById('shippingRow').style.display = 'flex';
+                            document.getElementById('freeShippingRow').style.display = 'none';
+                            document.getElementById('shipping').textContent = `PKR ${data.shipping_cost.toLocaleString()}`;
+                        }
+                        
+                        // Show message and re-enable button
+                        alert(`Prices have been updated. Please review your order. Difference: PKR ${data.difference}`);
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Validation error:', error);
+                    // On error, proceed with original submission
+                    document.getElementById('orderItems').value = JSON.stringify(cart);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    e.target.submit();
+                });
             });
-        });
-    </script>
+
+            // ...existing code...
+        </script>
 
     @if(session('success'))
         <script>

@@ -295,7 +295,7 @@
                         <select name="product_id" class="form-control" required>
                             <option value="">Select a product</option>
                             @foreach($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }} - PKR {{ number_format($product->price, 2) }}</option>
+                                <option value="{{ $product->id }}">{{ $product->name }} - PKR {{ number_format($product->price, 0) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -312,7 +312,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Deal Price (PKR) - Optional</label>
-                        <input type="number" name="deal_price" class="form-control" min="0" step="0.01" placeholder="Override with fixed price">
+                        <input type="number" name="deal_price" class="form-control" min="0" step="1" placeholder="Override with fixed price">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Sort Order</label>
@@ -373,10 +373,10 @@
                     </div>
 
                     <div class="deal-pricing">
-                        <span class="original-price">PKR {{ number_format($deal->product->price, 2) }}</span>
-                        <span class="deal-price">PKR {{ number_format($deal->final_price, 2) }}</span>
+                        <span class="original-price">PKR {{ number_format($deal->product->price, 0) }}</span>
+                        <span class="deal-price">PKR {{ number_format($deal->final_price, 0) }}</span>
                         @if($deal->savings > 0)
-                            <span class="savings-badge">Save PKR {{ number_format($deal->savings, 2) }}</span>
+                            <span class="savings-badge">Save PKR {{ number_format($deal->savings, 0) }}</span>
                         @endif
                     </div>
 
@@ -443,7 +443,7 @@
                             <label class="form-label">Product</label>
                             <select name="product_id" id="edit_product_id" class="form-control" required>
                                 @foreach($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }} - PKR {{ number_format($product->price, 2) }}</option>
+                                    <option value="{{ $product->id }}">{{ $product->name }} - PKR {{ number_format($product->price, 0) }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -460,7 +460,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Deal Price (PKR)</label>
-                            <input type="number" name="deal_price" id="edit_deal_price" class="form-control" min="0" step="0.01">
+                            <input type="number" name="deal_price" id="edit_deal_price" class="form-control" min="0" step="1">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Sort Order</label>

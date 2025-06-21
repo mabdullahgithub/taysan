@@ -59,7 +59,8 @@ Route::middleware(['auth'])->group(function () {
     // Orders
     Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
-Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::get('/admin/orders/{id}/print', [OrderController::class, 'print'])->name('admin.orders.print');
+    Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
     // Deal of the Day Management
     Route::get('/admin/deals', [DealOfTheDayController::class, 'index'])->name('admin.deals.index');

@@ -740,7 +740,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <strong class="text-dark">PKR {{ number_format($order->total, 2) }}</strong>
+                                        <strong class="text-dark">PKR {{ number_format($order->total, 0) }}</strong>
                                     </td>
                                     <td>
                                         <span class="status-badge status-{{ $order->status }}">

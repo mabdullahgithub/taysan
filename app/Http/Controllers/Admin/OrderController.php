@@ -5,19 +5,71 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of orders
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('orderItems')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-            
-        return view('admin.orders.view', compact('orders'));
+        $query = Order::with(['orderItems', 'orderItems.product']);
+        
+        // Filter by status if provided
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+        
+        // Filter by shipping type if provided
+        if ($request->has('shipping') && $request->shipping !== 'all') {
+            if ($request->shipping === 'free') {
+                $query->where('shipping_cost', 0);
+            } elseif ($request->shipping === 'paid') {
+                $query->where('shipping_cost', '>', 0);
+            }
+        }
+        
+        // Filter by deal status if provided
+        if ($request->has('deal') && $request->deal !== 'all') {
+            if ($request->deal === 'with_deals') {
+                $query->whereHas('orderItems', function($q) {
+                    $q->whereHas('product', function($p) {
+                        $p->whereHas('dealOfTheDay', function($d) {
+                            $d->where('is_active', 1)
+                              ->where('start_date', '<=', now())
+                              ->where('end_date', '>=', now());
+                        });
+                    });
+                });
+            } elseif ($request->deal === 'without_deals') {
+                $query->whereDoesntHave('orderItems', function($q) {
+                    $q->whereHas('product', function($p) {
+                        $p->whereHas('dealOfTheDay', function($d) {
+                            $d->where('is_active', 1)
+                              ->where('start_date', '<=', now())
+                              ->where('end_date', '>=', now());
+                        });
+                    });
+                });
+            }
+        }
+        
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // Get order counts for filter tabs
+        $orderCounts = [
+            'all' => Order::count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
+            'free_shipping' => Order::where('shipping_cost', 0)->count(),
+            'paid_shipping' => Order::where('shipping_cost', '>', 0)->count(),
+        ];
+        
+        return view('admin.orders.view', compact('orders', 'orderCounts'));
     }
 
     /**
@@ -52,7 +104,7 @@ class OrderController extends Controller
             return redirect()->route('admin.orders.index')
                 ->with('error', 'Order not found');
         } catch (\Exception $e) {
-            \Log::error('Order status update failed: ' . $e->getMessage());
+            Log::error('Order status update failed: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Failed to update order status. Please try again.');
         }
@@ -75,5 +127,16 @@ class OrderController extends Controller
                 ->whereMonth('created_at', now()->month)
                 ->sum('total'),
         ];
+    }
+
+    /**
+     * Display the specified order for printing
+     */
+    public function print($id)
+    {
+        $order = Order::with(['orderItems', 'orderItems.product'])
+            ->findOrFail($id);
+            
+        return view('admin.orders.print', compact('order'));
     }
 }

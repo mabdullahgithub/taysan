@@ -563,7 +563,7 @@
 
                                     <div class="ts-product-meta">
                                         <span class="ts-product-category">{{ $product->category->name }}</span>
-                                        <span class="ts-product-price">${{ number_format($product->price, 2) }}</span>
+                                        <span class="ts-product-price">${{ number_format($product->price, 0) }}</span>
                                     </div>
 
                                     <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
@@ -707,7 +707,7 @@
 
                                     <div class="ts-product-meta">
                                         <span class="ts-product-category">{{ $product->category->name }}</span>
-                                        <span class="ts-product-price">${{ number_format($product->price, 2) }}</span>
+                                        <span class="ts-product-price">${{ number_format($product->price, 0) }}</span>
                                     </div>
 
                                     <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"

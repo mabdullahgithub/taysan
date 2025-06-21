@@ -793,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 quickViewModal.querySelector('.ts-modal-product-img').src = data.image;
                 quickViewModal.querySelector('.ts-modal-product-title').textContent = data.name;
                 quickViewModal.querySelector('.ts-modal-category').textContent = data.category;
-                quickViewModal.querySelector('.ts-modal-price').textContent = `$${parseFloat(data.price).toFixed(2)}`;
+                quickViewModal.querySelector('.ts-modal-price').textContent = `$${Math.round(parseFloat(data.price))}`;
                 quickViewModal.querySelector('.ts-modal-description').textContent = data.description;
 
                 // Reset quantity
@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <img class="ts-cart-item-image" src="${item.image}" alt="${item.name}">
                     <div class="ts-cart-item-details">
                         <h4 class="ts-cart-item-title">${item.name}</h4>
-                        <div class="ts-cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                        <div class="ts-cart-item-price">$${Math.round(item.price * item.quantity)}</div>
                         <div class="ts-quantity-control">
                             <button class="ts-quantity-btn" onclick="shopManager.updateCartQuantity(${item.id}, 'decrease')">
                                 <i class="fas fa-minus"></i>
@@ -906,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Update total
             const total = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            totalAmount.textContent = `$${total.toFixed(2)}`;
+            totalAmount.textContent = `$${Math.round(total)}`;
         },
 
         filterProducts() {
@@ -1003,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mini-cart-item-des">
                         <a href="#">${item.name}</a>
                         <span class="mini-cart-item-price">
-                            $${itemTotal.toFixed(2)} 
+                            $${Math.round(itemTotal)} 
                             <small>(${item.quantity}x)</small>
                         </span>
                         <div class="cart-qty-controls">
@@ -1020,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update cart count and subtotal
         $cartCount.text(totalQuantity);
-        $miniCheckoutPrice.text(`$${totalPrice.toFixed(2)}`);
+        $miniCheckoutPrice.text(`$${Math.round(totalPrice)}`);
     }
 
     // Add a product to the cart (or increment if it already exists)

@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal content
             document.getElementById('quickViewImage').src = this.dataset.image;
             document.getElementById('quickViewTitle').textContent = this.dataset.name;
-            document.getElementById('quickViewPrice').textContent = `$${parseFloat(this.dataset.price).toFixed(2)}`;
+            document.getElementById('quickViewPrice').textContent = `$${Math.round(parseFloat(this.dataset.price))}`;
             document.getElementById('quickViewDescription').textContent = this.dataset.description;
             
             // Reset quantity

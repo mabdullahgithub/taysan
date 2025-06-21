@@ -30,7 +30,7 @@ class DealOfTheDayController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
-            'deal_price' => 'nullable|numeric|min:0',
+            'deal_price' => 'nullable|integer|min:0',
             'deal_title' => 'nullable|string|max:255',
             'deal_description' => 'nullable|string',
             'start_date' => 'required|date',
@@ -79,7 +79,7 @@ class DealOfTheDayController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
-            'deal_price' => 'nullable|numeric|min:0',
+            'deal_price' => 'nullable|integer|min:0',
             'deal_title' => 'nullable|string|max:255',
             'deal_description' => 'nullable|string',
             'start_date' => 'required|date',

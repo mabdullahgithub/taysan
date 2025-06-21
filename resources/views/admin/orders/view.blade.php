@@ -18,35 +18,28 @@
         --border-light: #E2E8F0;
         --success: #48BB78;
         --danger: #F56565;
+        --warning: #ED8936;
         --info: #4299E1;
     }
 
-    .orders-container {
-        background-color: var(--background);
+    .main-content {
         min-height: 100vh;
-        padding: 2rem 0;
-    }
-
-    .page-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-        color: var(--white);
+        background: var(--background);
         padding: 2rem;
-        border-radius: 16px;
+    }
+
+    .header-section {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 2rem;
         margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .page-title {
-        font-size: 1.75rem;
+    .header-title {
+        color: var(--text-dark);
+        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .page-subtitle {
-        opacity: 0.85;
-        font-size: 1rem;
         margin: 0;
     }
 
@@ -63,11 +56,68 @@
         text-decoration: none;
     }
 
-    .table-container {
+    .filters-section {
         background: var(--white);
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(139, 123, 168, 0.08);
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-lightest);
+        color: var(--primary-dark);
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-tab.active {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .tab-count {
+        background: rgba(255,255,255,0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .orders-table {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .table thead th {
+        background: var(--primary-lightest);
+        color: var(--primary-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: middle;
     }
 
     .order-id {
@@ -86,155 +136,135 @@
         font-size: 0.8rem;
     }
 
-    .location-info {
-        font-weight: 500;
-        color: var(--text-dark);
-        margin-bottom: 2px;
-    }
-
-    .location-detail {
-        color: var(--text-light);
-        font-size: 0.8rem;
-    }
-
-    .items-badge {
-        background: var(--primary-lightest);
-        color: var(--primary-dark);
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
     .total-amount {
-        color: var(--success);
-        font-size: 1rem;
         font-weight: 700;
-    }
-
-    .order-date {
-        color: var(--text-medium);
-        font-weight: 500;
+        color: var(--success);
+        font-size: 1.1rem;
     }
 
     .action-btn {
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        background: none;
+        border: none;
+        padding: 0.5rem;
         border-radius: 6px;
-        background: transparent;
-        border: 1px solid var(--border-light);
-        color: var(--text-light);
         cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s ease;
+        transition: background-color 0.2s ease;
     }
 
     .action-btn:hover {
-        background-color: var(--background);
-        transform: translateY(-1px);
-        text-decoration: none;
-    }
-
-    .action-btn.btn-view:hover {
-        border-color: var(--info);
-        color: var(--info);
-    }
-
-    .table thead th {
         background: var(--primary-lightest);
-        color: var(--text-dark);
-        border: none;
-        padding: 1rem;
-        font-weight: 600;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        transform: scale(1.1);
     }
 
-    .table tbody td {
-        padding: 1rem;
-        border-color: var(--border-light);
-        vertical-align: middle;
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
     }
 
-    .table tbody tr:hover {
-        background-color: rgba(139, 123, 168, 0.02);
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-light);
     }
 
-    .dataTables_wrapper .dataTables_length select,
-    .dataTables_wrapper .dataTables_filter input {
-        border: 1px solid var(--border-light);
-        border-radius: 8px;
-        padding: 0.5rem;
-        color: var(--text-dark);
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-lighter);
     }
 
-    .dataTables_wrapper .dataTables_filter input:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(139, 123, 168, 0.1);
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0.5rem 1rem;
-        margin: 0 0.25rem;
-        border-radius: 6px;
-        border: 1px solid var(--border-light);
+    /* Pagination info text */
+    .pagination-info {
+        background: var(--white);
+        padding: 1rem 2rem;
+        border-top: 1px solid var(--border-light);
+        text-align: center;
         color: var(--text-medium);
+        font-size: 0.875rem;
+        border-radius: 0;
+        margin-top: 1rem;
     }
 
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: var(--primary-color) !important;
-        color: var(--white) !important;
-        border-color: var(--primary-color) !important;
+    .pagination-info strong {
+        color: var(--primary-color);
+        font-weight: 600;
     }
 
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: var(--primary-color) !important;
-        color: var(--white) !important;
-        border-color: var(--primary-color) !important;
+    @media (max-width: 768px) {
+        .pagination-info {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+        }
     }
 </style>
 
-<div class="orders-container">
-    <div class="container-fluid">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb breadcrumb-custom">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Orders</li>
-            </ol>
-        </nav>
+<div class="main-content">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+        </ol>
+    </nav>
 
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col-lg-12">
-                    <h1 class="page-title">
-                        <i class="fas fa-shopping-cart"></i>
-                        Orders Management
-                    </h1>
-                    <p class="page-subtitle">Manage customer orders and track order details</p>
-                </div>
-            </div>
+    <!-- Header Section -->
+    <div class="header-section">
+        <h1 class="header-title">Orders Management</h1>
+        <p>View and manage all customer orders</p>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+        <div class="filter-tabs">
+            <a href="{{ route('admin.orders.index') }}" class="filter-tab {{ !request('status') && !request('shipping') && !request('deal') ? 'active' : '' }}">
+                <i class="fas fa-list"></i>
+                All Orders
+                <span class="tab-count">{{ $orderCounts['all'] ?? 0 }}</span>
+            </a>
+            
+            <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="filter-tab {{ request('status') == 'pending' ? 'active' : '' }}">
+                <i class="fas fa-clock"></i>
+                Pending
+                <span class="tab-count">{{ $orderCounts['pending'] ?? 0 }}</span>
+            </a>
+            
+            <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="filter-tab {{ request('status') == 'processing' ? 'active' : '' }}">
+                <i class="fas fa-cog"></i>
+                Processing
+                <span class="tab-count">{{ $orderCounts['processing'] ?? 0 }}</span>
+            </a>
+            
+            <a href="{{ route('admin.orders.index', ['status' => 'shipped']) }}" class="filter-tab {{ request('status') == 'shipped' ? 'active' : '' }}">
+                <i class="fas fa-truck"></i>
+                Shipped
+                <span class="tab-count">{{ $orderCounts['shipped'] ?? 0 }}</span>
+            </a>
+            
+            <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="filter-tab {{ request('status') == 'delivered' ? 'active' : '' }}">
+                <i class="fas fa-check-circle"></i>
+                Delivered
+                <span class="tab-count">{{ $orderCounts['delivered'] ?? 0 }}</span>
+            </a>
+            
+            <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="filter-tab {{ request('status') == 'cancelled' ? 'active' : '' }}">
+                <i class="fas fa-times-circle"></i>
+                Cancelled
+                <span class="tab-count">{{ $orderCounts['cancelled'] ?? 0 }}</span>
+            </a>
         </div>
+    </div>
 
-        <!-- Orders Table -->
-        <div class="table-container">
-            <table id="ordersTable" class="table table-hover w-100">
+    <!-- Orders Table -->
+    <div class="orders-table">
+        @if($orders->count() > 0)
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
-                        <th>Contact</th>
-                        <th>Location</th>
-                        <th>Items</th>
-                        <th>Total Amount</th>
-                        <th>Order Date</th>
+                        <th>Total</th>
+                        <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -242,63 +272,56 @@
                     @foreach($orders as $order)
                     <tr>
                         <td>
-                            <div class="order-id">#{{ $order->id }}</div>
+                            <span class="order-id">#{{ $order->id }}</span>
                         </td>
                         <td>
-                            <div class="customer-info">{{ $order->first_name }} {{ $order->last_name }}</div>
+                            <div class="customer-info">{{ $order->full_name }}</div>
+                            <div class="customer-contact">{{ $order->email }}</div>
                         </td>
                         <td>
-                            <div class="customer-info">{{ $order->email }}</div>
-                            <div class="customer-contact">{{ $order->phone }}</div>
+                            <div class="total-amount">PKR {{ number_format($order->total ?? 0, 0) }}</div>
                         </td>
                         <td>
-                            <div class="location-info">{{ $order->city }}</div>
-                            <div class="location-detail">{{ $order->country }}</div>
+                            {{ $order->created_at->format('M d, Y') }}
                         </td>
                         <td>
-                            @php
-                                $items = json_decode($order->order_items, true) ?: [];
-                                $itemCount = collect($items)->sum('quantity');
-                            @endphp
-                            <span class="items-badge">{{ $itemCount }} items</span>
-                        </td>
-                        <td>
-                            <div class="total-amount">PKR {{ number_format($order->total, 2) }}</div>
-                        </td>
-                        <td>
-                            <div class="order-date">{{ \Carbon\Carbon::parse($order->created_at)->format('M d, Y') }}</div>
-                        </td>
-                        <td>
-                            <a href="{{ route('admin.orders.show', $order->id) }}" 
-                               class="action-btn btn-view" 
-                               title="View Order">
-                                <i class="fas fa-eye"></i>
-                            </a>
+                            <div class="action-buttons">
+                                <a href="{{ route('admin.orders.show', $order->id) }}" 
+                                   class="action-btn" 
+                                   title="View Order Details">
+                                    <i class="fas fa-eye text-primary"></i>
+                                </a>
+                                <a href="{{ route('admin.orders.print', $order->id) }}" 
+                                   class="action-btn" 
+                                   title="Print Order"
+                                   target="_blank">
+                                    <i class="fas fa-print text-success"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
+            
+            @if($orders->hasPages())
+                <!-- Pagination Info -->
+                <div class="pagination-info">
+                    Showing <strong>{{ $orders->firstItem() }}</strong> to <strong>{{ $orders->lastItem() }}</strong> 
+                    of <strong>{{ $orders->total() }}</strong> orders
+                </div>
+                
+                <!-- Custom Modern Pagination -->
+                {{ $orders->appends(request()->query())->links('custom.pagination') }}
+            @endif
+        @else
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>No Orders Found</h4>
+                <p>There are no orders matching your current filter criteria.</p>
+            </div>
+        @endif
     </div>
 </div>
-
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    // Initialize DataTable
-    $('#ordersTable').DataTable({
-        responsive: true,
-        pageLength: 25,
-        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-        order: [[6, 'desc']], // Order by date descending
-        columnDefs: [
-            { targets: [7], orderable: false, searchable: false }
-        ]
-    });
-});
-</script>
 
 @endsection

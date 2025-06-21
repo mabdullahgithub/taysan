@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal content
             quickViewImage.src = currentProductData.image;
             document.getElementById('quickViewTitle').textContent = currentProductData.name;
-            document.getElementById('quickViewPrice').textContent = `$${currentProductData.price.toFixed(2)}`;
+            document.getElementById('quickViewPrice').textContent = `$${Math.round(currentProductData.price)}`;
             document.getElementById('quickViewDescription').textContent = this.dataset.description;
             
             // Reset quantity

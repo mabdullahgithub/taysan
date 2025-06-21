@@ -144,6 +144,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .item-controls button {
@@ -154,11 +155,19 @@
             background: var(--secondary-color);
             color: var(--primary-color);
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
 
         .item-controls button:hover {
             background: var(--primary-color);
             color: white;
+        }
+
+        .item-controls span {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
 
@@ -302,6 +311,52 @@
             color: var(--primary-color);
         }
 
+        /* Order Totals */
+        .order-totals {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .total-row.final {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        /* Free Shipping Message */
+        .free-shipping-message {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            color: #155724;
+            font-weight: 500;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .free-shipping-message i {
+            margin-right: 8px;
+            color: #28a745;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
         /* Improved button styling */
         .btn-primary {
             background: var(--primary-color);
@@ -405,9 +460,16 @@
                     <label for="country">Country</label>
                     <select class="form-control" id="country" name="country" required>
                         <option value="">Select Country</option>
+                        <option value="Pakistan" selected>Pakistan</option>
+                        <option value="India">India</option>
+                        <option value="Bangladesh">Bangladesh</option>
                         <option value="USA">United States</option>
                         <option value="Canada">Canada</option>
                         <option value="UK">United Kingdom</option>
+                        <option value="UAE">United Arab Emirates</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
 
@@ -427,112 +489,233 @@
             <div id="orderItems">
                 <!-- Cart items will be rendered here -->
             </div>
-            <div class="order-total">
-                Total: <span id="orderTotal">$0.00</span>
+            
+            <!-- Free Shipping Message -->
+            <div id="freeShippingMessage" class="free-shipping-message" style="display: none;">
+                <!-- Message will be populated by JavaScript -->
+            </div>
+            
+            <div class="order-totals">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">PKR 0</span>
+                </div>
+                <div class="total-row" id="shippingRow">
+                    <span>Shipping:</span>
+                    <span id="shipping">PKR {{ number_format($shippingCharges ?? 150, 0) }}</span>
+                </div>
+                <div class="total-row" id="freeShippingRow" style="display: none;">
+                    <span>Shipping:</span>
+                    <span style="color: #28a745; font-weight: bold;">FREE</span>
+                </div>
+                <div class="total-row final">
+                    <span>Total:</span>
+                    <span id="orderTotal">PKR 0</span>
+                </div>
             </div>
         </section>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            let cart = [];
+            
+            // Load cart from localStorage
             function loadCart() {
-                const cart = localStorage.getItem('ts-cart');
-                return cart ? JSON.parse(cart) : [];
+                const savedCart = localStorage.getItem('ts-cart');
+                if (savedCart) {
+                    try {
+                        cart = JSON.parse(savedCart);
+                        if (!Array.isArray(cart)) cart = [];
+                    } catch (e) {
+                        cart = [];
+                    }
+                }
             }
 
-            function saveCart(cart) {
+            function saveCart() {
                 localStorage.setItem('ts-cart', JSON.stringify(cart));
             }
 
             function renderCart() {
-                const cart = loadCart();
-                const orderItems = document.getElementById('orderItems');
-                const orderTotalEl = document.getElementById('orderTotal');
+                const cartContainer = document.getElementById('orderItems');
                 const orderForm = document.getElementById('orderForm');
                 
                 if (cart.length === 0) {
-                    orderItems.innerHTML = '<div class="error-msg">Your cart is empty. Please add items to your cart first.</div>';
-                    orderTotalEl.textContent = '$0.00';
+                    cartContainer.innerHTML = '<div class="error-msg">Your cart is empty. Please add items to your cart first.</div>';
                     orderForm.style.display = 'none';
+                    updateTotals();
                     return;
                 }
                 
-                orderItems.innerHTML = '';
-                let total = 0;
+                orderForm.style.display = 'block';
+                cartContainer.innerHTML = '';
                 
                 cart.forEach(item => {
-                    total += item.price * item.quantity;
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'order-cart-item';
                     itemDiv.innerHTML = `
-                        <img src="${item.image || '/api/placeholder/80/80'}" alt="${item.name}">
+                        <img src="${item.image || '/logo.png'}" alt="${item.name}" onerror="this.src='/logo.png'">
                         <div class="item-details">
                             <h4>${item.name}</h4>
-                            <p>$${item.price.toFixed(2)} x ${item.quantity}</p>
+                            <p>PKR ${parseFloat(item.price).toLocaleString()} x ${item.quantity}</p>
+                            <p style="color: var(--primary-color); font-weight: 600;">PKR ${(parseFloat(item.price) * item.quantity).toLocaleString()}</p>
                         </div>
                         <div class="item-controls">
-                            <button data-action="decrease" data-id="${item.id}">
+                            <button type="button" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <button data-action="increase" data-id="${item.id}">
+                            <span style="padding: 0 10px; font-weight: bold;">${item.quantity}</span>
+                            <button type="button" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">
                                 <i class="fas fa-plus"></i>
                             </button>
-                            <button data-action="remove" data-id="${item.id}">
+                            <button type="button" onclick="removeItem(${item.id})" style="background: #dc3545; color: white;">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     `;
-                    orderItems.appendChild(itemDiv);
+                    cartContainer.appendChild(itemDiv);
                 });
                 
-                orderTotalEl.textContent = '$' + total.toFixed(2);
-
-                // Assign hidden inputs for backend submission
-                document.getElementById('orderItemsInput').value = JSON.stringify(cart);
-                document.getElementById('orderTotalInput').value = total.toFixed(2);
+                updateTotals();
             }
 
-            function updateCartItem(productId, action) {
-                let cart = loadCart();
-                cart = cart.map(item => {
-                    if (item.id == productId) {
-                        if (action === 'increase' && item.quantity < 99) {
-                            item.quantity++;
-                        } else if (action === 'decrease' && item.quantity > 1) {
-                            item.quantity--;
-                        }
-                    }
-                    return item;
-                }).filter(item => item.quantity > 0);
-                saveCart(cart);
-                renderCart();
-            }
-
-            function removeCartItem(productId) {
-                let cart = loadCart();
-                cart = cart.filter(item => item.id != productId);
-                saveCart(cart);
-                renderCart();
-            }
-
-            document.getElementById('orderItems').addEventListener('click', function(e) {
-                if (e.target.closest('button')) {
-                    const button = e.target.closest('button');
-                    const action = button.getAttribute('data-action');
-                    const productId = button.getAttribute('data-id');
-                    
-                    if (action === 'increase' || action === 'decrease') {
-                        updateCartItem(productId, action);
-                    } else if (action === 'remove') {
-                        removeCartItem(productId);
+            function updateTotals() {
+                const subtotal = cart.reduce((total, item) => {
+                    const itemPrice = parseFloat(item.price);
+                    const itemQuantity = parseInt(item.quantity);
+                    return total + (itemPrice * itemQuantity);
+                }, 0);
+                
+                // Round subtotal to whole numbers (no decimal points)
+                const roundedSubtotal = Math.round(subtotal);
+                
+                const shippingCharges = {{ $shippingCharges ?? 150 }};
+                const freeShippingThreshold = {{ $freeShippingThreshold ?? 2000 }};
+                
+                // Calculate shipping
+                let shipping = 0;
+                let isFreeShipping = false;
+                
+                if (roundedSubtotal >= freeShippingThreshold) {
+                    shipping = 0;
+                    isFreeShipping = true;
+                } else if (roundedSubtotal > 0) {
+                    shipping = shippingCharges;
+                }
+                
+                // Round shipping to whole numbers
+                shipping = Math.round(shipping);
+                
+                // Calculate and round final total
+                const total = Math.round(roundedSubtotal + shipping);
+                
+                // Update display without decimal points
+                document.getElementById('subtotal').textContent = `PKR ${roundedSubtotal.toLocaleString()}`;
+                document.getElementById('orderTotal').textContent = `PKR ${total.toLocaleString()}`;
+                
+                // Show/hide shipping rows
+                const shippingRow = document.getElementById('shippingRow');
+                const freeShippingRow = document.getElementById('freeShippingRow');
+                
+                if (isFreeShipping) {
+                    shippingRow.style.display = 'none';
+                    freeShippingRow.style.display = 'flex';
+                } else {
+                    shippingRow.style.display = 'flex';
+                    freeShippingRow.style.display = 'none';
+                    document.getElementById('shipping').textContent = `PKR ${shipping.toLocaleString()}`;
+                }
+                
+                // Show free shipping message if close to threshold
+                const freeShippingMessage = document.getElementById('freeShippingMessage');
+                if (freeShippingMessage) {
+                    if (roundedSubtotal > 0 && roundedSubtotal < freeShippingThreshold) {
+                        const remaining = freeShippingThreshold - roundedSubtotal;
+                        freeShippingMessage.innerHTML = `<i class="fas fa-gift"></i> Add PKR ${remaining.toLocaleString()} more to get FREE shipping!`;
+                        freeShippingMessage.style.display = 'block';
+                    } else {
+                        freeShippingMessage.style.display = 'none';
                     }
                 }
+                
+                // Update hidden inputs with rounded values (no decimals)
+                if (document.getElementById('orderItemsInput')) {
+                    document.getElementById('orderItemsInput').value = JSON.stringify(cart);
+                }
+                if (document.getElementById('orderTotalInput')) {
+                    document.getElementById('orderTotalInput').value = total.toString();
+                }
+            }
+
+            window.updateQuantity = function(productId, newQuantity) {
+                if (newQuantity < 1) {
+                    removeItem(productId);
+                    return;
+                }
+                
+                const item = cart.find(item => item.id == productId);
+                if (item) {
+                    item.quantity = parseInt(newQuantity);
+                    saveCart();
+                    renderCart();
+                }
+            };
+
+            window.removeItem = function(productId) {
+                cart = cart.filter(item => item.id != productId);
+                saveCart();
+                renderCart();
+            };
+
+            document.getElementById('orderForm').addEventListener('submit', function(e) {
+                if (cart.length === 0) {
+                    e.preventDefault();
+                    alert('Your cart is empty. Please add items before placing an order.');
+                    return;
+                }
+                
+                // Calculate totals with proper rounding before submission
+                let subtotal = 0;
+                cart.forEach(item => {
+                    const itemPrice = parseFloat(item.price);
+                    const itemQuantity = parseInt(item.quantity);
+                    subtotal += itemPrice * itemQuantity;
+                });
+                
+                // Round subtotal to whole numbers (no decimal points)
+                subtotal = Math.round(subtotal);
+                
+                const shippingCharges = {{ $shippingCharges ?? 150 }};
+                const freeShippingThreshold = {{ $freeShippingThreshold ?? 5000 }};
+                
+                let shipping = 0;
+                if (subtotal >= freeShippingThreshold) {
+                    shipping = 0;
+                } else {
+                    shipping = shippingCharges;
+                }
+                
+                // Round shipping to whole numbers (no decimal points)
+                shipping = Math.round(shipping);
+                
+                // Calculate and round final total to whole numbers
+                const total = Math.round(subtotal + shipping);
+                
+                console.log('Order submission debug:', {
+                    subtotal: subtotal,
+                    shipping: shipping,
+                    total: total,
+                    cart: cart
+                });
+                
+                // Update hidden inputs with rounded values (no decimals)
+                document.getElementById('orderItemsInput').value = JSON.stringify(cart);
+                document.getElementById('orderTotalInput').value = total.toString();
             });
 
-            document.getElementById('orderForm').addEventListener('submit', function() {
-                // Just let the form submit normally
-            });
-
+            // Initialize
+            loadCart();
             renderCart();
         });
     </script>

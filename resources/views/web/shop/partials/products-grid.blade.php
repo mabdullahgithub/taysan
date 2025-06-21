@@ -36,7 +36,7 @@
                             {{ $product->category->name }}
                         </span>
                         <span class="ts-product-price" style="color: #8D68AD !important; font-weight: 700 !important; font-size: 1.15rem !important;">
-                            ${{ number_format($product->price, 2) }}
+                            ${{ number_format($product->price, 0) }}
                         </span>
                     </div>
 

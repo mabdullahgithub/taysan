@@ -405,11 +405,11 @@
                                class="form-control @error('price') is-invalid @enderror" 
                                id="price" 
                                name="price" 
-                               step="0.01" 
+                               step="1" 
                                min="0" 
                                value="{{ old('price', $product->price) }}" 
                                required 
-                               placeholder="0.00">
+                               placeholder="0">
                         @error('price')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

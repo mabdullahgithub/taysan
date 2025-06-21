@@ -17,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Price validation APIs for cart synchronization
+use App\Http\Controllers\Api\PriceController;
+
+Route::get('/price/{productId}', [PriceController::class, 'getCurrentPrice']);
+Route::post('/validate-cart', [PriceController::class, 'validateCart']);

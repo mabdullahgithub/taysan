@@ -66,7 +66,7 @@
                             <h3 class="product-title">{{ $product->name }}</h3>
                             <div class="product-meta">
                                 <span class="product-category">{{ $product->category->name }}</span>
-                                <span class="product-price">${{ number_format($product->price, 2) }}</span>
+                                <span class="product-price">${{ number_format($product->price, 0) }}</span>
                             </div>
                             <button class="add-to-cart-btn" 
                                     data-id="{{ $product->id }}"
@@ -739,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+            <div class="cart-item-price">$${Math.round(item.price)}</div>
             <div class="cart-item-controls">
                 <div class="quantity-control cart-quantity-control">
                     <button class="qty-btn cart-qty-btn" onclick="updateCartQuantity(${item.id}, 'decrease')">
@@ -769,7 +769,7 @@ function updateCartQuantity(productId, action) {
 }
         // Update total
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        totalAmount.textContent = `$${total.toFixed(2)}`;
+        totalAmount.textContent = `$${Math.round(total)}`;
 
         // Save cart to localStorage
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -785,7 +785,7 @@ function updateCartQuantity(productId, action) {
         quickViewModal.querySelector('.product-modal-img').src = data.image;
         quickViewModal.querySelector('.product-modal-title').textContent = data.name;
         quickViewModal.querySelector('.modal-category').textContent = data.category;
-        quickViewModal.querySelector('.modal-price').textContent = `$${parseFloat(data.price).toFixed(2)}`;
+        quickViewModal.querySelector('.modal-price').textContent = `$${Math.round(parseFloat(data.price))}`;
         quickViewModal.querySelector('.modal-product-description').textContent = data.description;
         
         // Reset quantity

@@ -63,7 +63,7 @@
                                         </td>
                                         <td>{{ $product->name }}</td>
                                         <td>{{ $product->category->name }}</td>
-                                        <td>${{ number_format($product->price, 2) }}</td>
+                                        <td>${{ number_format($product->price, 0) }}</td>
                                         <td>{{ $product->stock }}</td>
                                         <td>
                                             <button class="btn btn-icon btn-icon-circle btn-secondary btn-icon-style-2 edit-product" 
@@ -138,7 +138,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Price</label>
-                                <input type="number" class="form-control" name="price" id="price" step="0.01" required>
+                                <input type="number" class="form-control" name="price" id="price" step="1" required>
                             </div>
                         </div>
                         <div class="col-md-6">

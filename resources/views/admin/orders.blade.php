@@ -68,7 +68,7 @@
                                             <span class="badge badge-soft-info">{{ $itemCount }} items</span>
                                         </td>
                                         <td>
-                                            <span class="text-success font-weight-bold">${{ number_format($order->total, 2) }}</span>
+                                            <span class="text-success font-weight-bold">${{ number_format($order->total, 0) }}</span>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($order->created_at)->format('M d, Y') }}</td>
                                         <td>
@@ -373,14 +373,14 @@ $(document).ready(function() {
         let itemsHtml = '';
         
         items.forEach(item => {
-            const itemTotal = (item.price * item.quantity).toFixed(2);
+            const itemTotal = Math.round(item.price * item.quantity);
             itemsHtml += `
                 <tr>
                     <td>${item.name}</td>
                     <td>
                         <img src="${item.image}" alt="${item.name}" class="img-thumbnail" style="height: 50px;">
                     </td>
-                    <td>$${item.price.toFixed(2)}</td>
+                    <td>$${Math.round(item.price)}</td>
                     <td>${item.quantity}</td>
                     <td class="text-right">$${itemTotal}</td>
                 </tr>
@@ -388,7 +388,7 @@ $(document).ready(function() {
         });
         
         $('#order-items').html(itemsHtml);
-        $('#order-total').text(`$${parseFloat(orderData.total).toFixed(2)}`);
+        $('#order-total').text(`$${Math.round(parseFloat(orderData.total))}`);
         
         $('#viewOrderModal').modal('show');
     });

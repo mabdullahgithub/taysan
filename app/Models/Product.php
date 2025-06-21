@@ -25,6 +25,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function dealOfTheDay()
+    {
+        return $this->hasMany(DealOfTheDay::class);
+    }
+
     public function getImageUrlAttribute()
     {
         if ($this->image && file_exists(public_path('storage/' . $this->image))) {

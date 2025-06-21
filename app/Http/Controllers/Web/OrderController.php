@@ -16,7 +16,7 @@ class OrderController extends BaseController
 {
     public function view()
     {
-        return view('web.order', $this->withBanners());
+        return view('web.order', $this->withBannersAndShipping());
     }
     
     public function checkout()
@@ -58,6 +58,7 @@ class OrderController extends BaseController
                 'lastName' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'phone' => 'required',
+                'address' => 'nullable|string|max:500',
                 'postalCode' => 'required',
                 'city' => 'required|string|max:255',
                 'country' => 'required|string|max:255',
@@ -104,11 +105,16 @@ class OrderController extends BaseController
                     ->first();
                     
                 if ($deal) {
-                    $effectivePrice = $deal->final_price; // Use deal price if available
+                    // Get the final price and ensure it's rounded to whole numbers
+                    $dealFinalPrice = $deal->final_price;
+                    $effectivePrice = round($dealFinalPrice, 0); // Round deal price to whole numbers
+                } else {
+                    // For non-deal products, round regular price to whole numbers
+                    $effectivePrice = round($product->price, 0);
                 }
 
                 // Calculate subtotal using the effective price (deal price or regular price)
-                $itemSubtotal = $effectivePrice * $item['quantity'];
+                $itemSubtotal = $effectivePrice * (int)$item['quantity'];
                 $calculatedTotal += $itemSubtotal;
 
                 // Prepare item data for order_items table
@@ -116,15 +122,18 @@ class OrderController extends BaseController
                     'product_id' => $product->id,
                     'product_name' => $product->name,
                     'product_price' => $effectivePrice, // Use effective price (deal price or regular price)
-                    'product_image' => $item['image'] ?? $product->image,
+                    'product_image' => $product->image, // Store the image path from the product
                     'quantity' => (int) $item['quantity'],
                     'subtotal' => $itemSubtotal
                 ];
             }
 
+            // Round the calculated total to whole numbers
+            $calculatedTotal = round($calculatedTotal, 0);
+
             // Get shipping settings
-            $shippingCharges = (float) Setting::get('shipping_charges', '150.00');
-            $freeShippingThreshold = (float) Setting::get('free_shipping_threshold', '5000.00');
+            $shippingCharges = round((float) Setting::get('shipping_charges', '150.00'), 0);
+            $freeShippingThreshold = round((float) Setting::get('free_shipping_threshold', '5000.00'), 0);
             
             // Calculate shipping cost
             $shippingCost = 0;
@@ -134,12 +143,50 @@ class OrderController extends BaseController
                 $shippingCost = $shippingCharges;
             }
             
-            // Calculate final total including shipping
-            $finalTotal = $calculatedTotal + $shippingCost;
+            // Round shipping cost to whole numbers
+            $shippingCost = round($shippingCost, 0);
+            
+            // Calculate final total including shipping and round to whole numbers
+            $finalTotal = round($calculatedTotal + $shippingCost, 0);
+
+            // Log values for debugging
+            Log::info('Order price calculation debug', [
+                'calculated_subtotal' => $calculatedTotal,
+                'shipping_cost' => $shippingCost,
+                'calculated_final_total' => $finalTotal,
+                'submitted_total' => $validated['total'],
+                'difference' => abs($finalTotal - $validated['total']),
+                'shipping_settings' => [
+                    'shipping_charges' => $shippingCharges,
+                    'free_shipping_threshold' => $freeShippingThreshold,
+                    'qualifies_for_free_shipping' => $calculatedTotal >= $freeShippingThreshold
+                ],
+                'order_items' => $orderItems
+            ]);
 
             // Security check: verify total matches calculated total (including shipping)
-            if (abs($finalTotal - $validated['total']) > 0.01) {
-                return back()->with('error', 'Price mismatch detected. Please refresh your cart and try again.');
+            // Allow reasonable tolerance for rounding differences and deal price fluctuations
+            $tolerance = 5; // Allow 5 PKR tolerance for rounding and deal timing differences
+            if (abs($finalTotal - $validated['total']) > $tolerance) {
+                Log::warning('Price mismatch detected', [
+                    'calculated_total' => $finalTotal,
+                    'submitted_total' => $validated['total'],
+                    'difference' => abs($finalTotal - $validated['total']),
+                    'subtotal' => $calculatedTotal,
+                    'shipping_cost' => $shippingCost,
+                    'tolerance' => $tolerance,
+                    'order_items' => $orderItems,
+                    'validated_items' => $validatedItems
+                ]);
+                
+                // Instead of hard failing, use the calculated total for accuracy
+                Log::info('Using calculated total instead of submitted total for accuracy', [
+                    'original_submitted' => $validated['total'],
+                    'using_calculated' => $finalTotal
+                ]);
+                
+                // Update the validated total to use the calculated total
+                $validated['total'] = $finalTotal;
             }
 
             // Create the order (with subtotal, shipping cost, and total)
@@ -212,5 +259,72 @@ class OrderController extends BaseController
                 ->with('error', 'Failed to place order. Please try again. If the problem persists, contact support.')
                 ->withInput();
         }
+    }
+    
+    /**
+     * Debug method to check order calculations (remove in production)
+     */
+    public function debugCalculation(Request $request)
+    {
+        if (!app()->environment(['local', 'testing'])) {
+            abort(404);
+        }
+        
+        $cartItems = $request->input('cart_items', []);
+        $submittedTotal = $request->input('total', 0);
+        
+        $calculatedTotal = 0;
+        $debugItems = [];
+        
+        foreach ($cartItems as $item) {
+            $product = \App\Models\Product::find($item['id']);
+            $effectivePrice = $product->price;
+            
+            // Check for deals
+            $deal = DealOfTheDay::where('product_id', $product->id)
+                ->where('is_active', 1)
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->first();
+                
+            if ($deal) {
+                $effectivePrice = $deal->final_price;
+            }
+            
+            $effectivePrice = round($effectivePrice, 0);
+            $itemSubtotal = round($effectivePrice * $item['quantity'], 0);
+            $calculatedTotal += $itemSubtotal;
+            
+            $debugItems[] = [
+                'product_id' => $item['id'],
+                'product_name' => $product->name,
+                'original_price' => $product->price,
+                'deal_price' => $deal ? $deal->final_price : null,
+                'effective_price' => $effectivePrice,
+                'quantity' => $item['quantity'],
+                'subtotal' => $itemSubtotal
+            ];
+        }
+        
+        $calculatedTotal = round($calculatedTotal, 0);
+        $shippingCharges = round((float) Setting::get('shipping_charges', '150.00'), 0);
+        $freeShippingThreshold = round((float) Setting::get('free_shipping_threshold', '5000.00'), 0);
+        $shippingCost = $calculatedTotal >= $freeShippingThreshold ? 0 : $shippingCharges;
+        $shippingCost = round($shippingCost, 0);
+        $finalTotal = round($calculatedTotal + $shippingCost, 0);
+        
+        return response()->json([
+            'debug_items' => $debugItems,
+            'subtotal' => $calculatedTotal,
+            'shipping_cost' => $shippingCost,
+            'final_total' => $finalTotal,
+            'submitted_total' => $submittedTotal,
+            'difference' => abs($finalTotal - $submittedTotal),
+            'match' => abs($finalTotal - $submittedTotal) <= 1,
+            'settings' => [
+                'shipping_charges' => $shippingCharges,
+                'free_shipping_threshold' => $freeShippingThreshold
+            ]
+        ]);
     }
 }
