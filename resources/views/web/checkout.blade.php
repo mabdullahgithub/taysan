@@ -652,8 +652,7 @@
                         document.getElementById('orderItems').value = JSON.stringify(cart);
                         
                         // Submit the form
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-lock"></i> Processing Order...';
                         e.target.submit();
                     } else {
                         // If validation fails, update cart and totals
@@ -675,7 +674,7 @@
                         }
                         
                         // Show message and re-enable button
-                        alert(`Prices have been updated. Please review your order. Difference: PKR ${data.difference}`);
+                        alert(`Prices have been updated. Please review your order and try again. Price difference: PKR ${data.difference}`);
                         submitBtn.innerHTML = originalText;
                         submitBtn.disabled = false;
                     }
@@ -689,9 +688,8 @@
                     e.target.submit();
                 });
             });
-
-            // ...existing code...
-        </script>
+        });
+    </script>
 
     @if(session('success'))
         <script>

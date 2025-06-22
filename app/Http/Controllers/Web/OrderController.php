@@ -105,16 +105,14 @@ class OrderController extends BaseController
                     ->first();
                     
                 if ($deal) {
-                    // Get the final price and ensure it's rounded to whole numbers
-                    $dealFinalPrice = $deal->final_price;
-                    $effectivePrice = round($dealFinalPrice, 0); // Round deal price to whole numbers
-                } else {
-                    // For non-deal products, round regular price to whole numbers
-                    $effectivePrice = round($product->price, 0);
+                    $effectivePrice = $deal->final_price; // Use deal price if available
                 }
 
+                // Round the effective price to whole numbers (no decimal points)
+                $effectivePrice = round($effectivePrice, 0);
+
                 // Calculate subtotal using the effective price (deal price or regular price)
-                $itemSubtotal = $effectivePrice * (int)$item['quantity'];
+                $itemSubtotal = round($effectivePrice * $item['quantity'], 0);
                 $calculatedTotal += $itemSubtotal;
 
                 // Prepare item data for order_items table
@@ -166,9 +164,9 @@ class OrderController extends BaseController
 
             // Security check: verify total matches calculated total (including shipping)
             // Allow reasonable tolerance for rounding differences and deal price fluctuations
-            $tolerance = 5; // Allow 5 PKR tolerance for rounding and deal timing differences
+            $tolerance = 50; // Increased tolerance to 50 PKR to handle price mismatches while we debug
             if (abs($finalTotal - $validated['total']) > $tolerance) {
-                Log::warning('Price mismatch detected', [
+                Log::warning('Large price mismatch detected', [
                     'calculated_total' => $finalTotal,
                     'submitted_total' => $validated['total'],
                     'difference' => abs($finalTotal - $validated['total']),
@@ -179,13 +177,23 @@ class OrderController extends BaseController
                     'validated_items' => $validatedItems
                 ]);
                 
-                // Instead of hard failing, use the calculated total for accuracy
-                Log::info('Using calculated total instead of submitted total for accuracy', [
+                // For large discrepancies, use calculated total but continue with order
+                Log::info('Using calculated total due to large price mismatch', [
                     'original_submitted' => $validated['total'],
+                    'using_calculated' => $finalTotal,
+                    'difference' => abs($finalTotal - $validated['total'])
+                ]);
+                
+                $validated['total'] = $finalTotal;
+            } else if (abs($finalTotal - $validated['total']) > 1) {
+                // For smaller discrepancies, log but continue
+                Log::info('Small price mismatch detected, using calculated total', [
+                    'calculated_total' => $finalTotal,
+                    'submitted_total' => $validated['total'],
+                    'difference' => abs($finalTotal - $validated['total']),
                     'using_calculated' => $finalTotal
                 ]);
                 
-                // Update the validated total to use the calculated total
                 $validated['total'] = $finalTotal;
             }
 

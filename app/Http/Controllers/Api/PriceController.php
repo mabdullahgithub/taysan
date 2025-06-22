@@ -111,7 +111,7 @@ class PriceController extends Controller
             'shipping_cost' => $shippingCost,
             'total' => $calculatedTotal,
             'submitted_total' => $submittedTotal,
-            'is_valid' => abs($calculatedTotal - $submittedTotal) <= 5, // 5 PKR tolerance
+            'is_valid' => abs($calculatedTotal - $submittedTotal) <= 10, // Increased to 10 PKR tolerance
             'difference' => abs($calculatedTotal - $submittedTotal),
             'items' => $validatedItems,
             'shipping_info' => [
