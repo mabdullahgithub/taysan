@@ -35,7 +35,7 @@
         }
 
         .checkout-banner-image {
-            max-width: 350px;
+            max-width: 110px;
             transition: transform 0.3s ease;
             margin-top: 0 !important;
         }
@@ -48,18 +48,12 @@
             margin-top: 15px !important;
         }
 
-        .checkout-title-overlay h2 {
-            color: #8D68AD;
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .checkout-title-overlay p {
-            color: #666;
-            font-size: 1rem;
-            margin: 8px 0 0;
+        .checkout-title-overlay h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         /* Main Container */
@@ -194,24 +188,20 @@
 
         @media (max-width: 768px) {
             .checkout-header {
-                padding: 110px 0 20px;
-                margin-bottom: 20px;
+                padding: 100px 0 20px;
             }
 
-            .checkout-image-wrapper {
-                padding: 15px 0 !important;
+            .checkout-title-overlay h1 {
+                font-size: 2rem;
             }
 
-            .checkout-banner-image {
-                max-width: 280px;
+            .order-container {
+                padding: 10px;
             }
 
-            .checkout-title-overlay h2 {
-                font-size: 1.8rem;
-            }
-
-            .checkout-title-overlay p {
-                font-size: 0.95rem;
+            .order-form,
+            .order-cart {
+                padding: 20px;
             }
             
             .order-cart-item {
@@ -229,32 +219,11 @@
                 padding: 4px 8px;
                 font-size: 0.8rem;
             }
-            
-            .order-form, .order-cart {
-                padding: 20px;
-            }
         }
 
         @media (max-width: 480px) {
-            .checkout-header {
-                padding: 105px 0 15px;
-                margin-bottom: 15px;
-            }
-
-            .checkout-image-wrapper {
-                padding: 10px 0 !important;
-            }
-
-            .checkout-banner-image {
-                max-width: 240px;
-            }
-
-            .checkout-title-overlay h2 {
-                font-size: 1.5rem;
-            }
-
-            .checkout-title-overlay p {
-                font-size: 0.9rem;
+            .checkout-title-overlay h1 {
+                font-size: 1.8rem;
             }
             
             .order-container {
@@ -400,7 +369,13 @@
 <section class="checkout-header">
     <div class="container">
         <div class="row">
-            <div class="col-12">
+            <div class="col-lg-6 d-flex align-items-center">
+                <div class="checkout-title-overlay">
+                    <h1>{{ $checkoutBanner->title ?? 'Complete Your Order' }}</h1>
+                    <p style="margin-top: 10px; font-size: 1.1rem; color: #666;">{{ $checkoutBanner->subtitle ?? 'You\'re one step away from beautiful, natural skincare!' }}</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
                 <div class="checkout-image-wrapper">
                     @if(isset($checkoutBanner) && $checkoutBanner->image)
                         <img src="{{ asset('storage/'.$checkoutBanner->image) }}" 
@@ -411,10 +386,6 @@
                              alt="Joyful Woman with Shopping Bags" 
                              class="checkout-banner-image">
                     @endif
-                    <div class="checkout-title-overlay">
-                        <h2>{{ $checkoutBanner->title ?? 'Complete Your Order Below' }}</h2>
-                        <p>{{ $checkoutBanner->subtitle ?? 'You\'re one step away from beautiful, natural skincare!' }}</p>
-                    </div>
                 </div>
             </div>
         </div>

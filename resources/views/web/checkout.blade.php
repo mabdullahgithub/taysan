@@ -38,7 +38,7 @@
         }
 
         .checkout-banner-image {
-            max-width: 350px;
+            max-width: 110px;
             transition: transform 0.3s ease;
             margin-top: 0 !important;
         }

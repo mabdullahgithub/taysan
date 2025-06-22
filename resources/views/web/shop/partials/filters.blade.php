@@ -2,23 +2,24 @@
     <!-- Mobile Filter Toggle Button -->
     <button class="mobile-filter-toggle" onclick="toggleMobileFilters()" style="
         display: none;
-        width: 100%;
-        padding: 12px;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
         background: #8D68AD;
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 50%;
         font-size: 16px;
         font-weight: 500;
         cursor: pointer;
         margin-bottom: 1rem;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 0;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(141, 104, 173, 0.3);
     ">
         <i class="fas fa-filter"></i>
-        <span>Filters</span>
-        <i class="fas fa-chevron-down filter-chevron"></i>
     </button>
 
     <div class="ts-filters-container" id="filtersContainer" style="

@@ -720,6 +720,7 @@
                             <tr>
                                 <th>Order ID</th>
                                 <th>Customer</th>
+                                <th class="d-none d-lg-table-cell">Source</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th class="d-none d-md-table-cell">Date</th>
@@ -738,7 +739,19 @@
                                             <div class="fw-medium">{{ $order->first_name }} {{ $order->last_name }}</div>
                                             <small class="text-muted d-none d-sm-block">{{ $order->email }}</small>
                                         </div>
-                                    </td>
+                                    </td>                    <td class="d-none d-lg-table-cell">
+                        @if($order->order_source === 'deal')
+                            <span style="color: #ED8936; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-fire"></i>
+                                Deal
+                            </span>
+                        @else
+                            <span style="color: #8B7BA8; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-shopping-bag"></i>
+                                Regular
+                            </span>
+                        @endif
+                    </td>
                                     <td>
                                         <strong class="text-dark">PKR {{ number_format($order->total, 0) }}</strong>
                                     </td>

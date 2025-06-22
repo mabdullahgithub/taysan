@@ -42,6 +42,7 @@
                                         <th style="padding:inherit;">Contact</th>
                                         <th style="padding:inherit;">Location</th>
                                         <th style="padding:inherit;">Items</th>
+                                        <th style="padding:inherit;">Source</th>
                                         <th style="padding:inherit;">Total Amount</th>
                                         <th style="padding:inherit;">Order Date</th>
                                         <th>Actions</th>
@@ -66,7 +67,19 @@
                                                 $itemCount = collect($items)->sum('quantity');
                                             @endphp
                                             <span class="badge badge-soft-info">{{ $itemCount }} items</span>
-                                        </td>
+                                        </td>                        <td>
+                            @if($order->order_source === 'deal')
+                                <span class="badge" style="background: linear-gradient(135deg, #ED8936, #F6AD55); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-fire"></i>
+                                    Deal
+                                </span>
+                            @else
+                                <span class="badge" style="background: linear-gradient(135deg, #8B7BA8, #A893C4); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Regular
+                                </span>
+                            @endif
+                        </td>
                                         <td>
                                             <span class="text-success font-weight-bold">${{ number_format($order->total, 0) }}</span>
                                         </td>

@@ -477,6 +477,26 @@
                         </span>
                     </div>
                     
+                    <div class="info-row">
+                        <span class="info-label">Order Source:</span>
+                        @if($order->order_source === 'deal')
+                            <span style="color: #ED8936; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-fire"></i>
+                                Deal of the Day
+                                @if($order->dealOfTheDay)
+                                    <small style="color: var(--text-light); font-weight: normal; margin-left: 0.5rem;">
+                                        ({{ $order->dealOfTheDay->deal_title }})
+                                    </small>
+                                @endif
+                            </span>
+                        @else
+                            <span style="color: var(--primary-color); font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-shopping-bag"></i>
+                                Regular Order
+                            </span>
+                        @endif
+                    </div>
+                    
                     <!-- Status Update Form -->
                     <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="status-update-form">
                         @csrf

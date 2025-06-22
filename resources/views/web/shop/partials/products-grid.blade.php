@@ -1,6 +1,30 @@
     <!-- Your filter sidebar here -->
     
-    <div class="ts-product-grid" style="flex: 1 !important; display: grid !important; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important; gap: 1.5rem !important; align-content: start !important; margin-left: 0 !important;">
+    <div class="ts-product-grid" style="flex: 1 !important; display: grid !important; align-content: start !important; margin-left: 0 !important;">
+    
+    <style>
+        /* Mobile view - 2 products per row */
+        .ts-product-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+        }
+        
+        /* Tablet view - 3 products per row */
+        @media (min-width: 768px) {
+            .ts-product-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1.25rem !important;
+            }
+        }
+        
+        /* Laptop view - 4 products per row */
+        @media (min-width: 1024px) {
+            .ts-product-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 1.5rem !important;
+            }
+        }
+    </style>
         @foreach($products as $product)
             <div class="ts-product-card" 
                  data-price="{{ $product->price }}" 

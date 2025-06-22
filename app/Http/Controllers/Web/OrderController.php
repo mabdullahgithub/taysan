@@ -78,6 +78,8 @@ class OrderController extends BaseController
             // Validate each item and calculate total from backend
             $calculatedTotal = 0;
             $validatedItems = [];
+            $orderDeals = []; // Track deals in this order
+            $hasDealsItems = false; // Flag to track if order contains deal items
 
             foreach ($orderItems as $item) {
                 // Validate item structure
@@ -106,6 +108,8 @@ class OrderController extends BaseController
                     
                 if ($deal) {
                     $effectivePrice = $deal->final_price; // Use deal price if available
+                    $hasDealsItems = true; // Mark that this order contains deal items
+                    $orderDeals[] = $deal->id; // Track the deal ID
                 }
 
                 // Round the effective price to whole numbers (no decimal points)
@@ -209,7 +213,9 @@ class OrderController extends BaseController
                 'subtotal' => $calculatedTotal,
                 'shipping_cost' => $shippingCost,
                 'total' => $finalTotal, // Always use calculated total for consistency
-                'status' => 'pending'
+                'status' => 'pending',
+                'order_source' => $hasDealsItems ? 'deal' : 'regular', // Set order source based on deal items
+                'deal_id' => $hasDealsItems ? $orderDeals[0] : null // Use first deal ID if order has deals
             ];
 
             // Add address if provided and field exists

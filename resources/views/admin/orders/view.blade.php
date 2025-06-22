@@ -142,6 +142,10 @@
         font-size: 1.1rem;
     }
 
+    .order-source-badge {
+        white-space: nowrap;
+    }
+
     .action-btn {
         background: none;
         border: none;
@@ -263,6 +267,7 @@
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
+                        <th>Source</th>
                         <th>Total</th>
                         <th>Date</th>
                         <th>Actions</th>
@@ -277,6 +282,19 @@
                         <td>
                             <div class="customer-info">{{ $order->full_name }}</div>
                             <div class="customer-contact">{{ $order->email }}</div>
+                        </td>
+                        <td>
+                            @if($order->order_source === 'deal')
+                                <span class="badge order-source-badge" style="background: linear-gradient(135deg, #ED8936, #F6AD55); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-fire"></i>
+                                    Deal
+                                </span>
+                            @else
+                                <span class="badge order-source-badge" style="background: linear-gradient(135deg, #8B7BA8, #A893C4); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Regular
+                                </span>
+                            @endif
                         </td>
                         <td>
                             <div class="total-amount">PKR {{ number_format($order->total ?? 0, 0) }}</div>
