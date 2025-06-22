@@ -51,21 +51,20 @@ class DealOfTheDay extends Model
     }
 
     /**
-     * Get the final deal price (always returns whole numbers)
+     * Get the final deal price
      */
     public function getFinalPriceAttribute()
     {
         if ($this->deal_price) {
-            return round($this->deal_price, 0);
+            return $this->deal_price;
         }
 
         if ($this->discount_percentage > 0) {
             $discount = ($this->product->price * $this->discount_percentage) / 100;
-            $finalPrice = $this->product->price - $discount;
-            return round($finalPrice, 0);
+            return $this->product->price - $discount;
         }
 
-        return round($this->product->price, 0);
+        return $this->product->price;
     }
 
     /**
