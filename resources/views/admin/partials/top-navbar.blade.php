@@ -556,6 +556,13 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('admin.thank-you-cards.*') || request()->routeIs('admin.thank-you-card.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.thank-you-cards.index') }}">
+                    <i class="fa fa-palette d-xl-none"></i>
+                    <span>Thank You Cards</span>
+                </a>
+            </li>
+
             <li class="nav-item {{ request()->routeIs('admin.queries.index') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('admin.queries.index') }}">
                     <i class="fa fa-envelope d-xl-none"></i>

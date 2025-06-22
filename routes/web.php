@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{
     SettingsController,
     AuthController,
     DealOfTheDayController,
+    ThankYouCardController,
 };
 
 /*
@@ -68,6 +69,16 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/deals/{deal}', [DealOfTheDayController::class, 'update'])->name('admin.deals.update');
     Route::delete('/admin/deals/{deal}', [DealOfTheDayController::class, 'destroy'])->name('admin.deals.destroy');
     Route::post('/admin/deals/{deal}/toggle-status', [DealOfTheDayController::class, 'toggleStatus'])->name('admin.deals.toggleStatus');
+
+    // Thank You Card Generator
+    Route::get('/admin/thank-you-card', [ThankYouCardController::class, 'index'])->name('admin.thank-you-card.index');
+    Route::post('/admin/thank-you-card/generate', [ThankYouCardController::class, 'generate'])->name('admin.thank-you-card.generate');
+    
+    // Enhanced Thank You Cards System
+    Route::get('/admin/thank-you-cards', [ThankYouCardController::class, 'index'])->name('admin.thank-you-cards.index');
+    Route::get('/admin/thank-you-cards/create', [ThankYouCardController::class, 'create'])->name('admin.thank-you-cards.create');
+    Route::post('/admin/thank-you-cards/preview', [ThankYouCardController::class, 'preview'])->name('admin.thank-you-cards.preview');
+    Route::post('/admin/thank-you-cards/print', [ThankYouCardController::class, 'print'])->name('admin.thank-you-cards.print');
 
     // Banners
 
