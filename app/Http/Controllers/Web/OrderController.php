@@ -197,7 +197,7 @@ class OrderController extends BaseController
                 $validated['total'] = $finalTotal;
             }
 
-            // Create the order (with subtotal, shipping cost, and total)
+            // Create the order using the final calculated total for consistency
             $orderData = [
                 'first_name' => $validated['firstName'],
                 'last_name' => $validated['lastName'],
@@ -208,7 +208,7 @@ class OrderController extends BaseController
                 'country' => $validated['country'],
                 'subtotal' => $calculatedTotal,
                 'shipping_cost' => $shippingCost,
-                'total' => $finalTotal,
+                'total' => $finalTotal, // Always use calculated total for consistency
                 'status' => 'pending'
             ];
 
