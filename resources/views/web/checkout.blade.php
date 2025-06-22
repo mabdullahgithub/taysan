@@ -624,74 +624,12 @@
                     return;
                 }
                 
-                e.preventDefault(); // Prevent default submission
-                
-                // Show loading state
-                const submitBtn = document.getElementById('submitBtn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validating...';
-                
-                // Validate cart with backend before submission
-                fetch('/api/validate-cart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        items: cart,
-                        total: parseInt(document.getElementById('totalInput').value)
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_valid) {
-                        // If validation passes, update values and submit
-                        document.getElementById('totalInput').value = data.total;
-                        document.getElementById('orderItems').value = JSON.stringify(cart);
-                        
-                        // Submit the form
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                        e.target.submit();
-                    } else {
-                        // If validation fails, update cart and totals
-                        console.log('Price validation failed, updating cart...', data);
-                        
-                        // Update the total display with backend calculated values
-                        document.getElementById('subtotal').textContent = `PKR ${data.subtotal.toLocaleString()}`;
-                        document.getElementById('total').textContent = `PKR ${data.total.toLocaleString()}`;
-                        document.getElementById('totalInput').value = data.total;
-                        
-                        // Update shipping display
-                        if (data.shipping_cost === 0) {
-                            document.getElementById('shippingRow').style.display = 'none';
-                            document.getElementById('freeShippingRow').style.display = 'flex';
-                        } else {
-                            document.getElementById('shippingRow').style.display = 'flex';
-                            document.getElementById('freeShippingRow').style.display = 'none';
-                            document.getElementById('shipping').textContent = `PKR ${data.shipping_cost.toLocaleString()}`;
-                        }
-                        
-                        // Show message and re-enable button
-                        alert(`Prices have been updated. Please review your order. Difference: PKR ${data.difference}`);
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Validation error:', error);
-                    // On error, proceed with original submission
-                    document.getElementById('orderItems').value = JSON.stringify(cart);
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    e.target.submit();
-                });
+                // Update order items before submission
+                document.getElementById('orderItems').value = JSON.stringify(cart);
+                // Total is already set correctly in updateCart() function - don't override it here
             });
-
-            // ...existing code...
-        </script>
+        });
+    </script>
 
     @if(session('success'))
         <script>

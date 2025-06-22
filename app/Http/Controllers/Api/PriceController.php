@@ -3,122 +3,130 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\DealOfTheDay;
-use Illuminate\Http\Request;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
 
 class PriceController extends Controller
 {
     /**
-     * Get current price for a product (including any active deals)
-     */
-    public function getCurrentPrice($productId)
-    {
-        $product = Product::find($productId);
-        
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $effectivePrice = round($product->price, 0);
-        $isDeal = false;
-        
-        // Check for active deals
-        $deal = DealOfTheDay::where('product_id', $product->id)
-            ->where('is_active', 1)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->first();
-            
-        if ($deal) {
-            $effectivePrice = round($deal->final_price, 0);
-            $isDeal = true;
-        }
-
-        return response()->json([
-            'product_id' => $product->id,
-            'regular_price' => round($product->price, 0),
-            'effective_price' => $effectivePrice,
-            'is_deal' => $isDeal,
-            'deal_info' => $deal ? [
-                'discount_percentage' => $deal->discount_percentage,
-                'deal_title' => $deal->deal_title,
-                'end_date' => $deal->end_date->toISOString()
-            ] : null
-        ]);
-    }
-
-    /**
-     * Validate cart totals
+     * Validate cart items and calculate accurate totals
      */
     public function validateCart(Request $request)
     {
-        $items = $request->input('items', []);
-        $submittedTotal = $request->input('total', 0);
-        
-        $calculatedSubtotal = 0;
-        $validatedItems = [];
-        
-        foreach ($items as $item) {
-            $product = Product::find($item['id']);
-            if (!$product) {
-                continue;
+        try {
+            $items = $request->input('items', []);
+            $submittedTotal = $request->input('total', 0);
+            
+            if (empty($items)) {
+                return response()->json([
+                    'is_valid' => false,
+                    'message' => 'Cart is empty',
+                    'subtotal' => 0,
+                    'shipping_cost' => 0,
+                    'total' => 0,
+                    'difference' => 0
+                ]);
             }
             
-            $effectivePrice = round($product->price, 0);
-            $isDeal = false;
+            $calculatedSubtotal = 0;
+            $validatedItems = [];
             
-            // Check for active deals
-            $deal = DealOfTheDay::where('product_id', $product->id)
-                ->where('is_active', 1)
-                ->where('start_date', '<=', now())
-                ->where('end_date', '>=', now())
-                ->first();
+            foreach ($items as $item) {
+                // Validate item structure
+                if (!isset($item['id'], $item['quantity'])) {
+                    continue;
+                }
                 
-            if ($deal) {
-                $effectivePrice = round($deal->final_price, 0);
-                $isDeal = true;
+                $product = Product::find($item['id']);
+                if (!$product || $product->status !== 'active') {
+                    continue;
+                }
+                
+                // Get effective price (deal price or regular price)
+                $effectivePrice = $product->price;
+                $deal = DealOfTheDay::where('product_id', $product->id)
+                    ->where('is_active', 1)
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now())
+                    ->first();
+                    
+                if ($deal) {
+                    $effectivePrice = $deal->final_price;
+                }
+                
+                // Round to whole numbers
+                $effectivePrice = round($effectivePrice, 0);
+                $itemSubtotal = $effectivePrice * (int)$item['quantity'];
+                $calculatedSubtotal += $itemSubtotal;
+                
+                $validatedItems[] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $effectivePrice,
+                    'quantity' => (int)$item['quantity'],
+                    'subtotal' => $itemSubtotal
+                ];
             }
             
-            $itemSubtotal = $effectivePrice * (int)$item['quantity'];
-            $calculatedSubtotal += $itemSubtotal;
+            // Round subtotal
+            $calculatedSubtotal = round($calculatedSubtotal, 0);
             
-            $validatedItems[] = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $effectivePrice,
-                'quantity' => (int)$item['quantity'],
-                'subtotal' => $itemSubtotal,
-                'is_deal' => $isDeal
-            ];
-        }
-        
-        // Calculate shipping
-        $shippingCharges = round((float) \App\Models\Setting::get('shipping_charges', '150.00'), 0);
-        $freeShippingThreshold = round((float) \App\Models\Setting::get('free_shipping_threshold', '5000.00'), 0);
-        
-        $shippingCost = 0;
-        if ($calculatedSubtotal >= $freeShippingThreshold) {
+            // Calculate shipping
+            $shippingCharges = round((float) Setting::get('shipping_charges', '150.00'), 0);
+            $freeShippingThreshold = round((float) Setting::get('free_shipping_threshold', '5000.00'), 0);
+            
             $shippingCost = 0;
-        } else if ($calculatedSubtotal > 0) {
-            $shippingCost = $shippingCharges;
+            if ($calculatedSubtotal >= $freeShippingThreshold) {
+                $shippingCost = 0; // Free shipping
+            } else if ($calculatedSubtotal > 0) {
+                $shippingCost = $shippingCharges;
+            }
+            
+            $shippingCost = round($shippingCost, 0);
+            $calculatedTotal = round($calculatedSubtotal + $shippingCost, 0);
+            
+            // Check if prices match (with tolerance)
+            $tolerance = 5; // 5 PKR tolerance
+            $difference = abs($calculatedTotal - $submittedTotal);
+            $isValid = $difference <= $tolerance;
+            
+            Log::info('Cart validation', [
+                'submitted_total' => $submittedTotal,
+                'calculated_total' => $calculatedTotal,
+                'difference' => $difference,
+                'is_valid' => $isValid,
+                'subtotal' => $calculatedSubtotal,
+                'shipping_cost' => $shippingCost,
+                'items_count' => count($validatedItems)
+            ]);
+            
+            return response()->json([
+                'is_valid' => $isValid,
+                'subtotal' => $calculatedSubtotal,
+                'shipping_cost' => $shippingCost,
+                'total' => $calculatedTotal,
+                'difference' => $difference,
+                'items' => $validatedItems,
+                'message' => $isValid ? 'Cart is valid' : "Price mismatch detected. Calculated: PKR " . number_format($calculatedTotal) . ", Submitted: PKR " . number_format($submittedTotal) . ". Please refresh your cart and try again."
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Cart validation error', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
+            
+            return response()->json([
+                'is_valid' => false,
+                'message' => 'Validation error occurred',
+                'subtotal' => 0,
+                'shipping_cost' => 0,
+                'total' => 0,
+                'difference' => 0
+            ], 500);
         }
-        
-        $calculatedTotal = $calculatedSubtotal + $shippingCost;
-        
-        return response()->json([
-            'subtotal' => $calculatedSubtotal,
-            'shipping_cost' => $shippingCost,
-            'total' => $calculatedTotal,
-            'submitted_total' => $submittedTotal,
-            'is_valid' => abs($calculatedTotal - $submittedTotal) <= 5, // 5 PKR tolerance
-            'difference' => abs($calculatedTotal - $submittedTotal),
-            'items' => $validatedItems,
-            'shipping_info' => [
-                'shipping_charges' => $shippingCharges,
-                'free_shipping_threshold' => $freeShippingThreshold,
-                'qualifies_for_free_shipping' => $calculatedSubtotal >= $freeShippingThreshold
-            ]
-        ]);
     }
 }

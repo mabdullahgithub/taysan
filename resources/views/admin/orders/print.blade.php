@@ -31,9 +31,8 @@
             line-height: 1.4;
             color: var(--text-dark);
             background: var(--background);
-            padding: 0.5rem;
+            padding: 1rem;
             font-size: 12px;
-            margin: 0;
         }
 
         .print-container {
@@ -43,7 +42,7 @@
             background: white;
             border: 1px solid var(--border-light);
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20mm 18mm; /* Increased padding to match print margins */
+            padding: 0;
         }
 
         .print-header {
@@ -218,18 +217,10 @@
             font-size: 0.65rem;
         }
 
-        .items-table th:last-child {
-            text-align: right;
-        }
-
         .items-table td {
             padding: 0.5rem 0.25rem;
             border-bottom: 1px solid var(--border-light);
             vertical-align: middle;
-        }
-
-        .items-table td:last-child {
-            text-align: right;
         }
 
         .items-table tr:nth-child(even) {
@@ -375,7 +366,7 @@
         @media print {
             @page {
                 size: A4;
-                margin: 12mm 15mm; /* Top/Bottom: 12mm, Left/Right: 15mm for better alignment */
+                margin: 10mm;
             }
 
             body {
@@ -383,7 +374,6 @@
                 background: white;
                 font-size: 10px;
                 line-height: 1.3;
-                margin: 0;
             }
 
             .print-container {
@@ -391,7 +381,7 @@
                 width: 100%;
                 border: none;
                 box-shadow: none;
-                padding: 5mm 3mm; /* Add some internal padding for content spacing */
+                padding: 0;
                 margin: 0;
             }
 
@@ -400,14 +390,13 @@
             }
 
             .print-header {
-                padding: 6mm 0; /* Increased padding */
-                margin-bottom: 4mm; /* Increased margin */
-                text-align: center;
+                padding: 8mm 0;
+                margin-bottom: 2mm;
             }
 
             .company-name {
                 font-size: 18px;
-                margin-bottom: 3px; /* Increased margin */
+                margin-bottom: 2px;
             }
 
             .company-tagline {
@@ -415,84 +404,67 @@
             }
 
             .order-header {
-                padding: 3mm 0; /* Increased padding */
-                margin-bottom: 4mm; /* Increased margin */
+                padding: 3mm 0;
+                margin-bottom: 2mm;
             }
 
             .order-title {
                 font-size: 14px;
-                margin-bottom: 3mm; /* Increased margin */
+                margin-bottom: 2mm;
             }
 
             .order-meta {
-                gap: 5mm;
-                margin-bottom: 4mm; /* Increased bottom margin */
+                gap: 3mm;
             }
 
             .meta-section h4 {
                 font-size: 9px;
-                margin-bottom: 1.5mm; /* Increased margin */
+                margin-bottom: 1mm;
             }
 
             .meta-info {
-                padding: 3mm 4mm; /* Increased padding */
+                padding: 2mm;
             }
 
             .customer-section {
-                padding: 3mm 0; /* Increased padding */
-                margin-bottom: 4mm; /* Increased bottom margin */
+                padding: 3mm 0;
+                margin-bottom: 2mm;
             }
 
             .section-title {
                 font-size: 12px;
-                margin-bottom: 3mm; /* Increased margin */
+                margin-bottom: 2mm;
             }
 
             .customer-grid {
-                gap: 6mm; /* Increased gap */
+                gap: 3mm;
             }
 
             .customer-card {
-                padding: 3mm 4mm; /* Increased padding */
+                padding: 2mm;
             }
 
             .card-title {
                 font-size: 9px;
-                margin-bottom: 2mm; /* Increased margin */
+                margin-bottom: 1mm;
             }
 
             .items-section {
-                padding: 3mm 0; /* Increased padding */
+                padding: 3mm 0;
             }
 
             .items-table {
                 font-size: 8px;
-                margin-bottom: 3mm;
-                width: 100%;
-                border-collapse: collapse;
+                margin-bottom: 2mm;
             }
 
             .items-table th,
             .items-table td {
-                padding: 2mm 3mm; /* Increased padding for better spacing */
-                text-align: left;
-                border-bottom: 0.5px solid var(--border-light);
+                padding: 1mm 1mm;
             }
 
             .items-table th {
                 font-size: 8px;
-                background: #F8F9FA;
-            }
-
-            .items-table th:first-child,
-            .items-table td:first-child {
-                padding-left: 2mm; /* Consistent left padding */
-            }
-
-            .items-table th:last-child,
-            .items-table td:last-child {
-                padding-right: 2mm; /* Consistent right padding */
-                text-align: right;
             }
 
             .product-image,
@@ -513,28 +485,16 @@
 
             .price-cell {
                 font-size: 8px;
-                text-align: right;
             }
 
             .total-section {
-                padding: 4mm; /* Increased padding */
-                margin-top: 4mm; /* Increased top margin */
-                width: 65%; /* Slightly wider */
-                margin-left: auto;
-                margin-right: 0;
-                border: 1px solid var(--primary-color);
+                padding: 2mm;
+                margin-top: 2mm;
             }
 
             .total-row {
                 font-size: 9px;
-                margin-bottom: 1.5mm; /* Increased margin */
-                padding: 1mm 0; /* Increased padding */
-            }
-
-            .grand-total {
-                border-top: 1px solid var(--primary-color);
-                padding-top: 2mm; /* Increased padding */
-                margin-top: 3mm; /* Increased margin */
+                margin-bottom: 1mm;
             }
 
             .grand-total .total-label {
@@ -546,17 +506,14 @@
             }
 
             .print-footer {
-                padding: 4mm 0; /* Increased padding */
+                padding: 2mm 0;
                 font-size: 7px;
-                margin-top: 6mm; /* Increased top margin */
-                text-align: center;
-                border-top: 0.5px solid var(--border-light);
+                margin-top: 2mm;
             }
 
             .info-row {
                 font-size: 8px;
                 margin-bottom: 1mm;
-                padding: 0;
             }
 
             .status-badge {
@@ -569,17 +526,6 @@
                 line-height: 1.2;
             }
 
-            /* Ensure proper text alignment */
-            .product-info {
-                gap: 2mm;
-            }
-
-            /* Better spacing for order meta */
-            .meta-info .info-row {
-                justify-content: space-between;
-                padding: 0.5mm 0;
-            }
-
             /* Ensure no page breaks in critical sections */
             .order-header,
             .customer-section,
@@ -590,12 +536,6 @@
             /* Allow breaks between order items if needed */
             .items-table tbody tr {
                 page-break-inside: avoid;
-            }
-
-            /* Better alignment for customer cards */
-            .customer-card .info-row {
-                margin-bottom: 1mm;
-                font-size: 8px;
             }
 
             .page-break {
