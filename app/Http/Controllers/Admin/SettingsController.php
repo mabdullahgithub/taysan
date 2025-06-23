@@ -48,6 +48,8 @@ class SettingsController extends Controller
             'footer_instagram' => Setting::get('footer_instagram', '#'),
             'footer_twitter' => Setting::get('footer_twitter', '#'),
             'footer_copyright' => Setting::get('footer_copyright', 'Copyright © 2025 by Taysan Beauty. All Rights Reserved. | Founded by Muhammad Abdullah'),
+            'discover_more_section_enabled' => Setting::get('discover_more_section_enabled', '1'),
+            'discover_more_products_count' => Setting::get('discover_more_products_count', '10'),
         ];
 
         // Get all categories
@@ -217,6 +219,7 @@ class SettingsController extends Controller
             'footer_instagram' => 'nullable|url|max:255',
             'footer_twitter' => 'nullable|url|max:255',
             'footer_copyright' => 'nullable|string|max:255',
+            'discover_more_products_count' => 'nullable|integer|min:1|max:50',
         ]);
 
         $settingsMap = [
@@ -238,6 +241,7 @@ class SettingsController extends Controller
             'footer_instagram' => 'url',
             'footer_twitter' => 'url',
             'footer_copyright' => 'text',
+            'discover_more_products_count' => 'number',
         ];
 
         // Update text settings
@@ -245,6 +249,14 @@ class SettingsController extends Controller
             if ($request->has($key)) {
                 Setting::set($key, $request->input($key), $type);
             }
+        }
+
+        // Handle checkbox settings (checkboxes don't send value when unchecked)
+        Setting::set('discover_more_section_enabled', $request->has('discover_more_section_enabled') ? '1' : '0', 'boolean');
+        
+        // Handle number settings that may not be in the settingsMap
+        if ($request->has('discover_more_products_count')) {
+            Setting::set('discover_more_products_count', $request->input('discover_more_products_count'), 'number');
         }
 
         // Handle logo upload

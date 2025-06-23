@@ -1784,6 +1784,78 @@
                     </div>
                 </div>
 
+                <!-- Section Controls Card -->
+                <div class="banner-card">
+                    <div class="banner-header">
+                        <i class="fas fa-toggle-on"></i>
+                        <h5>Section Controls</h5>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-3 border rounded" style="background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%); border: 1px solid #e9ecef !important;">
+                                <div class="form-check form-switch me-3">
+                                    <input class="form-check-input" type="checkbox" name="discover_more_section_enabled" id="discoverMoreSection" 
+                                           {{ $discover_more_section_enabled == '1' ? 'checked' : '' }} 
+                                           style="transform: scale(1.3); margin-top: 2px;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <label class="form-check-label mb-1" for="discoverMoreSection" style="cursor: pointer;">
+                                        <i class="fas fa-eye text-primary me-2"></i>
+                                        <strong style="color: #495057;">Enable "Discover More" Section</strong>
+                                    </label>
+                                    <div>
+                                        <small class="text-muted">
+                                            Controls the visibility of the random products section on the homepage (displays 10 random products with "View All" button)
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <span class="badge {{ $discover_more_section_enabled == '1' ? 'bg-success' : 'bg-secondary' }}" 
+                                          id="sectionStatusBadge">
+                                        {{ $discover_more_section_enabled == '1' ? 'Enabled' : 'Disabled' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="discoverMoreCount">
+                                        <i class="fas fa-hashtag text-primary me-2"></i>
+                                        <strong>Number of Products to Display</strong>
+                                    </label>
+                                    <input type="number" class="form-control" name="discover_more_products_count" 
+                                           id="discoverMoreCount" value="{{ $discover_more_products_count }}" 
+                                           min="1" max="50" placeholder="10"
+                                           style="border: 1px solid #ddd;">
+                                    <small class="text-muted">
+                                        Choose how many random products to show (1-50)
+                                    </small>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <div class="alert alert-light mb-0 w-100" style="background: #f8f9fa; border: 1px solid #e9ecef;">
+                                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                                        <strong>Responsive Display:</strong><br>
+                                        <small class="text-muted">
+                                            • Mobile: 2 products per row<br>
+                                            • Laptop: 5 products per row
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-info" style="margin-top: 15px;">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>About this section:</strong> 
+                                The "Discover More" section shows random products in a grid layout after the "Best Selling Products" section on the homepage. 
+                                When disabled, this section will be completely hidden from visitors.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Logo Settings Card -->
                 <div class="banner-card">
                     <div class="banner-header">
@@ -2054,6 +2126,24 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.readAsDataURL(input.files[0]);
         }
     };
+});
+
+// Section toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const discoverMoreToggle = document.getElementById('discoverMoreSection');
+    const statusBadge = document.getElementById('sectionStatusBadge');
+    
+    if (discoverMoreToggle && statusBadge) {
+        discoverMoreToggle.addEventListener('change', function() {
+            if (this.checked) {
+                statusBadge.textContent = 'Enabled';
+                statusBadge.className = 'badge bg-success';
+            } else {
+                statusBadge.textContent = 'Disabled';
+                statusBadge.className = 'badge bg-secondary';
+            }
+        });
+    }
 });
 </script>
 

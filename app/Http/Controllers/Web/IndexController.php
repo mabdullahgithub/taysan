@@ -50,13 +50,26 @@ class IndexController extends BaseController
                                                 ->orderBy('order')
                                                 ->orderBy('created_at', 'desc')
                                                 ->get();
+
+        // Get random products for the products showcase section (if enabled)
+        $randomProducts = collect();
+        if(\App\Models\Setting::get('discover_more_section_enabled', '1') == '1') {
+            $productCount = (int)\App\Models\Setting::get('discover_more_products_count', '10');
+            $randomProducts = Product::with('category')
+                                    ->where('status', 'active')
+                                    ->where('stock', '>', 0)
+                                    ->inRandomOrder()
+                                    ->limit($productCount)
+                                    ->get();
+        }
         
         return view('web.index', $this->withBanners([
             'products' => $products,
             'topPicks' => $topPicks,
             'categories' => $categories,
             'deals' => $deals,
-            'announcements' => $announcements
+            'announcements' => $announcements,
+            'randomProducts' => $randomProducts
         ]));
     }
 }

@@ -593,6 +593,85 @@
         </div>
     </section>
 
+    <!-- Random Products Section -->
+    @if(\App\Models\Setting::get('discover_more_section_enabled', '1') == '1' && isset($randomProducts) && $randomProducts->count() > 0)
+    <section class="random-products py-5" style="background: #f8f9fa;">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="section-subtitle" style="color: #8D68AD; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Discover More</span>
+                <h2 class="section-title" style="font-size: 2.5rem; color: #333; font-weight: 300;">Handpicked for You</h2>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row">
+                @foreach($randomProducts as $product)
+                    <div class="col-6 col-lg-2dot4 mb-4 discover-product-col">
+                        <div class="carousel-product-card h-100">
+                            <div class="ts-product-image-wrapper">
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                                
+                                <!-- Dynamic Badge based on sold count or flag -->
+                                @if($product->sold_count > 5 || $product->flag == 'Best Seller')
+                                    <div class="product-badge">
+                                        <span>Best Seller</span>
+                                    </div>
+                                @elseif($product->flag == 'Featured')
+                                    <div class="product-badge">
+                                        <span>Featured</span>
+                                    </div>
+                                @elseif($product->flag == 'New Arrivals')
+                                    <div class="product-badge" style="background: #17a2b8;">
+                                        <span>New</span>
+                                    </div>
+                                @endif
+
+                                <button class="ts-quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal"
+                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                    data-price="{{ $product->price }}" data-description="{{ $product->description }}"
+                                    data-category="{{ $product->category->name }}"
+                                    data-image="{{ asset('storage/' . $product->image) }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <div class="ts-product-details">
+                                <h3 class="ts-product-title">{{ $product->name }}</h3>
+
+                                <div class="ts-product-meta">
+                                    <span class="ts-product-category">{{ $product->category->name }}</span>
+                                    <span class="ts-product-price">PKR {{ number_format($product->price, 0) }}</span>
+                                </div>
+
+                                <div class="product-card-actions">
+                                    <a href="{{ route('web.product.show', $product) }}" class="ts-view-product-btn">
+                                        <i class="fas fa-eye"></i>
+                                        View
+                                    </a>
+                                    <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                        data-image="{{ asset('storage/' . $product->image) }}">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <!-- View All Button -->
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <a href="/shop" class="btn btn-outline-primary btn-lg" 
+                       style="border: 2px solid #667eea; color: #667eea; border-radius: 30px; padding: 12px 40px; font-weight: 500; transition: all 0.3s ease;">
+                        View All Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
 
     <!-- Sale Banner Section -->
     <section class="home-sale py-5">
@@ -2755,6 +2834,55 @@
 
             .counter-label {
                 font-size: 0.8rem;
+            }
+        }
+
+        /* Random Products Section */
+        .random-products .product-card {
+            transition: all 0.3s ease;
+        }
+
+        .random-products .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+
+        .random-products .product-image-wrapper:hover .product-actions {
+            opacity: 1;
+        }
+
+        .random-products .product-actions button:hover {
+            background: white !important;
+            transform: scale(1.1);
+        }
+
+        .random-products .btn-outline-primary:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Custom column class for 5 products per row on desktop */
+        .col-lg-2dot4 {
+            flex: 0 0 auto;
+            width: 20%; /* 5 products per row: 100% / 5 = 20% */
+        }
+
+        /* Responsive layout for random products */
+        @media (max-width: 991.98px) {
+            .col-lg-2dot4 {
+                width: 50%; /* 2 products per row on tablet and mobile */
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .discover-product-col {
+                margin-bottom: 20px;
+            }
+            
+            .random-products .carousel-product-card {
+                margin-bottom: 10px;
             }
         }
     </style>
