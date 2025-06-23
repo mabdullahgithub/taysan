@@ -69,9 +69,18 @@ class Product extends Model
         }
         
         // Add additional images
-        if ($this->images && is_array($this->images)) {
-            foreach ($this->images as $image) {
-                $images[] = asset('storage/' . $image);
+        $additionalImages = $this->images;
+        
+        // Handle if images is stored as JSON string
+        if (is_string($additionalImages)) {
+            $additionalImages = json_decode($additionalImages, true);
+        }
+        
+        if ($additionalImages && is_array($additionalImages)) {
+            foreach ($additionalImages as $image) {
+                if (is_string($image)) {
+                    $images[] = asset('storage/' . $image);
+                }
             }
         }
         
@@ -86,5 +95,23 @@ class Product extends Model
     public function hasMultipleImages()
     {
         return count($this->all_images) > 1;
+    }
+
+    public function hasImages()
+    {
+        // Check main image
+        if ($this->image) {
+            return true;
+        }
+        
+        // Check additional images
+        $additionalImages = $this->images;
+        
+        // Handle if images is stored as JSON string
+        if (is_string($additionalImages)) {
+            $additionalImages = json_decode($additionalImages, true);
+        }
+        
+        return $additionalImages && is_array($additionalImages) && count($additionalImages) > 0;
     }
 }
