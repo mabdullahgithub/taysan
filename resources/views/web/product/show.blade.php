@@ -177,87 +177,127 @@
 
         /* Product Info */
         .product-info {
-            padding: 20px 0;
+            padding: 0;
+        }
+
+        /* Product Header */
+        .product-header {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .product-title {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--text-color);
-            margin-bottom: 15px;
+            margin: 0;
             line-height: 1.2;
+            flex: 1;
+        }
+
+        .product-sku {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            background: #f8f9fa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+            white-space: nowrap;
+        }
+
+        .product-short-description {
+            margin-bottom: 16px;
+            padding: 0;
+        }
+
+        .product-short-description p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .product-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .deal-badge-special {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(238, 90, 36, 0.3);
+            box-shadow: 0 2px 8px rgba(238, 90, 36, 0.3);
             animation: pulse-deal 2s infinite;
-        }
-
-        @keyframes pulse-deal {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .product-sku {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
         }
 
         .product-rating {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: 8px;
         }
 
         .stars {
             color: #FFD700;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .rating-text {
             color: var(--text-light);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        /* Price Section */
+        /* Price & Badges Row */
+        .price-badges-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
         .price-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--secondary-color);
-            border-radius: 12px;
+            flex: 1;
+            min-width: 200px;
         }
 
         .price-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .current-price {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--primary-color);
+            margin: 0;
         }
 
         .original-price {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: var(--text-light);
             text-decoration: line-through;
         }
@@ -265,9 +305,9 @@
         .savings-badge {
             background: var(--success-color);
             color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -275,27 +315,41 @@
         /* Product Badges */
         .product-badges {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+        }
+
+        .badge i {
+            font-size: 0.65rem;
         }
 
         .badge-organic { background: #28a745; color: white; }
         .badge-vegan { background: #17a2b8; color: white; }
         .badge-cruelty-free { background: #6f42c1; color: white; }
 
+        /* Purchase Section */
+        .purchase-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
         /* Stock Status */
         .stock-status {
-            margin-bottom: 30px;
+            margin-bottom: 16px;
         }
 
         .stock-indicator {
@@ -303,6 +357,11 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .stock-indicator i {
+            font-size: 0.85rem;
         }
 
         .stock-indicator.in-stock {
@@ -317,31 +376,25 @@
             color: var(--danger-color);
         }
 
-        .stock-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        /* Add to Cart Section */
-        .add-to-cart-section {
-            background: #f9f9f9;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 40px;
+        /* Purchase Controls */
+        .purchase-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .quantity-selector {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
         .quantity-label {
             font-weight: 500;
             color: var(--text-color);
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .quantity-controls {
@@ -350,14 +403,15 @@
             border: 2px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            background: white;
         }
 
         .quantity-btn {
             background: var(--primary-color);
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -370,54 +424,54 @@
         }
 
         .quantity-input {
-            width: 60px;
-            height: 40px;
+            width: 50px;
+            height: 36px;
             text-align: center;
             border: none;
             background: white;
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
-        .cart-actions {
+        /* Purchase Buttons */
+        .purchase-buttons {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .cart-actions .btn-buy-now:only-child {
+            gap: 12px;
             flex: 1;
+            min-width: 280px;
         }
 
         .btn-add-cart {
             flex: 1;
-            min-width: 200px;
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 20px;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            min-width: 140px;
         }
 
         .btn-add-cart:hover {
             background: var(--primary-light);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .btn-buy-now {
+            flex: 1;
             background: #28a745;
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 20px;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -425,73 +479,361 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            min-width: 140px;
         }
 
         .btn-buy-now:hover {
             background: #218838;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             color: white;
             text-decoration: none;
         }
 
-        /* Product Tabs */
-        .product-tabs {
-            margin-bottom: 60px;
-        }
-
-        .tab-nav {
-            display: flex;
-            border-bottom: 2px solid #eee;
-            margin-bottom: 30px;
-            gap: 0;
-        }
-
-        .tab-btn {
-            padding: 15px 25px;
-            background: none;
+        .btn-out-of-stock {
+            flex: 1;
+            background: #e9ecef;
+            color: #6c757d;
             border: none;
-            font-size: 1rem;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .purchase-buttons-disabled {
+            width: 100%;
+        }
+
+        .purchase-buttons-disabled .btn-out-of-stock {
+            flex: 1;
+        }
+
+        /* Product Tags */
+        .product-tags {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .tags-label {
             font-weight: 500;
-            color: var(--text-light);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .tags-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #f8f9fa;
+            color: var(--text-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: var(--secondary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Product Information Dropdowns */
+        .product-info-section {
+            margin-bottom: 60px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .info-dropdown {
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-dropdown:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            background: #fff;
             cursor: pointer;
             transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
+            user-select: none;
         }
 
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+        .dropdown-header:hover {
+            background: var(--secondary-color);
         }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
+        .dropdown-header.active {
+            background: var(--primary-color);
+            color: white;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tab-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-
-        .tab-content p, .tab-content ul {
+        .dropdown-title {
+            font-size: 1.1rem;
+            font-weight: 600;
             color: var(--text-color);
-            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .dropdown-header.active .dropdown-title {
+            color: white;
+        }
+
+        .dropdown-icon {
+            font-size: 1rem;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-header.active .dropdown-icon {
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fafafa;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        .dropdown-content.active {
+            max-height: 500px;
+            padding: 25px;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .dropdown-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .dropdown-content p {
+            color: var(--text-color);
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-content .formatted-text {
+            color: var(--text-color);
+            line-height: 1.7;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .dropdown-content .formatted-text br {
+            line-height: 1.7;
+        }
+
+        .dropdown-content ul {
+            padding-left: 20px;
             margin-bottom: 15px;
         }
 
-        .tab-content ul {
-            padding-left: 20px;
+        .dropdown-content li {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-content li strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Specification Grid */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .spec-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        /* Product Tags */
+        .product-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .product-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .product-tag:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .product-title {
+                font-size: 1.8rem;
+            }
+
+            .product-title-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .product-short-description p {
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+
+            .product-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .price-badges-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .current-price {
+                font-size: 1.8rem;
+            }
+
+            .purchase-controls {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .quantity-selector {
+                justify-content: space-between;
+            }
+
+            .purchase-buttons {
+                min-width: auto;
+                flex-direction: column;
+            }
+
+            .purchase-buttons-disabled {
+                flex-direction: column;
+            }
+
+            .dropdown-header {
+                padding: 18px 20px;
+            }
+
+            .dropdown-title {
+                font-size: 1rem;
+            }
+
+            .dropdown-content.active {
+                padding: 20px;
+            }
+
+            .spec-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .spec-item {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-title {
+                font-size: 1.6rem;
+            }
+
+            .product-short-description p {
+                font-size: 0.9rem;
+            }
+
+            .current-price {
+                font-size: 1.6rem;
+            }
+
+            .purchase-section {
+                padding: 16px;
+            }
+
+            .product-tags {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .dropdown-header {
+                padding: 15px 18px;
+            }
+
+            .dropdown-title {
+                font-size: 0.95rem;
+                gap: 8px;
+            }
+
+            .dropdown-content.active {
+                padding: 18px;
+            }
         }
 
         /* Product Tags */
@@ -817,45 +1159,11 @@
             .main-image {
                 height: 400px;
             }
-
-            .product-title {
-                font-size: 2rem;
-            }
-
-            .current-price {
-                font-size: 2rem;
-            }
-
-            .cart-actions {
-                flex-direction: column;
-            }
-
-            .btn-add-cart {
-                min-width: 100%;
-            }
-
-            .tab-nav {
-                flex-wrap: wrap;
-            }
-
-            .tab-btn {
-                flex: 1;
-                min-width: 120px;
-                text-align: center;
-            }
         }
 
         @media (max-width: 480px) {
             .product-detail-container {
                 padding: 0 15px;
-            }
-
-            .product-title {
-                font-size: 1.6rem;
-            }
-
-            .current-price {
-                font-size: 1.8rem;
             }
 
             .thumbnail-gallery {
@@ -865,14 +1173,6 @@
             .thumbnail {
                 min-width: 60px;
                 height: 60px;
-            }
-
-            .add-to-cart-section {
-                padding: 20px;
-            }
-
-            .quantity-controls {
-                flex: 1;
             }
         }
 
@@ -962,125 +1262,161 @@
 
                 <!-- Product Info -->
                 <div class="product-info">
-                    <h1 class="product-title">{{ $product->name }}</h1>
-                    
-                    @if($fromDeal)
-                    <div class="deal-badge-special">
-                        <i class="fas fa-fire"></i>
-                        Deal of the Day Special
-                    </div>
-                    @endif
-                    
-                    @if($product->sku)
-                    <div class="product-sku">SKU: {{ $product->sku }}</div>
-                    @endif
-
-                    <!-- Rating (Placeholder for future implementation) -->
-                    <div class="product-rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                    <!-- Product Header -->
+                    <div class="product-header">
+                        <div class="product-title-row">
+                            <h1 class="product-title">{{ $product->name }}</h1>
+                            @if($product->sku)
+                                <span class="product-sku">SKU: {{ $product->sku }}</span>
+                            @endif
                         </div>
-                        <span class="rating-text">(0 reviews)</span>
+                        
+                        <!-- Product Short Description -->
+                        @if($product->description)
+                        <div class="product-short-description">
+                            <p>{{ Str::limit(strip_tags($product->description), 100, '...') }}</p>
+                        </div>
+                        @endif
+                        
+                        <div class="product-meta">
+                            @if($fromDeal)
+                                <div class="deal-badge-special">
+                                    <i class="fas fa-fire"></i>
+                                    Deal of the Day Special
+                                </div>
+                            @endif
+                            
+                            <!-- Rating -->
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-text">(0 reviews)</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Price Section -->
-                    <div class="price-section">
-                        <div class="price-container">
+                    <!-- Price & Badges Row -->
+                    <div class="price-badges-row">
+                        <div class="price-section">
                             @if($deal)
-                                <span class="current-price">PKR {{ number_format($deal->final_price, 0) }}</span>
-                                <span class="original-price">PKR {{ number_format($product->price, 0) }}</span>
-                                <span class="savings-badge">Save PKR {{ number_format($deal->savings, 0) }}</span>
+                                <div class="price-container">
+                                    <span class="current-price">PKR {{ number_format($deal->final_price, 0) }}</span>
+                                    <span class="original-price">PKR {{ number_format($product->price, 0) }}</span>
+                                    <span class="savings-badge">Save {{ round($deal->discount_percentage) }}%</span>
+                                </div>
                             @else
                                 <span class="current-price">PKR {{ number_format($product->price, 0) }}</span>
                             @endif
                         </div>
-                    </div>
-
-                    <!-- Product Badges -->
-                    @if($product->is_organic || $product->is_vegan || $product->is_cruelty_free)
-                    <div class="product-badges">
-                        @if($product->is_organic)
-                            <span class="badge badge-organic">Organic</span>
-                        @endif
-                        @if($product->is_vegan)
-                            <span class="badge badge-vegan">Vegan</span>
-                        @endif
-                        @if($product->is_cruelty_free)
-                            <span class="badge badge-cruelty-free">Cruelty-Free</span>
-                        @endif
-                    </div>
-                    @endif
-
-                    <!-- Stock Status -->
-                    <div class="stock-status">
-                        @if($product->stock > 10)
-                            <div class="stock-indicator in-stock">
-                                <span class="stock-dot"></span>
-                                In Stock ({{ $product->stock }} available)
-                            </div>
-                        @elseif($product->stock > 0)
-                            <div class="stock-indicator low-stock">
-                                <span class="stock-dot"></span>
-                                Low Stock ({{ $product->stock }} left)
-                            </div>
-                        @else
-                            <div class="stock-indicator out-of-stock">
-                                <span class="stock-dot"></span>
-                                Out of Stock
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Add to Cart Section -->
-                    @if($product->stock > 0)
-                    <div class="add-to-cart-section">
-                        <div class="quantity-selector">
-                            <span class="quantity-label">Quantity:</span>
-                            <div class="quantity-controls">
-                                <button class="quantity-btn" onclick="decreaseQuantity()">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" class="quantity-input" id="productQuantity" value="1" min="1" max="{{ $product->stock }}">
-                                <button class="quantity-btn" onclick="increaseQuantity()">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="cart-actions">
-                            @if(!$fromDeal)
-                            <button class="btn-add-cart" 
-                                    data-id="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                    data-price="{{ $product->price }}"
-                                    data-image="{{ $product->all_images[0] }}"
-                                    data-deal="false">
-                                <i class="fas fa-shopping-cart"></i>
-                                Add to Cart
-                            </button>
+                        
+                        <!-- Product Badges -->
+                        @if($product->is_organic || $product->is_vegan || $product->is_cruelty_free)
+                        <div class="product-badges">
+                            @if($product->is_organic)
+                                <span class="badge badge-organic">
+                                    <i class="fas fa-leaf"></i>
+                                    Organic
+                                </span>
                             @endif
-                            <a href="{{ route('web.checkout.product', $product->id) }}" class="btn-buy-now">
-                                <i class="fas fa-bolt"></i>
-                                Buy Now
-                            </a>
+                            @if($product->is_vegan)
+                                <span class="badge badge-vegan">
+                                    <i class="fas fa-seedling"></i>
+                                    Vegan
+                                </span>
+                            @endif
+                            @if($product->is_cruelty_free)
+                                <span class="badge badge-cruelty-free">
+                                    <i class="fas fa-heart"></i>
+                                    Cruelty-Free
+                                </span>
+                            @endif
                         </div>
+                        @endif
                     </div>
-                    @else
-                    <div class="add-to-cart-section">
-                        <button class="btn-add-cart" disabled style="opacity: 0.5; cursor: not-allowed;">
-                            <i class="fas fa-times"></i>
-                            Out of Stock
-                        </button>
+
+                    <!-- Stock & Purchase Section -->
+                    <div class="purchase-section">
+                        <!-- Stock Status -->
+                        <div class="stock-status">
+                            @if($product->stock > 10)
+                                <div class="stock-indicator in-stock">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>In Stock</span>
+                                </div>
+                            @elseif($product->stock > 0)
+                                <div class="stock-indicator low-stock">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Low Stock</span>
+                                </div>
+                            @else
+                                <div class="stock-indicator out-of-stock">
+                                    <i class="fas fa-times-circle"></i>
+                                    <span>Out of Stock</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Purchase Controls -->
+                        @if($product->stock > 0)
+                        <div class="purchase-controls">
+                            <div class="quantity-selector">
+                                <label class="quantity-label">Qty:</label>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="decreaseQuantity()">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="quantity-input" id="productQuantity" value="1" min="1" max="{{ $product->stock }}">
+                                    <button class="quantity-btn" onclick="increaseQuantity()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="purchase-buttons">
+                                @if(!$fromDeal)
+                                <button class="btn-add-cart" 
+                                        data-id="{{ $product->id }}"
+                                        data-name="{{ $product->name }}"
+                                        data-price="{{ $product->price }}"
+                                        data-image="{{ $product->all_images[0] }}"
+                                        data-deal="false">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Add to Cart
+                                </button>
+                                @endif
+                                <a href="{{ route('web.checkout.product', $product->id) }}" class="btn-buy-now">
+                                    <i class="fas fa-bolt"></i>
+                                    Buy Now
+                                </a>
+                            </div>
+                        </div>
+                        @else
+                        <div class="purchase-controls">
+                            <div class="purchase-buttons purchase-buttons-disabled">
+                                @if(!$fromDeal)
+                                <button class="btn-out-of-stock" disabled>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Add to Cart
+                                </button>
+                                @endif
+                                <button class="btn-out-of-stock" disabled>
+                                    <i class="fas fa-times"></i>
+                                    Out of Stock
+                                </button>
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    @endif
 
                     <!-- Product Tags -->
-                    @if($product->tags)
+                    @if($product->tags && count($product->tags) > 0)
                     <div class="product-tags">
+                        <span class="tags-label">Tags:</span>
                         <div class="tags-list">
                             @foreach($product->tags as $tag)
                                 <span class="tag">{{ $tag }}</span>
@@ -1091,81 +1427,148 @@
                 </div>
             </div>
 
-            <!-- Product Tabs -->
-            <div class="product-tabs">
-                <div class="tab-nav">
-                    <button class="tab-btn active" onclick="showTab('description')">Description</button>
-                    @if($product->detailed_description)
-                    <button class="tab-btn" onclick="showTab('details')">Details</button>
-                    @endif
-                    @if($product->ingredients)
-                    <button class="tab-btn" onclick="showTab('ingredients')">Ingredients</button>
-                    @endif
-                    @if($product->benefits)
-                    <button class="tab-btn" onclick="showTab('benefits')">Benefits</button>
-                    @endif
-                    @if($product->usage_instructions)
-                    <button class="tab-btn" onclick="showTab('usage')">How to Use</button>
-                    @endif
-                    <button class="tab-btn" onclick="showTab('shipping')">Shipping Info</button>
-                </div>
+            <!-- Product Information Dropdowns -->
+            <div class="product-info-section">
+                <!-- Description Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header active">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-align-left"></i>
+                            Product Description
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content active">
+                        <div class="formatted-text">{!! nl2br(e($product->description)) !!}</div>
+                        
+                        @if($product->weight || $product->dimensions || $product->origin_country)
+                        <h3>Product Specifications</h3>
+                        <div class="spec-grid">
+                            @if($product->weight)
+                            <div class="spec-item">
+                                <div class="spec-label">Weight</div>
+                                <div class="spec-value">{{ $product->weight }}g</div>
+                            </div>
+                            @endif
+                            @if($product->dimensions)
+                            <div class="spec-item">
+                                <div class="spec-label">Dimensions</div>
+                                <div class="spec-value">{{ $product->dimensions }}</div>
+                            </div>
+                            @endif
+                            @if($product->origin_country)
+                            <div class="spec-item">
+                                <div class="spec-label">Origin Country</div>
+                                <div class="spec-value">{{ $product->origin_country }}</div>
+                            </div>
+                            @endif
+                        </div>
+                        @endif
 
-                <div class="tab-content active" id="description">
-                    <h3>Product Description</h3>
-                    <p>{{ $product->description }}</p>
-                    
-                    @if($product->weight || $product->dimensions || $product->origin_country)
-                    <h3>Product Specifications</h3>
-                    <ul>
-                        @if($product->weight)
-                        <li><strong>Weight:</strong> {{ $product->weight }}g</li>
+                        @if($product->tags && count($product->tags) > 0)
+                        <h3>Product Tags</h3>
+                        <div class="product-tags-list">
+                            @foreach($product->tags as $tag)
+                                <span class="product-tag">{{ $tag }}</span>
+                            @endforeach
+                        </div>
                         @endif
-                        @if($product->dimensions)
-                        <li><strong>Dimensions:</strong> {{ $product->dimensions }}</li>
-                        @endif
-                        @if($product->origin_country)
-                        <li><strong>Origin:</strong> {{ $product->origin_country }}</li>
-                        @endif
-                    </ul>
-                    @endif
+                    </div>
                 </div>
 
                 @if($product->detailed_description)
-                <div class="tab-content" id="details">
-                    <h3>Detailed Information</h3>
-                    <p>{{ $product->detailed_description }}</p>
+                <!-- Detailed Information Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-info-circle"></i>
+                            Detailed Information
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="formatted-text">{!! nl2br(e($product->detailed_description)) !!}</div>
+                    </div>
                 </div>
                 @endif
 
                 @if($product->ingredients)
-                <div class="tab-content" id="ingredients">
-                    <h3>Ingredients</h3>
-                    <p>{{ $product->ingredients }}</p>
+                <!-- Ingredients Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-leaf"></i>
+                            Ingredients
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="formatted-text">{!! nl2br(e($product->ingredients)) !!}</div>
+                    </div>
                 </div>
                 @endif
 
                 @if($product->benefits)
-                <div class="tab-content" id="benefits">
-                    <h3>Benefits</h3>
-                    <p>{{ $product->benefits }}</p>
+                <!-- Benefits Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-star"></i>
+                            Benefits
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="formatted-text">{!! nl2br(e($product->benefits)) !!}</div>
+                    </div>
                 </div>
                 @endif
 
                 @if($product->usage_instructions)
-                <div class="tab-content" id="usage">
-                    <h3>How to Use</h3>
-                    <p>{{ $product->usage_instructions }}</p>
+                <!-- How to Use Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-hand-paper"></i>
+                            How to Use
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="formatted-text">{!! nl2br(e($product->usage_instructions)) !!}</div>
+                    </div>
                 </div>
                 @endif
 
-                <div class="tab-content" id="shipping">
-                    <h3>Shipping Information</h3>
-                    <ul>
-                        <li><strong>Free Shipping:</strong> On orders over PKR {{ number_format($freeShippingThreshold ?? 2000, 0) }}</li>
-                        <li><strong>Delivery Time:</strong> 3-5 business days</li>
-                        <li><strong>Shipping Cost:</strong> PKR {{ number_format($shippingCharges ?? 150, 0) }}</li>
-                        <li><strong>Return Policy:</strong> 30-day return policy</li>
-                    </ul>
+                <!-- Shipping Information Dropdown -->
+                <div class="info-dropdown">
+                    <div class="dropdown-header">
+                        <h3 class="dropdown-title">
+                            <i class="fas fa-shipping-fast"></i>
+                            Shipping Information
+                        </h3>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="spec-grid">
+                            <div class="spec-item">
+                                <div class="spec-label">Free Shipping</div>
+                                <div class="spec-value">On orders over PKR {{ number_format($freeShippingThreshold ?? 2000, 0) }}</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-label">Delivery Time</div>
+                                <div class="spec-value">3-5 business days</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-label">Shipping Cost</div>
+                                <div class="spec-value">PKR {{ number_format($shippingCharges ?? 150, 0) }}</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-label">Return Policy</div>
+                                <div class="spec-value">30-day return policy</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1233,16 +1636,95 @@
     </div>
 
     <script>
-        // Tab functionality
-        function showTab(tabId) {
-            // Remove active class from all tabs and contents
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // Dropdown functionality with smooth animations
+        function toggleDropdown(header) {
+            console.log('Toggle dropdown called', header);
             
-            // Add active class to clicked tab and corresponding content
-            event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.dropdown-icon');
+            
+            console.log('Content element:', content);
+            console.log('Icon element:', icon);
+            
+            // Check if this dropdown is currently active
+            const isActive = header.classList.contains('active');
+            console.log('Is active:', isActive);
+            
+            if (isActive) {
+                // Close this dropdown
+                header.classList.remove('active');
+                content.classList.remove('active');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Open this dropdown
+                header.classList.add('active');
+                content.classList.add('active');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+                
+                // Smooth scroll to the dropdown header with offset
+                setTimeout(() => {
+                    const headerRect = header.getBoundingClientRect();
+                    const scrollOffset = window.pageYOffset + headerRect.top - 100;
+                    
+                    window.scrollTo({
+                        top: scrollOffset,
+                        behavior: 'smooth'
+                    });
+                }, 200); // Wait for dropdown animation to start
+            }
         }
+
+        // Auto-close other dropdowns (alternative function if you want exclusive dropdowns)
+        function toggleDropdownExclusive(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.dropdown-icon');
+            const isActive = header.classList.contains('active');
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-header.active').forEach(activeHeader => {
+                if (activeHeader !== header) {
+                    activeHeader.classList.remove('active');
+                    activeHeader.nextElementSibling.classList.remove('active');
+                    activeHeader.querySelector('.dropdown-icon').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            if (!isActive) {
+                // Open this dropdown
+                header.classList.add('active');
+                content.classList.add('active');
+                icon.style.transform = 'rotate(180deg)';
+                
+                // Smooth scroll to the dropdown header
+                setTimeout(() => {
+                    const headerRect = header.getBoundingClientRect();
+                    const scrollOffset = window.pageYOffset + headerRect.top - 100;
+                    
+                    window.scrollTo({
+                        top: scrollOffset,
+                        behavior: 'smooth'
+                    });
+                }, 200);
+            }
+        }
+
+        // Initialize dropdowns on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing dropdowns');
+            
+            // Add click event listeners for better mobile support
+            document.querySelectorAll('.dropdown-header').forEach((header, index) => {
+                console.log('Adding listener to dropdown header', index, header);
+                
+                header.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Dropdown clicked', this);
+                    toggleDropdown(this);
+                });
+            });
+            
+            console.log('Dropdown initialization complete');
+        });
 
         // Image gallery functionality
         function changeMainImage(imageSrc, thumbnail) {
