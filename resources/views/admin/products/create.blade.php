@@ -170,6 +170,22 @@
         background: var(--primary-lightest);
     }
 
+    .additional-images-upload-area {
+        border: 2px dashed var(--border-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        background: var(--background);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .additional-images-upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-lightest);
+    }
+
     .upload-icon {
         font-size: 3rem;
         color: var(--text-light);
@@ -193,6 +209,57 @@
         border: 1px solid var(--border-light);
         margin: 1rem auto;
         display: none;
+    }
+
+    .additional-images-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .additional-image-preview {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+    }
+
+    .additional-image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .additional-image-preview .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.7rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .alert-custom {
@@ -325,22 +392,35 @@
 
                 <!-- Description -->
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                    <label for="description" class="form-label">Short Description <span class="text-danger">*</span></label>
                     <textarea class="form-control @error('description') is-invalid @enderror" 
                               id="description" 
                               name="description" 
-                              rows="4" 
+                              rows="3" 
                               required 
-                              placeholder="Enter product description">{{ old('description') }}</textarea>
+                              placeholder="Enter short product description">{{ old('description') }}</textarea>
                     @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Detailed Description -->
+                <div class="mb-3">
+                    <label for="detailed_description" class="form-label">Detailed Description</label>
+                    <textarea class="form-control @error('detailed_description') is-invalid @enderror" 
+                              id="detailed_description" 
+                              name="detailed_description" 
+                              rows="5" 
+                              placeholder="Enter detailed product description (optional)">{{ old('detailed_description') }}</textarea>
+                    @error('detailed_description')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="row">
                     <!-- Price -->
-                    <div class="col-md-6 mb-3">
-                        <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+                    <div class="col-md-4 mb-3">
+                        <label for="price" class="form-label">Price (PKR) <span class="text-danger">*</span></label>
                         <input type="number" 
                                class="form-control @error('price') is-invalid @enderror" 
                                id="price" 
@@ -356,7 +436,7 @@
                     </div>
 
                     <!-- Stock -->
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="stock" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
                         <input type="number" 
                                class="form-control @error('stock') is-invalid @enderror" 
@@ -370,16 +450,163 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <!-- SKU -->
+                    <div class="col-md-4 mb-3">
+                        <label for="sku" class="form-label">SKU</label>
+                        <input type="text" 
+                               class="form-control @error('sku') is-invalid @enderror" 
+                               id="sku" 
+                               name="sku" 
+                               value="{{ old('sku') }}" 
+                               placeholder="Product SKU (optional)">
+                        @error('sku')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Weight -->
+                    <div class="col-md-6 mb-3">
+                        <label for="weight" class="form-label">Weight (grams)</label>
+                        <input type="number" 
+                               class="form-control @error('weight') is-invalid @enderror" 
+                               id="weight" 
+                               name="weight" 
+                               step="0.01" 
+                               min="0" 
+                               value="{{ old('weight') }}" 
+                               placeholder="0.00">
+                        @error('weight')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Dimensions -->
+                    <div class="col-md-6 mb-3">
+                        <label for="dimensions" class="form-label">Dimensions</label>
+                        <input type="text" 
+                               class="form-control @error('dimensions') is-invalid @enderror" 
+                               id="dimensions" 
+                               name="dimensions" 
+                               value="{{ old('dimensions') }}" 
+                               placeholder="L x W x H (e.g., 10 x 5 x 3 cm)">
+                        @error('dimensions')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Origin Country -->
+                <div class="mb-3">
+                    <label for="origin_country" class="form-label">Origin Country</label>
+                    <input type="text" 
+                           class="form-control @error('origin_country') is-invalid @enderror" 
+                           id="origin_country" 
+                           name="origin_country" 
+                           value="{{ old('origin_country') }}" 
+                           placeholder="Country of origin (optional)">
+                    @error('origin_country')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Ingredients -->
+                <div class="mb-3">
+                    <label for="ingredients" class="form-label">Ingredients</label>
+                    <textarea class="form-control @error('ingredients') is-invalid @enderror" 
+                              id="ingredients" 
+                              name="ingredients" 
+                              rows="4" 
+                              placeholder="List all ingredients (optional)">{{ old('ingredients') }}</textarea>
+                    @error('ingredients')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Benefits -->
+                <div class="mb-3">
+                    <label for="benefits" class="form-label">Benefits</label>
+                    <textarea class="form-control @error('benefits') is-invalid @enderror" 
+                              id="benefits" 
+                              name="benefits" 
+                              rows="4" 
+                              placeholder="List product benefits (optional)">{{ old('benefits') }}</textarea>
+                    @error('benefits')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Usage Instructions -->
+                <div class="mb-3">
+                    <label for="usage_instructions" class="form-label">Usage Instructions</label>
+                    <textarea class="form-control @error('usage_instructions') is-invalid @enderror" 
+                              id="usage_instructions" 
+                              name="usage_instructions" 
+                              rows="4" 
+                              placeholder="How to use this product (optional)">{{ old('usage_instructions') }}</textarea>
+                    @error('usage_instructions')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Tags -->
+                <div class="mb-3">
+                    <label for="tags" class="form-label">Tags</label>
+                    <input type="text" 
+                           class="form-control @error('tags') is-invalid @enderror" 
+                           id="tags" 
+                           name="tags" 
+                           value="{{ old('tags') }}" 
+                           placeholder="Enter tags separated by commas (e.g., natural, handmade, soap)">
+                    <small class="text-muted">Enter tags separated by commas for better product categorization</small>
+                    @error('tags')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Product Certifications -->
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Product Certifications</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_organic" name="is_organic" value="1" {{ old('is_organic') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_organic">
+                                        <i class="fas fa-leaf text-success"></i> Organic
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_vegan" name="is_vegan" value="1" {{ old('is_vegan') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_vegan">
+                                        <i class="fas fa-seedling text-success"></i> Vegan
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_cruelty_free" name="is_cruelty_free" value="1" {{ old('is_cruelty_free') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_cruelty_free">
+                                        <i class="fas fa-heart text-success"></i> Cruelty-Free
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Product Image -->
                 <div class="mb-3">
-                    <label for="image" class="form-label">Product Image</label>
+                    <label for="image" class="form-label">Main Product Image</label>
                     <div class="image-upload-area" onclick="document.getElementById('image').click()">
                         <div class="upload-icon">
-                            <i class="fas fa-cloud-upload-alt"></i>
+                            <i class="fas fa-camera"></i>
                         </div>
-                        <div class="upload-text">Click to upload or drag and drop</div>
+                        <div class="upload-text">Click to upload main product image</div>
                         <div class="upload-hint">PNG, JPG, JPEG up to 2MB</div>
                         <input type="file" 
                                class="form-control @error('image') is-invalid @enderror" 
@@ -390,6 +617,29 @@
                     </div>
                     <img id="imagePreview" class="image-preview" alt="Preview">
                     @error('image')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Additional Images -->
+                <div class="mb-3">
+                    <label for="additional_images" class="form-label">Additional Images (Optional)</label>
+                    <div class="additional-images-upload-area" onclick="document.getElementById('additional_images').click()">
+                        <div class="upload-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="upload-text">Click to upload additional product images</div>
+                        <div class="upload-hint">PNG, JPG, JPEG up to 2MB each. You can select multiple images.</div>
+                        <input type="file" 
+                               class="form-control @error('additional_images.*') is-invalid @enderror" 
+                               id="additional_images" 
+                               name="additional_images[]" 
+                               accept="image/*" 
+                               multiple
+                               style="display: none;">
+                    </div>
+                    <div id="additionalImagesPreview" class="additional-images-preview"></div>
+                    @error('additional_images.*')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
@@ -454,12 +704,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('imagePreview');
     const uploadArea = document.querySelector('.image-upload-area');
+    const additionalImagesInput = document.getElementById('additional_images');
+    const additionalUploadArea = document.querySelector('.additional-images-upload-area');
+    const additionalImagesPreview = document.getElementById('additionalImagesPreview');
     const form = document.getElementById('createProductForm');
     const submitBtn = document.getElementById('submitBtn');
     const submitText = document.getElementById('submitText');
     const submitSpinner = document.getElementById('submitSpinner');
 
-    // Image preview functionality
+    let additionalImagesFiles = [];
+
+    // Main image preview functionality
     imageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -473,7 +728,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Drag and drop functionality
+    // Additional images preview functionality
+    additionalImagesInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        additionalImagesFiles = [...additionalImagesFiles, ...files];
+        updateAdditionalImagesPreview();
+    });
+
+    function updateAdditionalImagesPreview() {
+        additionalImagesPreview.innerHTML = '';
+        
+        if (additionalImagesFiles.length > 0) {
+            additionalUploadArea.style.display = 'none';
+        } else {
+            additionalUploadArea.style.display = 'block';
+        }
+
+        additionalImagesFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.createElement('div');
+                previewDiv.classList.add('additional-image-preview');
+                previewDiv.innerHTML = `
+                    <img src="${e.target.result}" alt="Additional Image ${index + 1}">
+                    <button type="button" class="remove-image" onclick="removeAdditionalImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                additionalImagesPreview.appendChild(previewDiv);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Add button to add more images
+        if (additionalImagesFiles.length > 0) {
+            const addMoreDiv = document.createElement('div');
+            addMoreDiv.classList.add('additional-image-preview');
+            addMoreDiv.style.border = '2px dashed var(--border-light)';
+            addMoreDiv.style.display = 'flex';
+            addMoreDiv.style.alignItems = 'center';
+            addMoreDiv.style.justifyContent = 'center';
+            addMoreDiv.style.cursor = 'pointer';
+            addMoreDiv.innerHTML = `
+                <i class="fas fa-plus" style="font-size: 1.5rem; color: var(--text-light);"></i>
+            `;
+            addMoreDiv.onclick = function() {
+                additionalImagesInput.click();
+            };
+            additionalImagesPreview.appendChild(addMoreDiv);
+        }
+    }
+
+    window.removeAdditionalImage = function(index) {
+        additionalImagesFiles.splice(index, 1);
+        updateAdditionalImagesPreview();
+        
+        // Update the file input
+        const dt = new DataTransfer();
+        additionalImagesFiles.forEach(file => dt.items.add(file));
+        additionalImagesInput.files = dt.files;
+    };
+
+    // Drag and drop functionality for main image
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -502,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitSpinner.style.display = 'inline';
     });
 
-    // Reset image preview if clicked again
+    // Reset main image preview if clicked again
     imagePreview.addEventListener('click', function() {
         imageInput.value = '';
         imagePreview.style.display = 'none';

@@ -26,9 +26,23 @@ class ProductController extends Controller
         'name' => 'required|string|max:255',
         'category_id' => 'required|exists:categories,id',
         'description' => 'required|string',
+        'detailed_description' => 'nullable|string',
         'price' => 'required|integer|min:0',
         'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'additional_images' => 'nullable|array',
+        'additional_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+        'sku' => 'nullable|string|max:100',
+        'weight' => 'nullable|numeric|min:0',
+        'dimensions' => 'nullable|string|max:100',
+        'ingredients' => 'nullable|string',
+        'benefits' => 'nullable|string',
+        'usage_instructions' => 'nullable|string',
+        'origin_country' => 'nullable|string|max:100',
+        'is_organic' => 'nullable|boolean',
+        'is_vegan' => 'nullable|boolean',
+        'is_cruelty_free' => 'nullable|boolean',
+        'tags' => 'nullable|string',
         'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale',
         'status' => 'required|string|in:active,inactive'
     ]);
@@ -36,6 +50,14 @@ class ProductController extends Controller
     try {
         DB::beginTransaction();
         
+        // Process tags - convert comma-separated string to array
+        if (!empty($validated['tags'])) {
+            $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
+        } else {
+            $validated['tags'] = null;
+        }
+        
+        // Handle main image upload
         if ($request->hasFile('image')) {
             $originalName = pathinfo($request->file('image')->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $request->file('image')->getClientOriginalExtension();
@@ -51,6 +73,27 @@ class ProductController extends Controller
             // Store with custom filename
             $imagePath = $request->file('image')->storeAs('products', $newFileName, 'public');
             $validated['image'] = $imagePath;
+        }
+        
+        // Handle additional images upload
+        $additionalImages = [];
+        if ($request->hasFile('additional_images')) {
+            foreach ($request->file('additional_images') as $index => $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                
+                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+                $cleanName = substr($cleanName, 0, 50);
+                
+                $newFileName = $timestamp . '_' . $cleanName . '_' . ($index + 1) . '.' . $extension;
+                $imagePath = $file->storeAs('products', $newFileName, 'public');
+                $additionalImages[] = $imagePath;
+            }
+        }
+        
+        if (!empty($additionalImages)) {
+            $validated['images'] = $additionalImages;
         }
         
         $product = Product::create($validated);
@@ -86,9 +129,23 @@ class ProductController extends Controller
         'name' => 'required|string|max:255',
         'category_id' => 'required|exists:categories,id',
         'description' => 'required|string',
+        'detailed_description' => 'nullable|string',
         'price' => 'required|integer|min:0',
         'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'additional_images' => 'nullable|array',
+        'additional_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+        'sku' => 'nullable|string|max:100',
+        'weight' => 'nullable|numeric|min:0',
+        'dimensions' => 'nullable|string|max:100',
+        'ingredients' => 'nullable|string',
+        'benefits' => 'nullable|string',
+        'usage_instructions' => 'nullable|string',
+        'origin_country' => 'nullable|string|max:100',
+        'is_organic' => 'nullable|boolean',
+        'is_vegan' => 'nullable|boolean',
+        'is_cruelty_free' => 'nullable|boolean',
+        'tags' => 'nullable|string',
         'flag' => 'nullable|string|in:All Items,New Arrivals,Featured,On Sale',
         'status' => 'required|string|in:active,inactive'
     ]);
@@ -97,7 +154,16 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         $oldImagePath = $product->image;
+        $oldAdditionalImages = $product->images;
 
+        // Process tags - convert comma-separated string to array
+        if (!empty($validated['tags'])) {
+            $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
+        } else {
+            $validated['tags'] = null;
+        }
+
+        // Handle main image update
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($oldImagePath) {
@@ -114,6 +180,33 @@ class ProductController extends Controller
             $newFileName = $timestamp . '_' . $cleanName . '.' . $extension;
             $imagePath = $request->file('image')->storeAs('products', $newFileName, 'public');
             $validated['image'] = $imagePath;
+        }
+
+        // Handle additional images update
+        if ($request->hasFile('additional_images')) {
+            // Delete old additional images if they exist
+            if ($oldAdditionalImages && is_array($oldAdditionalImages)) {
+                foreach ($oldAdditionalImages as $oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            }
+            
+            // Upload new additional images
+            $additionalImages = [];
+            foreach ($request->file('additional_images') as $index => $file) {
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = now()->format('Ymd_His');
+                
+                $cleanName = preg_replace('/[^A-Za-z0-9\-_]/', '', $originalName);
+                $cleanName = substr($cleanName, 0, 50);
+                
+                $newFileName = $timestamp . '_' . $cleanName . '_' . ($index + 1) . '.' . $extension;
+                $imagePath = $file->storeAs('products', $newFileName, 'public');
+                $additionalImages[] = $imagePath;
+            }
+            
+            $validated['images'] = $additionalImages;
         }
 
         $product->update($validated);
@@ -136,10 +229,18 @@ class ProductController extends Controller
 
             $productName = $product->name;
             $imagePath = $product->image;
+            $additionalImages = $product->images;
 
-            // Delete associated image
+            // Delete main image
             if ($imagePath) {
                 Storage::disk('public')->delete($imagePath);
+            }
+            
+            // Delete additional images
+            if ($additionalImages && is_array($additionalImages)) {
+                foreach ($additionalImages as $image) {
+                    Storage::disk('public')->delete($image);
+                }
             }
 
             // Delete the product

@@ -488,18 +488,9 @@
                             </div>
                             
                             <div class="deal-buttons-premium">
-                                <button class="deal-view-btn-premium" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#quickViewModal"
-                                        data-id="{{ $deal->product->id }}" 
-                                        data-name="{{ $deal->product->name }}"
-                                        data-price="{{ $deal->final_price }}" 
-                                        data-original-price="{{ $deal->product->price }}"
-                                        data-description="{{ $deal->product->description }}"
-                                        data-category="{{ $deal->product->category->name }}"
-                                        data-image="{{ $deal->product->image ? asset('storage/' . $deal->product->image) : '' }}">
+                                <a href="{{ route('web.product.show', $deal->product) }}?from=deal" class="deal-view-btn-premium">
                                     View
-                                </button>
+                                </a>
                                 
                                 <button class="deal-shop-btn-premium" 
                                         data-id="{{ $deal->product->id }}" 
@@ -707,15 +698,21 @@
 
                                     <div class="ts-product-meta">
                                         <span class="ts-product-category">{{ $product->category->name }}</span>
-                                        <span class="ts-product-price">${{ number_format($product->price, 0) }}</span>
+                                        <span class="ts-product-price">PKR {{ number_format($product->price, 0) }}</span>
                                     </div>
 
-                                    <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
-                                        data-name="{{ $product->name }}" data-price="{{ $product->price }}"
-                                        data-image="{{ asset('storage/' . $product->image) }}">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        Add to Cart
-                                    </button>
+                                    <div class="product-card-actions">
+                                        <a href="{{ route('web.product.show', $product) }}" class="ts-view-product-btn">
+                                            <i class="fas fa-eye"></i>
+                                            View
+                                        </a>
+                                        <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                            data-image="{{ asset('storage/' . $product->image) }}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -1161,6 +1158,43 @@
             transform: translateY(-1px);
         }
 
+        /* View Product Button Styles */
+        .ts-view-product-btn:hover {
+            background: #8D68AD !important;
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        /* Product Card Actions */
+        .product-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .ts-view-product-btn {
+            flex: 1;
+            background: transparent;
+            border: 2px solid #8D68AD;
+            color: #8D68AD;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .ts-add-to-cart-btn {
+            flex: 2;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
         /* Carousel Indicators */
         .carousel-indicators {
             display: flex;
@@ -1245,6 +1279,20 @@
             .carousel-product-card .ts-product-price {
                 font-size: 1rem;
             }
+
+            /* Stack buttons vertically on mobile */
+            .product-card-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .ts-view-product-btn,
+            .ts-add-to-cart-btn {
+                width: 100%;
+                flex: none;
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1278,6 +1326,36 @@
             .carousel-product-card .ts-add-to-cart-btn {
                 padding: 0.6rem;
                 font-size: 0.9rem;
+            }
+
+            /* Even more emphasis on stacked buttons for small screens */
+            .product-card-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .ts-view-product-btn,
+            .ts-add-to-cart-btn {
+                width: 100%;
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                border-radius: 8px;
+            }
+
+            /* Deal buttons mobile adjustments */
+            .deal-buttons-premium {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .deal-view-btn-premium,
+            .deal-shop-btn-premium {
+                width: 100%;
+                max-width: none;
+                padding: 12px 20px;
+                font-size: 0.8rem;
+                border-radius: 8px;
             }
         }
 
@@ -1772,34 +1850,38 @@
 
         .deal-pricing-premium {
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .original-price-premium {
             display: block;
             color: #a0aec0;
             text-decoration: line-through;
-            font-size: 1rem;
-            margin-bottom: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            font-weight: 500;
         }
 
         .deal-price-premium {
             display: block;
             color: #2d3748;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 900;
             margin-bottom: 8px;
+            line-height: 1.1;
         }
 
         .savings-premium {
             display: inline-block;
             background: linear-gradient(135deg, #48bb78, #38a169);
             color: white;
-            padding: 6px 16px;
-            border-radius: 25px;
-            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
         }
 
         .deal-timer-premium {
@@ -1841,6 +1923,10 @@
             box-shadow: 0 6px 20px rgba(66, 153, 225, 0.3);
             flex: 1;
             max-width: 90px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .deal-view-btn-premium::before {
@@ -1944,24 +2030,27 @@
             }
 
             .deal-price-premium {
-                font-size: 1.6rem; /* Smaller price */
+                font-size: 1.4rem; /* Smaller price for tablet */
             }
 
             .deal-buttons-premium {
                 flex-direction: column;
                 gap: 8px;
+                width: 100%;
             }
 
             .deal-view-btn-premium {
-                padding: 8px 20px; /* Smaller button */
-                font-size: 0.7rem; /* Smaller text */
-                max-width: 120px;
+                padding: 10px 20px;
+                font-size: 0.75rem;
+                max-width: none;
+                width: 100%;
             }
 
             .deal-shop-btn-premium {
-                padding: 8px 20px; /* Smaller button */
-                font-size: 0.7rem; /* Smaller text */
-                max-width: 120px;
+                padding: 10px 20px;
+                font-size: 0.75rem;
+                max-width: none;
+                width: 100%;
             }
 
             .discount-percentage {
@@ -2009,22 +2098,42 @@
             .deal-description-premium {
                 font-size: 0.65rem;
                 min-height: 25px;
+                margin-bottom: 8px;
+            }
+
+            .deal-price-premium {
+                font-size: 1rem;
+                margin-bottom: 6px;
+            }
+
+            .original-price-premium {
+                font-size: 0.65rem;
+                margin-bottom: 2px;
+            }
+
+            .savings-premium {
+                font-size: 0.5rem;
+                padding: 2px 6px;
             }
 
             .deal-buttons-premium {
-                gap: 6px;
+                gap: 8px;
+                flex-direction: column;
+                width: 100%;
             }
 
             .deal-view-btn-premium {
-                font-size: 0.6rem;
-                padding: 6px 15px;
-                max-width: 100px;
+                font-size: 0.7rem;
+                padding: 8px 15px;
+                max-width: none;
+                width: 100%;
             }
             
             .deal-shop-btn-premium {
-                font-size: 0.6rem;
-                padding: 6px 15px;
-                max-width: 100px;
+                font-size: 0.7rem;
+                padding: 8px 15px;
+                max-width: none;
+                width: 100%;
             }
 
             .discount-percentage {
@@ -2097,7 +2206,7 @@
             }
 
             .deal-price-premium {
-                font-size: 1.2rem; /* Readable price */
+                font-size: 1.1rem; /* Readable price for mobile */
             }
 
             .deal-timer-premium {
@@ -2123,12 +2232,13 @@
             }
 
             .original-price-premium {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
+                margin-bottom: 2px;
             }
 
             .savings-premium {
-                font-size: 0.6rem;
-                padding: 3px 8px;
+                font-size: 0.55rem;
+                padding: 2px 6px;
             }
         }
     </style>

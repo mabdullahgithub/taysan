@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\{
     AboutController,
     ContactController,
     OrderController as WebOrderController,
+    ProductController as WebProductController,
 };
 use App\Http\Controllers\Admin\{
     IndexController as AdminIndexController,
@@ -26,6 +27,7 @@ use App\Http\Controllers\Admin\{
 
 Route::get('/', [IndexController::class, 'index'])->name('web.view.index');
 Route::get('/shop', [ShopController::class, 'view'])->name('web.view.shop');
+Route::get('/product/{product}', [WebProductController::class, 'show'])->name('web.product.show');
 Route::get('/about-us', [AboutController::class, 'view'])->name('web.view.about');
 Route::get('/contact', [ContactController::class, 'view'])->name('web.view.contact');
 Route::post('/contact', [ContactController::class, 'submitContact'])->name('web.contact.submit');

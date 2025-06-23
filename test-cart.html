@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .cart-info { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .floating-cart { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 10px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <h1>Cart Functionality Test</h1>
+    
+    <div class="cart-info">
+        <h3>Current Cart Count: <span class="ts-cart-count">0</span></div>
+    </div>
+    
+    <button class="test-add-cart" 
+            data-id="1"
+            data-name="Test Product"
+            data-price="25.00"
+            data-image="test.jpg">
+        Add Test Product to Cart
+    </button>
+    
+    <button onclick="clearCart()">Clear Cart</button>
+    <button onclick="showCart()">Show Cart Contents</button>
+    
+    <div class="floating-cart">
+        Cart: <span class="ts-cart-count">0</span>
+    </div>
+
+    <script>
+        // Helper function to add to cart (same as homepage)
+        function addToCart(product) {
+            console.log('=== addToCart function called ===', product);
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            console.log('Current cart before adding:', cart);
+            
+            // Check if product already exists in cart
+            const existingItem = cart.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                existingItem.quantity += product.quantity;
+                console.log('Updated existing item quantity:', existingItem);
+            } else {
+                cart.push(product);
+                console.log('Added new item to cart:', product);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            console.log('Cart saved to localStorage:', cart);
+            
+            updateCartUI();
+            console.log('=== updateCartUI called ===');
+        }
+
+        // Helper function to show toast (same as homepage)
+        function showToast(message, type = 'info') {
+            console.log('=== showToast function called ===', { message, type });
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Add styles
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#48bb78' : '#4299e1'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 500;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            console.log('Toast added to DOM');
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                    console.log('Toast removed from DOM');
+                }
+            }, 3000);
+        }
+
+        // Helper function to update cart UI (same as homepage)
+        function updateCartUI() {
+            console.log('=== updateCartUI function called ===');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            console.log('Total cart items:', cartCount);
+            
+            // Update all cart count elements including floating cart
+            const cartCountElements = document.querySelectorAll('.cart-count, .ts-cart-count, .floating-cart-count');
+            console.log('Found cart count elements:', cartCountElements.length);
+            
+            cartCountElements.forEach((element, index) => {
+                if (element) {
+                    element.textContent = cartCount;
+                    element.style.display = cartCount > 0 ? 'inline' : 'none';
+                    console.log(`Updated cart count element ${index}:`, element.className, 'to:', cartCount);
+                }
+            });
+        }
+
+        // Initialize cart functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== INITIALIZING TEST CART ===');
+            
+            // Update cart UI on load
+            updateCartUI();
+            
+            // Add event listener to test button
+            const testButton = document.querySelector('.test-add-cart');
+            if (testButton) {
+                testButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    console.log('=== TEST BUTTON CLICKED ===');
+                    
+                    const product = {
+                        id: this.getAttribute('data-id'),
+                        name: this.getAttribute('data-name'),
+                        price: parseFloat(this.getAttribute('data-price')),
+                        image: this.getAttribute('data-image'),
+                        quantity: 1
+                    };
+                    
+                    console.log('Product to add:', product);
+                    
+                    addToCart(product);
+                    showToast(product.name + ' added to cart!', 'success');
+                });
+            }
+        });
+
+        function clearCart() {
+            localStorage.setItem('cart', JSON.stringify([]));
+            updateCartUI();
+            showToast('Cart cleared!', 'info');
+        }
+
+        function showCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            console.log('Current cart:', cart);
+            alert('Cart contents: ' + JSON.stringify(cart, null, 2));
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                0% { transform: translateX(100%); opacity: 0; }
+                100% { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
