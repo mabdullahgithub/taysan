@@ -754,6 +754,30 @@
             font-size: 0.8rem;
         }
     }
+
+    /* Sold Count Display Styles */
+    .sold-count-display {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 5px;
+    }
+
+    .sold-count-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #28a745;
+    }
+
+    .sold-count-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
 </style>
 
 <div class="edit-container">
@@ -943,6 +967,19 @@
                             @error('stock')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Total Sold
+                            </label>
+                            <div class="sold-count-display">
+                                <span class="sold-count-number">{{ $product->sold_count }}</span>
+                                <span class="sold-count-label">units sold</span>
+                            </div>
+                            <small class="form-text text-muted">
+                                This count increases automatically when orders are marked as "delivered"
+                            </small>
                         </div>
                     </div>
 

@@ -16,6 +16,7 @@ class Product extends Model
         'detailed_description',
         'price',
         'stock',
+        'sold_count',
         'image',
         'images',
         'sku',
@@ -113,5 +114,33 @@ class Product extends Model
         }
         
         return $additionalImages && is_array($additionalImages) && count($additionalImages) > 0;
+    }
+
+    /**
+     * Scope to get best selling products
+     */
+    public function scopeBestSelling($query, $limit = 10)
+    {
+        return $query->orderBy('sold_count', 'desc')->limit($limit);
+    }
+
+    /**
+     * Get formatted sold count
+     */
+    public function getFormattedSoldCountAttribute()
+    {
+        if ($this->sold_count >= 1000) {
+            return round($this->sold_count / 1000, 1) . 'k';
+        }
+        return $this->sold_count;
+    }
+
+    /**
+     * Check if product is a best seller (sold more than average)
+     */
+    public function getIsBestSellerAttribute()
+    {
+        $avgSoldCount = static::avg('sold_count') ?? 0;
+        return $this->sold_count > $avgSoldCount;
     }
 }

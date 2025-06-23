@@ -1,0 +1,196 @@
+/* Admin Layout Fixes - Shared CSS for all admin views */
+
+/* Fix navbar overlap and ensure proper spacing */
+.hk-pg-wrapper {
+    padding-top: 80px !important;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+}
+
+.hk-pg-header {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    margin-bottom: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Ensure buttons and interactive elements appear above other content */
+.btn, .btn-group {
+    position: relative;
+    z-index: 3;
+}
+
+/* Card and table styling improvements */
+.card {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+}
+
+.table-wrap {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Ensure modals and dropdowns appear above everything */
+.modal {
+    z-index: 9999 !important;
+}
+
+.dropdown-menu {
+    z-index: 1050;
+}
+
+/* Container spacing improvements */
+.container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 100%;
+}
+
+/* Alert styling */
+.alert {
+    position: relative;
+    z-index: 4;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Form improvements */
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #8365A0;
+    box-shadow: 0 0 0 0.2rem rgba(131, 101, 160, 0.25);
+}
+
+/* Table improvements */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Button improvements */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Image display fixes */
+.announcement-image, .card img {
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+}
+
+.announcement-image:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hk-pg-wrapper {
+        padding-top: 90px !important;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .hk-pg-header {
+        padding: 15px 0;
+    }
+    
+    .hk-pg-header .d-flex {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .btn-group {
+        width: 100%;
+        display: flex;
+    }
+    
+    .btn-group .btn {
+        flex: 1;
+    }
+    
+    .container-fluid {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .table-responsive {
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hk-pg-wrapper {
+        padding-top: 100px !important;
+    }
+    
+    .hk-pg-title {
+        font-size: 1.25rem;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Loading states */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success and error states */
+.is-valid {
+    border-color: #28a745;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.valid-feedback {
+    color: #28a745;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+}

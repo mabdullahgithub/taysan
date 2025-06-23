@@ -93,13 +93,24 @@ class OrderController extends Controller
         ]);
 
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::with('orderItems.product')->findOrFail($id);
             $oldStatus = $order->status;
-            $order->status = $request->status;
+            $newStatus = $request->status;
+            
+            $order->status = $newStatus;
             $order->save();
 
+            // Increment sold_count for products when order status changes to 'delivered'
+            if ($oldStatus !== 'delivered' && $newStatus === 'delivered') {
+                foreach ($order->orderItems as $orderItem) {
+                    if ($orderItem->product) {
+                        $orderItem->product->increment('sold_count', $orderItem->quantity);
+                    }
+                }
+            }
+
             return redirect()->route('admin.orders.show', $id)
-                ->with('success', "Order status updated from '{$oldStatus}' to '{$request->status}' successfully");
+                ->with('success', "Order status updated from '{$oldStatus}' to '{$newStatus}' successfully");
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('admin.orders.index')
                 ->with('error', 'Order not found');

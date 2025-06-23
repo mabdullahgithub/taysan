@@ -159,6 +159,15 @@
         color: #6c757d;
     }
 
+    .sold-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
     .status-badge {
         padding: 0.25rem 0.75rem;
         border-radius: 12px;
@@ -343,6 +352,7 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock</th>
+                        <th>Sold</th>
                         <th>Status</th>
                         <th>Flag</th>
                         <th>Actions</th>
@@ -376,6 +386,11 @@
                             <span class="stock-badge 
                                 {{ $product->stock == 0 ? 'stock-out' : ($product->stock <= 10 ? 'stock-low' : 'stock-normal') }}">
                                 {{ $product->stock }} units
+                            </span>
+                        </td>
+                        <td>
+                            <span class="sold-badge">
+                                {{ $product->sold_count }} sold
                             </span>
                         </td>
                         <td>

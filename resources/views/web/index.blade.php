@@ -530,15 +530,25 @@
                 <!-- Carousel Wrapper -->
                 <div class="products-carousel-wrapper">
                     <div class="products-carousel" id="bestSellingCarousel">
-                        @foreach ($products->where('flag', 'Featured')->take(8) as $product)
+                        @foreach ($topPicks as $product)
                             <div class="carousel-product-card">
                                 <div class="ts-product-image-wrapper">
                                     <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
                                     
-                                    <!-- Badge for Best Seller -->
-                                    <div class="product-badge">
-                                        <span>Best Seller</span>
-                                    </div>
+                                    <!-- Dynamic Badge based on sold count or flag -->
+                                    @if($product->sold_count > 5 || $product->flag == 'Best Seller')
+                                        <div class="product-badge">
+                                            <span>Best Seller</span>
+                                        </div>
+                                    @elseif($product->flag == 'Featured')
+                                        <div class="product-badge">
+                                            <span>Featured</span>
+                                        </div>
+                                    @elseif($product->flag == 'New Arrivals')
+                                        <div class="product-badge" style="background: #17a2b8;">
+                                            <span>New</span>
+                                        </div>
+                                    @endif
 
                                     <button class="ts-quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal"
                                         data-id="{{ $product->id }}" data-name="{{ $product->name }}"
@@ -554,15 +564,21 @@
 
                                     <div class="ts-product-meta">
                                         <span class="ts-product-category">{{ $product->category->name }}</span>
-                                        <span class="ts-product-price">${{ number_format($product->price, 0) }}</span>
+                                        <span class="ts-product-price">PKR {{ number_format($product->price, 0) }}</span>
                                     </div>
 
-                                    <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
-                                        data-name="{{ $product->name }}" data-price="{{ $product->price }}"
-                                        data-image="{{ asset('storage/' . $product->image) }}">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        Add to Cart
-                                    </button>
+                                    <div class="product-card-actions">
+                                        <a href="{{ route('web.product.show', $product) }}" class="ts-view-product-btn">
+                                            <i class="fas fa-eye"></i>
+                                            View
+                                        </a>
+                                        <button class="ts-add-to-cart-btn" data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                            data-image="{{ asset('storage/' . $product->image) }}">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -726,6 +742,102 @@
             </div>
         </div>
     </section>
+
+    <!-- Announcements Section -->
+    @if($announcements->count() > 0)
+    <section class="announcements-section py-5" style="background: linear-gradient(135deg, #A67BC9 0%, #8B7BA8 100%); position: relative; overflow: hidden;">
+        <!-- Background Pattern -->
+        <div class="announcement-bg-pattern"></div>
+        
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="home-products__subtitle text-white" style="opacity: 0.9;">Special Offers</span>
+                <h2 class="home-products__title text-white mb-3">Latest Announcements</h2>
+                <div class="section-divider mx-auto" style="background: rgba(255,255,255,0.3);"></div>
+            </div>
+
+            <div class="announcements-carousel">
+                @foreach($announcements as $index => $announcement)
+                <div class="announcement-slide {{ $index === 0 ? 'active' : '' }}" 
+                     style="background-color: {{ $announcement->background_color }}; color: {{ $announcement->text_color }};"
+                     data-announcement-id="{{ $announcement->id }}">
+                    <div class="row align-items-center">
+                        @if($announcement->image)
+                        <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                            <div class="announcement-image-wrapper">
+                                <img src="{{ $announcement->image }}" alt="{{ $announcement->title }}" class="announcement-image">
+                                <div class="image-overlay"></div>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        <div class="col-lg-{{ $announcement->image ? '7' : '12' }} col-md-{{ $announcement->image ? '6' : '12' }}">
+                            <div class="announcement-content">
+                                @if($announcement->type)
+                                    <span class="announcement-badge">{{ ucfirst(str_replace('_', ' ', $announcement->type)) }}</span>
+                                @endif
+                                
+                                <h2 class="announcement-title">{{ $announcement->title }}</h2>
+                                
+                                @if($announcement->subtitle)
+                                    <h4 class="announcement-subtitle">{{ $announcement->subtitle }}</h4>
+                                @endif
+                                
+                                @if($announcement->description)
+                                    <div class="announcement-text">
+                                        {{ $announcement->description }}
+                                    </div>
+                                @endif
+                                
+                                @if($announcement->countdown_date && $announcement->countdown_date->gt(now()))
+                                <div class="announcement-countdown" data-countdown="{{ $announcement->countdown_date->toISOString() }}">
+                                    <div class="countdown-timer">
+                                        <div class="countdown-item">
+                                            <span class="countdown-number days">00</span>
+                                            <span class="countdown-label">Days</span>
+                                        </div>
+                                        <div class="countdown-item">
+                                            <span class="countdown-number hours">00</span>
+                                            <span class="countdown-label">Hours</span>
+                                        </div>
+                                        <div class="countdown-item">
+                                            <span class="countdown-number minutes">00</span>
+                                            <span class="countdown-label">Minutes</span>
+                                        </div>
+                                        <div class="countdown-item">
+                                            <span class="countdown-number seconds">00</span>
+                                            <span class="countdown-label">Seconds</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($announcement->button_text && $announcement->button_link)
+                                <div class="announcement-actions">
+                                    <a href="{{ $announcement->button_link }}" class="announcement-btn">
+                                        {{ $announcement->button_text }}
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            @if($announcements->count() > 1)
+            <!-- Navigation Dots -->
+            <div class="announcement-dots">
+                @foreach($announcements as $index => $announcement)
+                <button class="dot {{ $index === 0 ? 'active' : '' }}" data-slide="{{ $index }}"></button>
+                @endforeach
+            </div>
+            @endif
+        </div>
+    </section>
+    @endif
 
     <style>
         /* Core styles with specific namespacing to avoid conflicts */
@@ -2241,6 +2353,410 @@
                 padding: 2px 6px;
             }
         }
+
+        /* Announcements Section Styles */
+        .announcements-section {
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .announcement-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 20% 50%, white 2px, transparent 2px),
+                radial-gradient(circle at 80% 50%, white 2px, transparent 2px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+        }
+
+        .section-divider {
+            width: 80px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .announcements-carousel {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .announcement-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s ease;
+            border-radius: 25px;
+            padding: 3rem;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 1;
+        }
+
+        .announcement-slide.active {
+            position: relative;
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        .announcement-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .announcement-image-wrapper {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .announcement-image-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .announcement-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(166, 123, 201, 0.1), rgba(139, 123, 168, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .announcement-image-wrapper:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .announcement-content {
+            padding: 1rem 0;
+        }
+
+        .announcement-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .announcement-subtitle {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .announcement-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-countdown {
+            margin: 2rem 0;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem 1rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 80px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .countdown-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .countdown-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .announcement-actions {
+            margin-top: 2rem;
+        }
+
+        .announcement-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .announcement-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .announcement-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        .announcement-dots {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .announcement-dots .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .announcement-dots .dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .announcement-dots .dot:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .announcement-slide {
+                padding: 2rem;
+            }
+
+            .announcement-image {
+                height: 280px;
+            }
+
+            .announcement-title {
+                font-size: 2.2rem;
+            }
+
+            .announcement-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .countdown-timer {
+                gap: 1rem;
+            }
+
+            .countdown-item {
+                min-width: 70px;
+                padding: 1rem 0.8rem;
+            }
+
+            .countdown-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcements-section {
+                min-height: auto;
+                padding: 3rem 0;
+            }
+
+            .announcement-slide {
+                padding: 1.5rem;
+            }
+
+            .announcement-image {
+                height: 220px;
+            }
+
+            .announcement-title {
+                font-size: 1.8rem;
+            }
+
+            .announcement-subtitle {
+                font-size: 1rem;
+            }
+
+            .announcement-text {
+                font-size: 1rem;
+            }
+
+            .countdown-timer {
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .countdown-item {
+                min-width: 60px;
+                padding: 0.8rem 0.5rem;
+            }
+
+            .countdown-number {
+                font-size: 1.2rem;
+            }
+
+            .countdown-label {
+                font-size: 0.7rem;
+            }
+
+            .announcement-btn {
+                padding: 0.8rem 2rem;
+                font-size: 0.9rem;
+            }
+        }
+            }
+
+            .announcement-text {
+                font-size: 1.1rem;
+            }
+
+            .counter-number {
+                font-size: 2.5rem;
+                min-width: 80px;
+            }
+
+            .counter-label {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcements-section {
+                padding: 60px 0 !important;
+            }
+
+            .announcement-content {
+                padding: 1rem 0;
+                text-align: center;
+            }
+
+            .announcement-image {
+                height: 250px;
+            }
+
+            .announcement-title {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .announcement-text {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .counter-wrapper {
+                padding: 1rem 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .counter-number {
+                font-size: 2rem;
+                min-width: auto;
+            }
+
+            .counter-label {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .announcement-title {
+                font-size: 1.8rem;
+            }
+
+            .announcement-text {
+                font-size: 0.95rem;
+            }
+
+            .counter-wrapper {
+                padding: 0.8rem 1.5rem;
+            }
+
+            .counter-number {
+                font-size: 1.8rem;
+            }
+
+            .counter-label {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 
     <script>
@@ -2680,6 +3196,102 @@
                     cartCountElement.textContent = cartCount;
                     cartCountElement.style.display = cartCount > 0 ? 'inline' : 'none';
                 }
+            }
+
+            // Announcement Carousel Functionality
+            let currentAnnouncementSlide = 0;
+            const announcementSlides = document.querySelectorAll('.announcement-slide');
+            const announcementDots = document.querySelectorAll('.announcement-dots .dot');
+            let announcementInterval;
+
+            function showAnnouncementSlide(index) {
+                if (announcementSlides.length === 0) return;
+                
+                // Remove active class from all slides and dots
+                announcementSlides.forEach(slide => slide.classList.remove('active'));
+                announcementDots.forEach(dot => dot.classList.remove('active'));
+                
+                // Add active class to current slide and dot
+                if (announcementSlides[index]) {
+                    announcementSlides[index].classList.add('active');
+                }
+                if (announcementDots[index]) {
+                    announcementDots[index].classList.add('active');
+                }
+                
+                currentAnnouncementSlide = index;
+            }
+
+            function nextAnnouncementSlide() {
+                const nextIndex = (currentAnnouncementSlide + 1) % announcementSlides.length;
+                showAnnouncementSlide(nextIndex);
+            }
+
+            function startAnnouncementCarousel() {
+                if (announcementSlides.length > 1) {
+                    announcementInterval = setInterval(nextAnnouncementSlide, 8000); // 8 seconds per slide
+                }
+            }
+
+            function stopAnnouncementCarousel() {
+                clearInterval(announcementInterval);
+            }
+
+            // Initialize announcement carousel
+            if (announcementSlides.length > 0) {
+                // Add click event to dots
+                announcementDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        stopAnnouncementCarousel();
+                        showAnnouncementSlide(index);
+                        startAnnouncementCarousel();
+                    });
+                });
+
+                // Pause on hover
+                const announcementSection = document.querySelector('.announcements-section');
+                if (announcementSection) {
+                    announcementSection.addEventListener('mouseenter', stopAnnouncementCarousel);
+                    announcementSection.addEventListener('mouseleave', startAnnouncementCarousel);
+                }
+
+                // Start the carousel
+                startAnnouncementCarousel();
+            }
+
+            // Countdown Timer Functionality
+            function updateCountdowns() {
+                document.querySelectorAll('.announcement-countdown').forEach(countdown => {
+                    const targetDate = new Date(countdown.dataset.countdown);
+                    const now = new Date();
+                    const difference = targetDate - now;
+
+                    if (difference > 0) {
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                        const daysEl = countdown.querySelector('.days');
+                        const hoursEl = countdown.querySelector('.hours');
+                        const minutesEl = countdown.querySelector('.minutes');
+                        const secondsEl = countdown.querySelector('.seconds');
+
+                        if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
+                        if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+                        if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+                        if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+                    } else {
+                        // Countdown expired
+                        countdown.style.display = 'none';
+                    }
+                });
+            }
+
+            // Update countdowns every second
+            if (document.querySelector('.announcement-countdown')) {
+                setInterval(updateCountdowns, 1000);
+                updateCountdowns(); // Initial call
             }
 
         });

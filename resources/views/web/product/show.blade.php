@@ -1144,7 +1144,7 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .product-detail {
-                padding: 100px 0 60px;
+                padding: 38px 0 60px;
             }
 
             .product-main {

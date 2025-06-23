@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\{
     AuthController,
     DealOfTheDayController,
     ThankYouCardController,
+    AnnouncementController,
 };
 
 /*
@@ -81,6 +82,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/thank-you-cards/create', [ThankYouCardController::class, 'create'])->name('admin.thank-you-cards.create');
     Route::post('/admin/thank-you-cards/preview', [ThankYouCardController::class, 'preview'])->name('admin.thank-you-cards.preview');
     Route::post('/admin/thank-you-cards/print', [ThankYouCardController::class, 'print'])->name('admin.thank-you-cards.print');
+
+    // Announcements Management
+    Route::get('/admin/announcements', [AnnouncementController::class, 'index'])->name('admin.announcements.index');
+    Route::get('/admin/announcements/create', [AnnouncementController::class, 'create'])->name('admin.announcements.create');
+    Route::post('/admin/announcements', [AnnouncementController::class, 'store'])->name('admin.announcements.store');
+    Route::get('/admin/announcements/{announcement}', [AnnouncementController::class, 'show'])->name('admin.announcements.show');
+    Route::get('/admin/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('admin.announcements.edit');
+    Route::put('/admin/announcements/{announcement}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
+    Route::delete('/admin/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
+    Route::post('/admin/announcements/{announcement}/toggle-status', [AnnouncementController::class, 'toggleStatus'])->name('admin.announcements.toggleStatus');
+    Route::post('/admin/announcements/toggle-all-status', [AnnouncementController::class, 'toggleAllStatus'])->name('admin.announcements.toggleAllStatus');
 
     // Banners
 

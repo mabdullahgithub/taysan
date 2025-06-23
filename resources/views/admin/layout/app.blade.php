@@ -27,6 +27,9 @@
     
     <!-- Custom CSS -->
     <link href="{{ asset('dashboard/dist/css/style.css') }}" rel="stylesheet" type="text/css">
+    
+    <!-- Admin Layout Fixes -->
+    <link href="{{ asset('css/admin-fixes.css') }}" rel="stylesheet" type="text/css">
 
  
 </head>
