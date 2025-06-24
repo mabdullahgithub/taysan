@@ -26,6 +26,7 @@ class SettingsController extends Controller
             'weekendSaleGif' => Banner::where('type', 'weekend_sale_gif')->first(),
         ];
 
+
         
         // Get current settings
         $settings = [
