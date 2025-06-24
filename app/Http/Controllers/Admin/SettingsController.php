@@ -26,6 +26,7 @@ class SettingsController extends Controller
             'weekendSaleGif' => Banner::where('type', 'weekend_sale_gif')->first(),
         ];
 
+        
         // Get current settings
         $settings = [
             'site_title' => Setting::get('site_title', 'Taysan Beauty - Natural Handcrafted Soaps & Skincare'),
