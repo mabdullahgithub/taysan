@@ -118,7 +118,7 @@
         flex: 1;
         overflow-y: auto;
         padding: 0;
-        padding-bottom: 120px; /* Space for fixed input field */
+        padding-bottom: 140px; /* Space for fixed input field on desktop */
         scrollbar-width: thin;
         scrollbar-color: #2a2a3e #0f0f23;
     }
@@ -703,7 +703,7 @@
         
         .chat-input-container {
             padding: 16px;
-            padding-bottom: 80px;
+            /* padding-bottom removed to avoid conflict with media query below */
         }
         
         .quick-actions {
@@ -774,7 +774,7 @@
         }
         
         .chat-messages {
-            padding-bottom: 0;
+            padding-bottom: 20px; /* Minimal padding for desktop */
         }
         
         .bottom-nav {
@@ -785,12 +785,12 @@
     /* Position input above bottom nav on mobile */
     @media (max-width: 1199px) {
         .chat-input-container {
-            bottom: 80px; /* Height of bottom nav + some padding */
+            bottom: 80px; /* Height of bottom nav */
             padding-bottom: 20px;
         }
         
         .chat-messages {
-            padding-bottom: 180px; /* Space for input + bottom nav */
+            padding-bottom: 200px; /* Space for input + bottom nav + extra buffer */
         }
         
         .bottom-nav {
