@@ -881,39 +881,6 @@
             padding: 0 20px;
         }
 
-        .related-carousel-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            background: rgba(141, 104, 173, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .related-carousel-nav:hover {
-            background: #8D68AD;
-            transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .related-carousel-nav-prev {
-            left: -25px;
-        }
-
-        .related-carousel-nav-next {
-            right: -25px;
-        }
-
         .related-carousel-wrapper {
             overflow: hidden;
             border-radius: 15px;
@@ -926,7 +893,8 @@
         }
 
         .related-product {
-            min-width: calc(25% - 15px); /* 4 products on desktop */
+            min-width: calc(25% - 15px); /* 4 per view on desktop */
+            max-width: calc(25% - 15px);
             background: white;
             border-radius: 12px;
             overflow: hidden;
@@ -962,184 +930,84 @@
         }
 
         .related-product-info {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-        }
-
-        .related-product-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 5px;
-            line-height: 1.4;
+            padding: 10px 10px 8px 10px !important;
         }
 
         .related-product-category {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin-bottom: 2px !important;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .related-product-title {
+            margin-bottom: 4px !important;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.2;
         }
 
         .related-product-price {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 6px !important;
+            font-size: 1rem;
+            color: #8D68AD;
+            font-weight: 600;
         }
 
         .related-product-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: auto;
+            margin-top: 6px !important;
         }
 
-        .related-view-btn {
-            flex: 1;
-            padding: 8px 12px;
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .related-view-btn:hover {
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-        }
-
-        .related-add-cart-btn {
-            flex: 2;
-            padding: 8px 12px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .related-add-cart-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        /* Carousel Indicators */
-        .related-carousel-indicators {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-            gap: 8px;
-        }
-
-        .related-carousel-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(141, 104, 173, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .related-carousel-indicator.active {
-            background: #8D68AD;
-            transform: scale(1.2);
-        }
-
-        /* Mobile Responsive Styles for Related Carousel */
-        @media (max-width: 768px) {
-            .related-products {
-                margin-left: -15px;
-                margin-right: -15px;
-                padding: 40px 0;
-            }
-
-            .related-product {
-                min-width: calc(50% - 10px); /* 2 products on mobile */
-            }
-
-            .related-carousel-nav {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-
-            .related-carousel-nav-prev {
-                left: -20px;
-            }
-
-            .related-carousel-nav-next {
-                right: -20px;
-            }
-
-            .related-carousel {
-                gap: 15px;
-            }
-
-            .section-title {
-                font-size: 1.6rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .related-carousel-nav-prev {
-                left: -15px;
-            }
-
-            .related-carousel-nav-next {
-                right: -15px;
-            }
-
-            .related-carousel-nav {
-                width: 35px;
-                height: 35px;
-                font-size: 0.8rem;
-            }
-
-            .related-carousel {
-                gap: 12px;
-            }
-
-            .related-product-info {
-                padding: 15px;
-            }
-
-            .related-product-title {
-                font-size: 1rem;
-            }
-
-            .related-product-price {
-                font-size: 1rem;
-            }
-
-            .related-product-actions {
-                flex-direction: column;
-            }
-        }
-
-        .related-product-price {
-            color: var(--primary-color);
-            font-size: 1.2rem;
+        .related-view-btn, .related-add-cart-btn {
+            margin-bottom: 4px !important;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            font-size: 1rem !important;
             font-weight: 700;
+            border: none !important;
+            border-radius: 12px !important;
+            width: 100%;
+            box-shadow: 0 4px 16px rgba(141, 104, 173, 0.18), 0 1.5px 4px rgba(0,0,0,0.07);
+            transition: background 0.2s, box-shadow 0.2s, color 0.2s;
         }
+        .related-view-btn {
+            background: transparent !important;
+            color: var(--primary-color) !important;
+            border: 2px solid var(--primary-color) !important;
+            box-shadow: none;
+        }
+        .related-view-btn:hover {
+            background: var(--primary-color) !important;
+            color: #fff !important;
+            border-color: var(--primary-light) !important;
+            box-shadow: 0 6px 20px rgba(141, 104, 173, 0.18);
+        }
+        .related-add-cart-btn {
+            background: linear-gradient(90deg, #A893C4 0%, #8D68AD 100%) !important;
+            color: #fff !important;
+        }
+        .related-add-cart-btn:hover {
+            background: linear-gradient(90deg, #8D68AD 0%, #A893C4 100%) !important;
+            color: #fff !important;
+            box-shadow: 0 6px 20px rgba(141, 104, 173, 0.25);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 991.98px) {
+            .related-product {
+                min-width: calc(50% - 10px); /* 2 per view on tablet */
+                max-width: calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .related-product {
+                min-width: calc(50% - 10px); /* 2 per view on mobile */
+                max-width: calc(50% - 10px);
+            }
+        }
+
+        /* Remove nav/indicator styles */
+        .related-carousel-nav, .related-carousel-indicators { display: none !important; }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -1577,14 +1445,6 @@
             <div class="related-products">
                 <h2 class="section-title">You May Also Like</h2>
                 <div class="related-products-carousel-container">
-                    <!-- Navigation Arrows -->
-                    <button class="related-carousel-nav related-carousel-nav-prev" id="relatedCarouselPrev">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="related-carousel-nav related-carousel-nav-next" id="relatedCarouselNext">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-
                     <!-- Carousel Wrapper -->
                     <div class="related-carousel-wrapper">
                         <div class="related-carousel" id="relatedCarousel">
@@ -1597,12 +1457,12 @@
                                     <div class="related-product-category">{{ $relatedProduct->category->name }}</div>
                                     <h3 class="related-product-title">{{ $relatedProduct->name }}</h3>
                                     <div class="related-product-price">PKR {{ number_format($relatedProduct->price, 0) }}</div>
-                                    <div class="related-product-actions">
-                                        <a href="{{ route('web.product.show', $relatedProduct) }}" class="related-view-btn">
+                                    <div class="related-product-actions d-flex flex-column gap-2 mt-2">
+                                        <a href="{{ route('web.product.show', $relatedProduct) }}" class="related-view-btn btn btn-outline-primary w-100 mb-1">
                                             <i class="fas fa-eye"></i>
                                             View
                                         </a>
-                                        <button class="related-add-cart-btn btn-add-cart"
+                                        <button class="related-add-cart-btn btn btn-primary w-100"
                                                 data-id="{{ $relatedProduct->id }}"
                                                 data-name="{{ $relatedProduct->name }}"
                                                 data-price="{{ $relatedProduct->price }}"
@@ -1615,11 +1475,6 @@
                             </div>
                             @endforeach
                         </div>
-                    </div>
-
-                    <!-- Carousel Indicators -->
-                    <div class="related-carousel-indicators" id="relatedCarouselIndicators">
-                        <!-- Will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -1854,114 +1709,62 @@
         // Related Products Carousel Functionality
         function initRelatedProductsCarousel() {
             const carousel = document.getElementById('relatedCarousel');
-            const prevBtn = document.getElementById('relatedCarouselPrev');
-            const nextBtn = document.getElementById('relatedCarouselNext');
-            const indicatorsContainer = document.getElementById('relatedCarouselIndicators');
-
-            if (!carousel || !prevBtn || !nextBtn) return;
+            if (!carousel) return;
 
             const products = carousel.querySelectorAll('.related-product');
-            const productsPerPage = getProductsPerPage();
-            const totalPages = Math.ceil(products.length / productsPerPage);
-            let currentPage = 0;
-
-            // Create indicators
-            function createIndicators() {
-                indicatorsContainer.innerHTML = '';
-                for (let i = 0; i < totalPages; i++) {
-                    const indicator = document.createElement('div');
-                    indicator.classList.add('related-carousel-indicator');
-                    if (i === 0) indicator.classList.add('active');
-                    indicator.addEventListener('click', () => goToPage(i));
-                    indicatorsContainer.appendChild(indicator);
-                }
-            }
-
-            // Get products per page based on screen size
             function getProductsPerPage() {
-                if (window.innerWidth <= 480) return 1;
-                if (window.innerWidth <= 768) return 2;
-                if (window.innerWidth <= 1024) return 3;
-                return 4;
+                if (window.innerWidth <= 575.98) return 2; // 2 on mobile
+                return 4; // 4 on desktop
             }
+            let productsPerPage = getProductsPerPage();
+            let currentIndex = 0;
+            let maxIndex = Math.max(0, products.length - productsPerPage);
 
-            // Update carousel position
             function updateCarousel() {
-                const productWidth = 100 / productsPerPage;
-                const translateX = -(currentPage * 100);
-                carousel.style.transform = `translateX(${translateX}%)`;
-
-                // Update indicators
-                indicatorsContainer.querySelectorAll('.related-carousel-indicator').forEach((indicator, index) => {
-                    indicator.classList.toggle('active', index === currentPage);
-                });
-
-                // Update navigation buttons
-                prevBtn.style.opacity = currentPage === 0 ? '0.5' : '1';
-                nextBtn.style.opacity = currentPage === totalPages - 1 ? '0.5' : '1';
+                productsPerPage = getProductsPerPage();
+                maxIndex = Math.max(0, products.length - productsPerPage);
+                const productWidth = products[0].offsetWidth + 20; // 20px gap
+                const translateX = -(currentIndex * productWidth);
+                carousel.style.transform = `translateX(${translateX}px)`;
             }
 
-            // Go to specific page
-            function goToPage(page) {
-                if (page >= 0 && page < totalPages) {
-                    currentPage = page;
-                    updateCarousel();
-                }
-            }
-
-            // Navigation functions
             function nextSlide() {
-                if (currentPage < totalPages - 1) {
-                    currentPage++;
-                    updateCarousel();
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                } else {
+                    currentIndex = 0;
                 }
+                updateCarousel();
             }
 
             function prevSlide() {
-                if (currentPage > 0) {
-                    currentPage--;
-                    updateCarousel();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                } else {
+                    currentIndex = maxIndex;
                 }
+                updateCarousel();
             }
 
-            // Event listeners
-            nextBtn.addEventListener('click', nextSlide);
-            prevBtn.addEventListener('click', prevSlide);
-
-            // Auto-play functionality (optional)
+            // Auto-play functionality (4 seconds)
             let autoPlayInterval;
             function startAutoPlay() {
-                autoPlayInterval = setInterval(() => {
-                    if (currentPage < totalPages - 1) {
-                        nextSlide();
-                    } else {
-                        currentPage = 0;
-                        updateCarousel();
-                    }
-                }, 5000);
+                autoPlayInterval = setInterval(nextSlide, 4000);
             }
-
             function stopAutoPlay() {
                 clearInterval(autoPlayInterval);
             }
 
-            // Mouse events for auto-play
-            carousel.addEventListener('mouseenter', stopAutoPlay);
-            carousel.addEventListener('mouseleave', startAutoPlay);
-
             // Touch events for mobile
             let startX = 0;
             let endX = 0;
-
             carousel.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 stopAutoPlay();
             });
-
             carousel.addEventListener('touchend', (e) => {
                 endX = e.changedTouches[0].clientX;
                 const diff = startX - endX;
-
                 if (Math.abs(diff) > 50) {
                     if (diff > 0) {
                         nextSlide();
@@ -1981,16 +1784,12 @@
                 }
             });
 
-            // Window resize handler
+            // Responsive: recalculate on resize
             window.addEventListener('resize', () => {
-                const newProductsPerPage = getProductsPerPage();
-                if (newProductsPerPage !== productsPerPage) {
-                    location.reload(); // Simple solution for responsive changes
-                }
+                updateCarousel();
             });
 
             // Initialize
-            createIndicators();
             updateCarousel();
             startAutoPlay();
         }

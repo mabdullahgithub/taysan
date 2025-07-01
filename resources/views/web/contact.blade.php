@@ -5,7 +5,7 @@
     /* Floating Cart Button Styles */
     .ts-floating-cart-btn {
         position: fixed;
-        bottom: 30px;
+        bottom: 85px;
         right: 30px;
         width: 60px;
         height: 60px;

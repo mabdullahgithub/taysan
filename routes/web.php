@@ -32,6 +32,10 @@ Route::get('/product/{product}', [WebProductController::class, 'show'])->name('w
 Route::get('/about-us', [AboutController::class, 'view'])->name('web.view.about');
 Route::get('/contact', [ContactController::class, 'view'])->name('web.view.contact');
 Route::post('/contact', [ContactController::class, 'submitContact'])->name('web.contact.submit');
+
+// AI Chatbot Routes
+Route::get('/dr-ai', [App\Http\Controllers\ChatbotController::class, 'view'])->name('web.chatbot');
+Route::post('/chatbot/recommendations', [App\Http\Controllers\ChatbotController::class, 'getRecommendations'])->name('chatbot.recommendations');
 Route::get('/orders-web', [WebOrderController::class, 'view'])->name('web.orders.index');
 
 // Checkout routes
