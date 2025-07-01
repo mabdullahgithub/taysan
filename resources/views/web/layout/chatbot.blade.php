@@ -118,6 +118,7 @@
         flex: 1;
         overflow-y: auto;
         padding: 0;
+        padding-bottom: 120px; /* Space for fixed input field */
         scrollbar-width: thin;
         scrollbar-color: #2a2a3e #0f0f23;
     }
@@ -298,6 +299,11 @@
         padding: 20px 24px;
         background: #0f0f23;
         border-top: 1px solid #1a1a2e;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
     }
     
     .input-wrapper {
@@ -760,10 +766,35 @@
         }
     }
     
-    /* Hide elements on mobile when bottom nav is present */
+    /* Desktop positioning */
+    @media (min-width: 1200px) {
+        .chat-input-container {
+            position: relative;
+            bottom: auto;
+        }
+        
+        .chat-messages {
+            padding-bottom: 0;
+        }
+        
+        .bottom-nav {
+            display: none;
+        }
+    }
+    
+    /* Position input above bottom nav on mobile */
     @media (max-width: 1199px) {
         .chat-input-container {
-            padding-bottom: 100px;
+            bottom: 80px; /* Height of bottom nav + some padding */
+            padding-bottom: 20px;
+        }
+        
+        .chat-messages {
+            padding-bottom: 180px; /* Space for input + bottom nav */
+        }
+        
+        .bottom-nav {
+            height: 80px;
         }
     }
     </style>
