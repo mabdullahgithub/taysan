@@ -139,6 +139,8 @@
     box-shadow: var(--ts-shadow);
 }
 
+
+
 .ts-navbar__wrapper {
     display: flex;
     align-items: center;
