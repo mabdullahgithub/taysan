@@ -21,10 +21,10 @@
             <div class="col-lg-4 col-md-12" style="padding: 0 15px !important;">
                 <div style="max-width: 400px !important;">
                     <img src="{{ $logoUrl }}" alt="logo" style="height: 40px !important; width: auto !important; margin-bottom: 20px !important; display: block !important;">
-                    <p style="color: #666 !important; line-height: 1.6 !important; margin-bottom: 20px !important; font-size: 14px !important;">
+                    <p style="color: #666 !important; line-height: 1.5 !important; margin-bottom: 20px !important; font-size: 12px !important;">
                         {{ $companyDescription }}
                     </p>
-                    <div class="d-flex gap-3" style="display: flex !important; gap: 15px !important;">
+                    <div class="d-flex gap-3" style="display: flex !important; gap: 15px !important; justify-content: center !important;">
                         <a href="{{ $facebook }}" class="d-flex align-items-center justify-content-center" 
                            style="width: 36px !important; height: 36px !important; border-radius: 50% !important; background-color: #8D68AD !important; color: white !important; text-decoration: none !important; transition: all 0.3s !important; display: flex !important; align-items: center !important; justify-content: center !important;">
                             <i class="fab fa-facebook-f" style="font-size: 14px !important;"></i>
@@ -42,26 +42,26 @@
             </div>
 
             <!-- Quick Links -->
-            <div class="col-lg-4 col-md-6" style="padding: 0 15px !important;">
-                <h3 style="color: #333 !important; font-size: 1.25rem !important; margin-bottom: 20px !important; font-weight: 600 !important;">Quick Links</h3>
+            <div class="col-lg-4 col-md-6 footer-quick-links" style="padding: 0 15px !important;">
+                <h3 style="color: #333 !important; font-size: 1rem !important; margin-bottom: 15px !important; font-weight: 600 !important;">Quick Links</h3>
                 <ul class="list-unstyled" style="margin: 0 !important; padding: 0 !important; list-style: none !important;">
-                    <li class="mb-2" style="margin-bottom: 10px !important;">
-                        <a href="/" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important;" 
+                    <li class="mb-2" style="margin-bottom: 8px !important;">
+                        <a href="/" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important; font-size: 12px !important;" 
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">Home</a>
                     </li>
-                    <li class="mb-2" style="margin-bottom: 10px !important;">
-                        <a href="/shop" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important;"
+                    <li class="mb-2" style="margin-bottom: 8px !important;">
+                        <a href="/shop" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important; font-size: 12px !important;"
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">Shop</a>
                     </li>
-                    <li class="mb-2" style="margin-bottom: 10px !important;">
-                        <a href="/about" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important;"
+                    <li class="mb-2" style="margin-bottom: 8px !important;">
+                        <a href="/about" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important; font-size: 12px !important;"
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">About Us</a>
                     </li>
-                    <li class="mb-2" style="margin-bottom: 10px !important;">
-                        <a href="/contact" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important;"
+                    <li class="mb-2" style="margin-bottom: 8px !important;">
+                        <a href="/contact" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; display: block !important; font-size: 12px !important;"
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">Contact Us</a>
                     </li>
@@ -69,26 +69,26 @@
             </div>
 
             <!-- Contact Info -->
-            <div class="col-lg-4 col-md-6" style="padding: 0 15px !important;">
-                <h3 style="color: #333 !important; font-size: 1.25rem !important; margin-bottom: 20px !important; font-weight: 600 !important;">Contact Us</h3>
+            <div class="col-lg-4 col-md-6 footer-contact-info" style="padding: 0 15px !important;">
+                <h3 style="color: #333 !important; font-size: 1rem !important; margin-bottom: 15px !important; font-weight: 600 !important;">Contact Us</h3>
                 <ul class="list-unstyled" style="margin: 0 !important; padding: 0 !important; list-style: none !important;">
-                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 15px !important; margin-bottom: 15px !important; color: #666 !important;">
-                        <i class="fas fa-user" style="color: #8D68AD !important; margin-top: 4px !important;"></i>
-                        <span><strong>{{ $founderName }}</strong><br><small>{{ $founderTitle }}</small></span>
+                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 12px !important; margin-bottom: 12px !important; color: #666 !important;">
+                        <i class="fas fa-user" style="color: #8D68AD !important; margin-top: 2px !important; font-size: 12px !important;"></i>
+                        <span style="font-size: 12px !important;"><strong>{{ $founderName }}</strong><br><small style="font-size: 11px !important;">{{ $founderTitle }}</small></span>
                     </li>
-                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 15px !important; margin-bottom: 15px !important; color: #666 !important;">
-                        <i class="fas fa-map-marker-alt" style="color: #8D68AD !important; margin-top: 4px !important;"></i>
-                        <span>{{ $address }}</span>
+                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 12px !important; margin-bottom: 12px !important; color: #666 !important;">
+                        <i class="fas fa-map-marker-alt" style="color: #8D68AD !important; margin-top: 2px !important; font-size: 12px !important;"></i>
+                        <span style="font-size: 12px !important;">{{ $address }}</span>
                     </li>
-                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 15px !important; margin-bottom: 15px !important;">
-                        <i class="fab fa-whatsapp" style="color: #8D68AD !important; margin-top: 4px !important;"></i>
-                        <a href="{{ $whatsapp }}" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important;"
+                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 12px !important; margin-bottom: 12px !important;">
+                        <i class="fab fa-whatsapp" style="color: #8D68AD !important; margin-top: 2px !important; font-size: 12px !important;"></i>
+                        <a href="{{ $whatsapp }}" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; font-size: 12px !important;"
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">{{ $phone }}</a>
                     </li>
-                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 15px !important; margin-bottom: 15px !important;">
-                        <i class="fas fa-envelope" style="color: #8D68AD !important; margin-top: 4px !important;"></i>
-                        <a href="mailto:{{ $email }}" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important;"
+                    <li class="d-flex gap-3 mb-3" style="display: flex !important; gap: 12px !important; margin-bottom: 12px !important;">
+                        <i class="fas fa-envelope" style="color: #8D68AD !important; margin-top: 2px !important; font-size: 12px !important;"></i>
+                        <a href="mailto:{{ $email }}" style="color: #666 !important; text-decoration: none !important; transition: color 0.3s !important; font-size: 12px !important;"
                            onmouseover="this.style.color='#8D68AD !important'" 
                            onmouseout="this.style.color='#666 !important'">{{ $email }}</a>
                     </li>
@@ -100,9 +100,97 @@
     <!-- Copyright -->
     <div style="background-color: white !important; padding: 20px 0 !important; margin-top: 40px !important; border-top: 1px solid #eee !important; width: 100% !important;">
         <div class="container" style="max-width: 1200px !important; margin-left: auto !important; margin-right: auto !important;">
-            <p class="text-center mb-0" style="text-align: center !important; margin-bottom: 0 !important; color: #666 !important;">
+            <p class="text-center mb-0" style="text-align: center !important; margin-bottom: 0 !important; color: #666 !important; font-size: 11px !important;">
                 {{ $copyright }}
             </p>
         </div>
     </div>
 </footer>
+
+<style>
+/* Mobile Footer Layout - Quick Links Left, Contact Us Right */
+@media (max-width: 767px) {
+    /* Company info takes full width on mobile and goes first */
+    .col-lg-4.col-md-12 {
+        order: 1 !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 30px !important;
+    }
+    
+    /* Quick Links goes to the left (order 2) */
+    .footer-quick-links {
+        order: 2 !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-right: 10px !important;
+        padding-left: 15px !important;
+    }
+    
+    /* Contact Info goes to the right (order 3) */
+    .footer-contact-info {
+        order: 3 !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding-left: 10px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Adjust font sizes for mobile */
+    .footer-quick-links h3,
+    .footer-contact-info h3 {
+        font-size: 0.9rem !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* Adjust spacing for mobile */
+    .footer-quick-links .list-unstyled li,
+    .footer-contact-info .list-unstyled li {
+        margin-bottom: 6px !important;
+    }
+    
+    /* Smaller font size for links */
+    .footer-quick-links a,
+    .footer-contact-info a,
+    .footer-contact-info span {
+        font-size: 11px !important;
+    }
+    
+    /* Adjust icons for mobile */
+    .footer-contact-info i {
+        font-size: 11px !important;
+        margin-top: 1px !important;
+    }
+    
+    /* Reduce gap between icon and text */
+    .footer-contact-info .d-flex {
+        gap: 8px !important;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 480px) {
+    .footer-quick-links h3,
+    .footer-contact-info h3 {
+        font-size: 0.85rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .footer-quick-links a,
+    .footer-contact-info a,
+    .footer-contact-info span {
+        font-size: 10px !important;
+    }
+    
+    .footer-quick-links,
+    .footer-contact-info {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Copyright text even smaller on very small screens */
+    .text-center.mb-0 {
+        font-size: 10px !important;
+    }
+}
+</style>

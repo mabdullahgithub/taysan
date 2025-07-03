@@ -32,8 +32,11 @@ class ChatbotController extends Controller
             // Create product context for AI (only if requesting products)
             $productContext = $isRequestingProducts ? $this->buildProductContext($products) : '';
             
+            // Add conversation context for better continuity
+            $contextualPrompt = $this->buildContextualPrompt($userSkinInfo, $conversationHistory, $isRequestingProducts);
+            
             // Call OpenAI API for conversational response
-            $recommendations = $this->callOpenAI($userSkinInfo, $productContext, $isRequestingProducts);
+            $recommendations = $this->callOpenAI($contextualPrompt, $productContext, $isRequestingProducts);
             
             // Get recommended products only if specifically requested
             $recommendedProducts = $isRequestingProducts ? 
@@ -53,6 +56,29 @@ class ChatbotController extends Controller
                 'message' => 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment.'
             ], 500);
         }
+    }
+    
+    private function buildContextualPrompt($userSkinInfo, $conversationHistory, $isRequestingProducts)
+    {
+        $contextualPrompt = $userSkinInfo;
+        
+        // Add conversation context if available
+        if (!empty($conversationHistory) && count($conversationHistory) > 0) {
+            $contextualPrompt = "CONVERSATION CONTEXT:\n";
+            
+            // Add last 3 exchanges for context
+            $recentHistory = array_slice($conversationHistory, -6); // Last 3 user + 3 bot messages
+            
+            foreach ($recentHistory as $index => $message) {
+                $speaker = $index % 2 === 0 ? 'Patient' : 'Dr. AI';
+                $contextualPrompt .= "{$speaker}: {$message}\n";
+            }
+            
+            $contextualPrompt .= "\nCURRENT INQUIRY:\n{$userSkinInfo}\n";
+            $contextualPrompt .= "\nPlease respond considering the conversation context above.";
+        }
+        
+        return $contextualPrompt;
     }
     
     private function isRequestingProductRecommendations($userInput)
@@ -83,31 +109,66 @@ class ChatbotController extends Controller
         $context = "TAYSAN BEAUTY PRODUCT CATALOG:\n\n";
         
         foreach ($products as $product) {
-            $context .= "Product: {$product->name}\n";
+            $context .= "=== PRODUCT: {$product->name} ===\n";
             $context .= "Category: {$product->category->name}\n";
             $context .= "Price: PKR {$product->price}\n";
             
-            if ($product->ingredients) {
-                $context .= "Ingredients: {$product->ingredients}\n";
-            }
-            
-            if ($product->benefits) {
-                $context .= "Benefits: {$product->benefits}\n";
-            }
-            
-            if ($product->usage_instructions) {
-                $context .= "Usage: {$product->usage_instructions}\n";
+            if ($product->sale_price && $product->is_on_sale) {
+                $context .= "Sale Price: PKR {$product->sale_price} (CURRENTLY ON SALE)\n";
             }
             
             if ($product->description) {
                 $context .= "Description: {$product->description}\n";
             }
             
-            $context .= "Suitable for: ";
-            if ($product->is_organic) $context .= "Organic skin, ";
-            if ($product->is_vegan) $context .= "Vegan-friendly, ";
-            if ($product->is_cruelty_free) $context .= "Sensitive skin, ";
-            $context .= "\n\n";
+            if ($product->ingredients) {
+                $context .= "Key Ingredients: {$product->ingredients}\n";
+            }
+            
+            if ($product->benefits) {
+                $context .= "Benefits & Effects: {$product->benefits}\n";
+            }
+            
+            if ($product->usage_instructions) {
+                $context .= "How to Use: {$product->usage_instructions}\n";
+            }
+            
+            // Enhanced product attributes
+            $attributes = [];
+            if ($product->is_organic) $attributes[] = "100% Organic";
+            if ($product->is_vegan) $attributes[] = "Vegan-Friendly";
+            if ($product->is_cruelty_free) $attributes[] = "Cruelty-Free";
+            
+            if (!empty($attributes)) {
+                $context .= "Special Attributes: " . implode(", ", $attributes) . "\n";
+            }
+            
+            // Add skin type recommendations based on product data
+            $context .= "Best For: ";
+            if (stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'oily') !== false ||
+                stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'acne') !== false) {
+                $context .= "Oily skin, Acne-prone skin, ";
+            }
+            if (stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'dry') !== false ||
+                stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'hydrat') !== false) {
+                $context .= "Dry skin, Dehydrated skin, ";
+            }
+            if (stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'sensitive') !== false ||
+                $product->is_organic) {
+                $context .= "Sensitive skin, ";
+            }
+            if (stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'aging') !== false ||
+                stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'wrinkle') !== false) {
+                $context .= "Mature skin, Anti-aging, ";
+            }
+            if (stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'bright') !== false ||
+                stripos($product->name . ' ' . $product->description . ' ' . $product->benefits, 'spot') !== false) {
+                $context .= "Dark spots, Uneven skin tone, ";
+            }
+            $context .= "All skin types\n";
+            
+            $context .= "Stock Available: {$product->stock} units\n";
+            $context .= "---\n\n";
         }
         
         return $context;
@@ -124,56 +185,70 @@ class ChatbotController extends Controller
         
         try {
             if ($isRequestingProducts) {
-                // Product recommendation prompt
-                $prompt = "You are Dr. AI, a professional skincare consultant for Taysan Beauty, specializing in natural and organic skincare products.
-                
-                Customer's request: {$skinInfo}
-                
-                Based on the customer's skin type and concerns, recommend the most suitable products from our catalog below. 
-                Provide personalized recommendations with detailed explanations of why each product is perfect for their specific needs.
-                
+                // Enhanced product recommendation prompt
+                $prompt = "You are Dr. AI, a professional dermatologist and skincare consultant for Taysan Beauty. You specialize in analyzing skin concerns and recommending the most suitable products from our exclusive catalog.
+
+                CUSTOMER CONSULTATION:
+                {$skinInfo}
+
+                AVAILABLE TAYSAN BEAUTY PRODUCTS:
                 {$productContext}
-                
-                Please respond in a friendly, professional tone as Dr. AI and recommend 2-3 products that would be most beneficial. 
-                Explain the ingredients and benefits that make each product ideal for their skin concerns.
-                Keep responses concise but informative (under 300 words).
-                Always mention the specific product names in your recommendations.";
+
+                INSTRUCTIONS:
+                1. Analyze the customer's specific skin type, concerns, age, and current routine
+                2. Select ONLY 2-3 products from the Taysan Beauty catalog that best match their needs
+                3. For each recommended product, explain:
+                   - Why this specific product is perfect for their skin type/concerns
+                   - How the ingredients address their specific issues
+                   - Expected benefits and results
+                4. Provide a brief skincare routine suggestion using these products
+                5. IMPORTANT: Only recommend products that are actually listed in the catalog above
+                6. Use the exact product names as they appear in the catalog
+
+                Respond as Dr. AI in a professional, caring tone. Keep the response under 350 words but make it comprehensive and personalized.";
             } else {
-                // Conversational prompt
-                $prompt = "You are Dr. AI, a professional skincare consultant and dermatology expert. You have extensive knowledge about:
-                - Skin types and conditions
-                - Skincare ingredients and their benefits
-                - Skincare routines and best practices
-                - Common skin problems and solutions
-                - Natural and organic skincare
-                
-                User's message: {$skinInfo}
-                
-                Respond as a knowledgeable, friendly skincare expert. Provide helpful, accurate information about skincare topics. 
-                Be conversational and engaging. If they ask about products, you can mention general categories or ingredients, 
-                but only recommend specific Taysan Beauty products if they explicitly ask for product recommendations.
-                
-                Keep responses informative but conversational (under 250 words).";
+                // Enhanced conversational prompt
+                $prompt = "You are Dr. AI, a board-certified dermatologist and skincare expert with 15+ years of experience. You specialize in:
+                - Clinical dermatology and skin health
+                - Cosmetic ingredients and formulations
+                - Personalized skincare routines
+                - Natural and organic skincare solutions
+                - Age-appropriate skincare strategies
+
+                PATIENT INQUIRY:
+                {$skinInfo}
+
+                GUIDELINES:
+                1. Provide evidence-based, professional medical advice
+                2. Be conversational but maintain clinical expertise
+                3. Explain complex concepts in simple terms
+                4. Ask follow-up questions when needed for better assessment
+                5. If they need product recommendations, guide them to ask specifically
+                6. Focus on education and skin health improvement
+
+                Respond as Dr. AI with warmth and professionalism. Keep responses informative but conversational (under 300 words).";
             }
             
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
             ])->timeout(30)->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-4o-mini',
+                'model' => 'gpt-4o', // Using the latest GPT-4o model for better accuracy
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are Dr. AI, an expert skincare consultant. You have deep knowledge of dermatology, skin types, ingredients, and skincare routines. Always provide helpful, accurate advice in a friendly professional manner. Be conversational and engaging.'
+                        'content' => 'You are Dr. AI, a highly experienced dermatologist and skincare consultant. You provide expert-level advice with clinical precision while maintaining a warm, approachable demeanor. You have deep expertise in ingredient science, skin physiology, and product formulations. Always prioritize skin health and provide personalized recommendations based on individual needs.'
                     ],
                     [
                         'role' => 'user',
                         'content' => $prompt
                     ]
                 ],
-                'max_tokens' => $isRequestingProducts ? 400 : 300,
-                'temperature' => 0.7,
-                'top_p' => 0.9
+                'max_tokens' => $isRequestingProducts ? 500 : 400,
+                'temperature' => 0.3, // Lower temperature for more consistent, accurate responses
+                'top_p' => 0.9,
+                'frequency_penalty' => 0.2,
+                'presence_penalty' => 0.1
             ]);
             
             if ($response->successful()) {
@@ -238,39 +313,151 @@ class ChatbotController extends Controller
     
     private function extractRecommendedProducts($aiResponse, $products)
     {
-        // Extract product names mentioned in AI response
+        // Extract product names mentioned in AI response with better matching
         $recommendedProducts = collect();
         
+        // First, try to find exact product name matches
         foreach ($products as $product) {
-            if (stripos($aiResponse, $product->name) !== false) {
-                $recommendedProducts->push([
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'price' => $product->price,
-                    'image' => $product->image ? asset('storage/' . $product->image) : asset('logo.png'),
-                    'category' => $product->category->name,
-                    'description' => $product->description,
-                    'benefits' => $product->benefits,
-                    'ingredients' => $product->ingredients,
-                    'is_organic' => (bool)$product->is_organic,
-                    'is_vegan' => (bool)$product->is_vegan,
-                    'is_cruelty_free' => (bool)$product->is_cruelty_free,
-                    'is_on_sale' => (bool)$product->is_on_sale,
-                    'sale_price' => $product->sale_price,
-                    'recommendation_reason' => $this->getRecommendationReason($aiResponse, $product->name)
-                ]);
+            $productName = $product->name;
+            
+            // Check for exact name match (case insensitive)
+            if (stripos($aiResponse, $productName) !== false) {
+                $recommendedProducts->push($this->formatProductData($product, $aiResponse));
+                continue;
+            }
+            
+            // Check for partial name matches (for products with long names)
+            $nameWords = explode(' ', $productName);
+            if (count($nameWords) > 2) {
+                $shortName = implode(' ', array_slice($nameWords, 0, 2));
+                if (stripos($aiResponse, $shortName) !== false) {
+                    $recommendedProducts->push($this->formatProductData($product, $aiResponse));
+                    continue;
+                }
             }
         }
         
-        // If no specific products found, return smart recommendations based on skin type keywords
-        if ($recommendedProducts->isEmpty()) {
-            $skinInfo = strtolower($aiResponse);
-            $smartProducts = $this->getSmartProductRecommendations($products, $skinInfo);
-            
-            return $smartProducts;
+        // If we found specific products, return them (limit to 3)
+        if ($recommendedProducts->isNotEmpty()) {
+            return $recommendedProducts->take(3);
         }
         
-        return $recommendedProducts->take(3);
+        // If no specific products found, use intelligent matching based on AI analysis
+        return $this->getIntelligentProductRecommendations($products, $aiResponse);
+    }
+    
+    private function formatProductData($product, $aiResponse)
+    {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'image' => $product->image ? asset('storage/' . $product->image) : asset('logo.png'),
+            'category' => $product->category->name,
+            'description' => $product->description,
+            'benefits' => $product->benefits,
+            'ingredients' => $product->ingredients,
+            'usage_instructions' => $product->usage_instructions,
+            'is_organic' => (bool)$product->is_organic,
+            'is_vegan' => (bool)$product->is_vegan,
+            'is_cruelty_free' => (bool)$product->is_cruelty_free,
+            'is_on_sale' => (bool)$product->is_on_sale,
+            'sale_price' => $product->sale_price,
+            'stock' => $product->stock,
+            'recommendation_reason' => $this->getRecommendationReason($aiResponse, $product->name)
+        ];
+    }
+    
+    private function getIntelligentProductRecommendations($products, $aiResponse)
+    {
+        $recommendations = collect();
+        $aiResponseLower = strtolower($aiResponse);
+        
+        // Analyze AI response for skin concerns and match with products
+        $skinConcerns = $this->extractSkinConcerns($aiResponseLower);
+        $recommendedIngredients = $this->extractRecommendedIngredients($aiResponseLower);
+        
+        foreach ($products as $product) {
+            $score = $this->calculateProductScore($product, $skinConcerns, $recommendedIngredients);
+            if ($score > 0) {
+                $productData = $this->formatProductData($product, $aiResponse);
+                $productData['match_score'] = $score;
+                $recommendations->push($productData);
+            }
+        }
+        
+        // Sort by match score and return top 3
+        return $recommendations->sortByDesc('match_score')->take(3)->values();
+    }
+    
+    private function extractSkinConcerns($aiResponse)
+    {
+        $concerns = [];
+        $concernKeywords = [
+            'acne' => ['acne', 'pimple', 'breakout', 'blemish', 'comedone'],
+            'oily' => ['oily', 'oil control', 'sebum', 'excess oil'],
+            'dry' => ['dry', 'dehydrated', 'moisture', 'hydration'],
+            'sensitive' => ['sensitive', 'irritated', 'reactive', 'gentle'],
+            'aging' => ['aging', 'wrinkle', 'fine line', 'anti-aging', 'mature'],
+            'pigmentation' => ['dark spot', 'pigmentation', 'melasma', 'brightening', 'even tone']
+        ];
+        
+        foreach ($concernKeywords as $concern => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (strpos($aiResponse, $keyword) !== false) {
+                    $concerns[] = $concern;
+                    break;
+                }
+            }
+        }
+        
+        return array_unique($concerns);
+    }
+    
+    private function extractRecommendedIngredients($aiResponse)
+    {
+        $ingredients = [];
+        $ingredientKeywords = [
+            'hyaluronic acid', 'vitamin c', 'retinol', 'niacinamide', 'salicylic acid',
+            'glycolic acid', 'kojic acid', 'arbutin', 'peptides', 'ceramides',
+            'tea tree', 'aloe vera', 'chamomile', 'green tea', 'rosehip'
+        ];
+        
+        foreach ($ingredientKeywords as $ingredient) {
+            if (strpos($aiResponse, $ingredient) !== false) {
+                $ingredients[] = $ingredient;
+            }
+        }
+        
+        return $ingredients;
+    }
+    
+    private function calculateProductScore($product, $skinConcerns, $recommendedIngredients)
+    {
+        $score = 0;
+        $productText = strtolower($product->name . ' ' . $product->description . ' ' . 
+                                 $product->benefits . ' ' . $product->ingredients);
+        
+        // Score based on skin concerns match
+        foreach ($skinConcerns as $concern) {
+            if (strpos($productText, $concern) !== false) {
+                $score += 10;
+            }
+        }
+        
+        // Score based on recommended ingredients
+        foreach ($recommendedIngredients as $ingredient) {
+            if (strpos($productText, $ingredient) !== false) {
+                $score += 5;
+            }
+        }
+        
+        // Bonus points for special attributes
+        if (in_array('sensitive', $skinConcerns) && $product->is_organic) {
+            $score += 3;
+        }
+        
+        return $score;
     }
     
     private function getRecommendationReason($aiResponse, $productName)

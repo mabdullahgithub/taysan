@@ -170,7 +170,7 @@ window.addEventListener('load', function() {
                 
                 <a href="{{ route('web.chatbot') }}" class="bottom-nav-item {{ Request::is('dr-ai') ? 'active' : '' }}">
                     <div class="nav-icon">
-                        <i class="fas fa-robot"></i>
+                        <i class="fas fa-user-md"></i>
                     </div>
                     <div class="nav-glow"></div>
                 </a>
@@ -417,8 +417,8 @@ window.addEventListener('load', function() {
 
         /* Glassmorphism enhancement on scroll */
         .bottom-nav-bar.scrolled .bottom-nav-container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(50px) saturate(5) brightness(1.4);
+            background: rgba(255, 252, 252, 0.085);
+            backdrop-filter: blur(50px) saturate(5) brightness(2.4);
             -webkit-backdrop-filter: blur(50px) saturate(5) brightness(1.4);
             border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 

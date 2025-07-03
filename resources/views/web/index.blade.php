@@ -519,14 +519,6 @@
 
             <!-- Best Selling Products Carousel -->
             <div class="best-selling-carousel-container">
-                <!-- Navigation Arrows -->
-                <button class="carousel-nav carousel-nav-prev" id="bestSellingPrev">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="carousel-nav carousel-nav-next" id="bestSellingNext">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
                 <!-- Carousel Wrapper -->
                 <div class="products-carousel-wrapper">
                     <div class="products-carousel" id="bestSellingCarousel">
@@ -761,14 +753,6 @@
 
             <!-- Products Carousel -->
             <div class="products-carousel-container">
-                <!-- Navigation Arrows -->
-                <button class="carousel-nav carousel-nav-prev" id="carouselPrev">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="carousel-nav carousel-nav-next" id="carouselNext">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
                 <!-- Carousel Wrapper -->
                 <div class="products-carousel-wrapper">
                     <div class="products-carousel" id="productsCarousel">
@@ -2987,8 +2971,6 @@
 
             // Products Carousel Functionality
             const carousel = document.getElementById('productsCarousel');
-            const prevBtn = document.getElementById('carouselPrev');
-            const nextBtn = document.getElementById('carouselNext');
             const indicatorsContainer = document.getElementById('carouselIndicators');
             
             let currentIndex = 0;
@@ -3060,17 +3042,6 @@
                 startAutoSlide();
             }
 
-            // Event listeners
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetAutoSlide();
-            });
-
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetAutoSlide();
-            });
-
             // Pause auto-slide on hover
             carousel.addEventListener('mouseenter', () => {
                 clearInterval(autoSlideInterval);
@@ -3087,8 +3058,6 @@
 
             // Best Selling Products Carousel Functionality
             const bestSellingCarousel = document.getElementById('bestSellingCarousel');
-            const bestSellingPrevBtn = document.getElementById('bestSellingPrev');
-            const bestSellingNextBtn = document.getElementById('bestSellingNext');
             const bestSellingIndicatorsContainer = document.getElementById('bestSellingIndicators');
             
             let bestSellingCurrentIndex = 0;
@@ -3162,20 +3131,6 @@
             }
 
             // Best Selling Event listeners
-            if (bestSellingNextBtn) {
-                bestSellingNextBtn.addEventListener('click', () => {
-                    nextBestSellingSlide();
-                    resetBestSellingAutoSlide();
-                });
-            }
-
-            if (bestSellingPrevBtn) {
-                bestSellingPrevBtn.addEventListener('click', () => {
-                    prevBestSellingSlide();
-                    resetBestSellingAutoSlide();
-                });
-            }
-
             // Pause auto-slide on hover for best selling carousel
             if (bestSellingCarousel) {
                 bestSellingCarousel.addEventListener('mouseenter', () => {
