@@ -9,6 +9,11 @@
     --text-light: #f8f0ff;
     --border-color: rgba(141, 104, 173, 0.2);
     --shadow-color: rgba(141, 104, 173, 0.15);
+    --animation-duration: 0.3s;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: rgba(141, 104, 173, 0.2);
+    --glass-blur: 10px;
 }
 
 body {
@@ -226,6 +231,32 @@ body {
     font-size: 40px;
     color: white;
     margin: 0 auto 24px;
+    box-shadow: 0 10px 20px var(--shadow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+        top: -50%;
+    }
+    100% {
+        left: 100%;
+        top: 100%;
+    }
 }
 
 .welcome-title {
@@ -495,20 +526,53 @@ body {
 .recommendation-reason {
     background: rgba(141, 104, 173, 0.1);
     border: 1px solid rgba(141, 104, 173, 0.2);
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 12px;
+    padding: 16px;
     font-size: 14px;
     color: var(--text-dark);
     display: flex;
     align-items: flex-start;
-    gap: 8px;
-    line-height: 1.4;
+    gap: 10px;
+    line-height: 1.5;
+    margin: 10px 0;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.recommendation-reason::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    pointer-events: none;
 }
 
 .recommendation-reason i {
     color: var(--primary);
     margin-top: 2px;
     flex-shrink: 0;
+    font-size: 18px;
+    animation: glow 2s infinite alternate;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px rgba(141, 104, 173, 0.2);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(141, 104, 173, 0.6);
+    }
 }
 
 .product-description {
@@ -626,6 +690,9 @@ body {
     display: flex;
     gap: 6px;
     padding: 16px 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
 }
 
 .typing-dot {
@@ -711,36 +778,69 @@ body {
     }
     
     .chat-input-container {
-        padding: 16px;
+        padding: 12px 16px;
+        bottom: 70px; /* Adjust for mobile bottom nav */
+    }
+    
+    .chat-messages {
+        padding-bottom: 180px; /* Reduced for mobile */
+    }
+    
+    .message {
+        padding: 16px 12px; /* Reduced padding for mobile */
+    }
+    
+    .message-content {
+        padding: 0 4px; /* Add slight inner padding */
     }
     
     .quick-actions {
         grid-template-columns: 1fr;
+        gap: 8px; /* Reduced gap */
+        margin: 16px 0; /* Reduced margin */
+    }
+    
+    .quick-action {
+        padding: 12px 16px; /* Optimized for touch */
+        margin: 0; /* Remove extra margins */
     }
     
     .product-grid {
         grid-template-columns: 1fr;
+        gap: 12px; /* Reduced gap between products */
     }
     
     .product-card {
-        padding: 16px;
+        padding: 12px; /* Reduced padding */
+        margin: 8px 0; /* Reduced margin */
     }
     
     .product-actions {
         flex-direction: column;
+        gap: 8px; /* Reduced gap between buttons */
     }
     
     .view-details-btn,
     .buy-now-btn {
         width: 100%;
+        padding: 10px 16px; /* Optimized button padding */
     }
     
     .welcome-section {
-        padding: 32px 16px;
+        padding: 24px 16px; /* Reduced top/bottom padding */
     }
     
-    .message {
-        padding: 20px 16px;
+    .doctor-icons {
+        gap: 12px; /* Reduced gap between icons */
+    }
+    
+    .continuation-message {
+        margin: 8px 0; /* Reduced margin */
+        padding: 10px 16px; /* Reduced padding */
+    }
+    
+    .glassmorphism-light {
+        padding: 12px 16px; /* Consistent mobile padding */
     }
 }
 
@@ -755,8 +855,22 @@ body {
         font-size: 13px;
     }
     
+    .message {
+        padding: 12px 8px; /* Further reduced for small screens */
+    }
+    
+    .message-content {
+        padding: 0 2px; /* Minimal inner padding */
+    }
+    
     .quick-action {
-        padding: 12px 16px;
+        padding: 10px 14px; /* Slightly smaller for tiny screens */
+        font-size: 14px;
+    }
+    
+    .quick-actions {
+        gap: 6px; /* Minimal gap */
+        margin: 12px 0; /* Reduced margin */
     }
     
     .product-image {
@@ -768,9 +882,47 @@ body {
         font-size: 16px;
     }
     
+    .product-card {
+        padding: 10px; /* Minimal padding for small screens */
+        margin: 6px 0;
+    }
+    
     .recommendation-reason {
-        padding: 10px;
+        padding: 8px;
         font-size: 13px;
+        margin: 8px 0; /* Reduced margin */
+    }
+    
+    .chat-input-container {
+        padding: 10px 12px; /* Minimal padding */
+        bottom: 65px; /* Adjust for smaller nav */
+    }
+    
+    .welcome-section {
+        padding: 20px 12px; /* Further reduced */
+    }
+    
+    .continuation-message {
+        padding: 8px 12px; /* Minimal padding */
+        margin: 6px 0;
+        gap: 8px;
+    }
+    
+    .inline-product-btn {
+        padding: 6px 12px; /* Smaller button padding */
+        font-size: 0.75em;
+    }
+    
+    .glassmorphism-light {
+        padding: 10px 12px; /* Consistent small screen padding */
+    }
+    
+    .doctor-icons {
+        gap: 8px; /* Minimal gap for small screens */
+    }
+    
+    .chat-messages {
+        padding-bottom: 160px; /* Reduced for small screens */
     }
 }
 
@@ -845,30 +997,395 @@ body {
 /* Product Suggestions Prompt */
 .product-suggestions-prompt {
     margin-top: 16px;
-    background: var(--secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 14px;
+    text-align: center;
+    position: relative;
+}
+
+.product-suggestions-prompt::before {
+    content: 'Based on Your Skin Analysis';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .product-suggestions-prompt button {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 8px 14px;
-    font-size: 13px;
+    border-radius: 25px;
+    padding: 16px 32px;
+    font-size: 15px;
     font-weight: 600;
-    margin-top: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--animation-duration) ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    animation: pulse 2s infinite;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.product-suggestions-prompt button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.product-suggestions-prompt button i {
+    font-size: 16px;
+    animation: spin 10s linear infinite;
+    position: relative;
+    z-index: 2;
+}
+
+.product-suggestions-prompt button span {
+    position: relative;
+    z-index: 2;
 }
 
 .product-suggestions-prompt button:hover {
-    background: var(--primary-light);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px var(--shadow-color);
+    animation: none;
+}
+
+.product-suggestions-prompt button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Glassmorphism Effects */
+.glassmorphism {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 16px var(--glass-shadow);
+    padding: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glassmorphism::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    z-index: 0;
+    pointer-events: none;
+}
+
+.glassmorphism:hover {
+    box-shadow: 0 8px 24px var(--glass-shadow);
+    transform: translateY(-2px);
+}
+
+.glassmorphism-light {
+    background: rgba(248, 240, 255, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px;
+    margin: 8px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.glassmorphism-light::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Continuation Message */
+.continuation-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #10b981;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 18px;
+    background: rgba(209, 250, 229, 0.7);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    margin: 12px 0;
+    animation: fadeIn 0.5s ease-in-out;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.continuation-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+.continuation-message i {
+    font-size: 18px;
+    color: #10b981;
+    animation: bounce 2s infinite;
+    position: relative;
+    z-index: 1;
+}
+
+.continuation-message span {
+    position: relative;
+    z-index: 1;
+}
+
+.inline-product-btn {
+    background: linear-gradient(135deg, 
+        rgba(255, 105, 180, 0.8) 0%, 
+        rgba(255, 182, 193, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.2);
+    text-transform: none;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+
+.inline-product-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 105, 180, 0.9) 0%, 
+        rgba(255, 182, 193, 0.9) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+.inline-product-btn i {
+    font-size: 0.9em;
+    margin: 0;
+    animation: none;
+}
+
+@media (max-width: 768px) {
+    .continuation-message {
+        flex-direction: column;
+        gap: 8px; /* Reduced gap */
+        padding: 10px 16px; /* Consistent with other mobile padding */
+        margin: 8px 0; /* Reduced margin */
+    }
+    
+    .inline-product-btn {
+        font-size: 0.8em;
+        padding: 6px 14px;
+    }
+}
+
+/* Additional mobile optimizations for very small screens */
+@media (max-width: 480px) {
+    .continuation-message {
+        padding: 8px 12px;
+        margin: 6px 0;
+        gap: 6px;
+    }
+    
+    .inline-product-btn {
+        font-size: 0.75em;
+        padding: 5px 12px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Animated Doctor Icon */
+.doctor-icon {
+    animation: pulse-icon 2s infinite;
+    position: relative;
+}
+
+.doctor-icon::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    z-index: -1;
+    animation: ripple 2s infinite;
+}
+
+@keyframes pulse-icon {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    40% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Update product card with glassmorphism */
+.product-card {
+    background: var(--light);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card.glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    position: relative;
+}
+
+.product-card.glassmorphism::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    pointer-events: none;
+}
+
+.product-card:hover {
+    background: rgba(248, 240, 255, 0.8);
+    border-color: var(--primary);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(141, 104, 173, 0.3);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px var(--shadow-color);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px var(--shadow-color);
+    }
 }

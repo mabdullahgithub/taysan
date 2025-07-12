@@ -29,8 +29,8 @@ class ChatbotController extends Controller
                 ->where('stock', '>', 0)
                 ->get();
             
-            // Create product context for AI (only if requesting products)
-            $productContext = $isRequestingProducts ? $this->buildProductContext($products) : '';
+            // Create product context for AI
+            $productContext = $this->buildProductContext($products);
             
             // Add conversation context for better continuity
             $contextualPrompt = $this->buildContextualPrompt($userSkinInfo, $conversationHistory, $isRequestingProducts);
@@ -38,9 +38,8 @@ class ChatbotController extends Controller
             // Call OpenAI API for conversational response
             $recommendations = $this->callOpenAI($contextualPrompt, $productContext, $isRequestingProducts);
             
-            // Get recommended products only if specifically requested
-            $recommendedProducts = $isRequestingProducts ? 
-                $this->extractRecommendedProducts($recommendations, $products) : [];
+            // Always try to get recommended products based on skin analysis
+            $recommendedProducts = $this->extractRecommendedProducts($recommendations, $products);
             
             return response()->json([
                 'success' => true,
@@ -268,7 +267,8 @@ class ChatbotController extends Controller
                 
                 // For product recommendations, always append product suggestion prompt
                 if (!$isRequestingProducts) {
-                    $aiResponse .= "\n\nWould you like me to suggest some Taysan Beauty products that might help with your skin concerns?";
+                    // Product suggestion button will be added via JavaScript
+                    // No text suggestion needed anymore
                 }
                 
                 return $aiResponse;
@@ -517,7 +517,33 @@ class ChatbotController extends Controller
                 return trim($sentence) . '.';
             }
         }
-        return 'Recommended by Dr. AI for your specific skin needs.';
+        
+        // If no direct mention, create specific reasons based on product name and type
+        $productNameLower = strtolower($productName);
+        $aiResponseLower = strtolower($aiResponse);
+        
+        // Check for specific skin concerns mentioned in the AI response
+        if (strpos($aiResponseLower, 'acne') !== false || strpos($aiResponseLower, 'pimple') !== false || strpos($aiResponseLower, 'breakout') !== false) {
+            return "Contains active ingredients to target acne, reduce inflammation, and prevent new breakouts while supporting your skin's healing process.";
+        } 
+        
+        if (strpos($aiResponseLower, 'oily') !== false) {
+            return "Formulated to balance oil production, minimize shine, and reduce pore appearance without over-drying your skin.";
+        }
+        
+        if (strpos($aiResponseLower, 'dry') !== false || strpos($aiResponseLower, 'dehydrat') !== false) {
+            return "Rich in hydrating ingredients that restore moisture barrier, relieve tightness, and provide long-lasting hydration for your dry skin.";
+        }
+        
+        if (strpos($aiResponseLower, 'sensitive') !== false || strpos($aiResponseLower, 'irritat') !== false) {
+            return "Specially formulated with gentle, soothing ingredients to calm irritation and strengthen your sensitive skin's natural defenses.";
+        }
+        
+        if (strpos($aiResponseLower, 'aging') !== false || strpos($aiResponseLower, 'wrinkle') !== false || strpos($aiResponseLower, 'fine line') !== false) {
+            return "Contains powerful anti-aging actives that boost collagen production, improve elasticity, and visibly reduce the appearance of fine lines and wrinkles.";
+        }
+        
+        return 'Specifically selected for your skin concerns with clinically-proven ingredients to improve your skin\'s health and appearance.';
     }
     
     private function getSmartProductRecommendations($products, $skinInfo)

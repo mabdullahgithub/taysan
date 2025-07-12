@@ -4,13 +4,13 @@
 <div class="welcome-section">
     <div class="welcome-content">
         <div class="welcome-icon">
-            <i class="fas fa-user-md"></i>
+            <i class="fas fa-user-md doctor-icon"></i>
         </div>
-        <h1 class="welcome-title">Welcome to Dr. AI</h1>
-        <p class="welcome-subtitle">Your personal skincare consultant powered by AI. Ask me anything about skincare, ingredients, routines, or skin concerns. I can also recommend Taysan Beauty products when you're ready!</p>
+        <h1 class="welcome-title">Welcome to Doctor AI</h1>
+        <p class="welcome-subtitle">Your personal skincare consultant powered by AI. Ask me anything about skincare, ingredients, routines, or skin concerns. I can also recommend Taysan Beauty products for your specific needs!</p>
         
         <div class="quick-actions">
-            <div class="quick-action" onclick="selectQuickOption('What ingredients should I look for in a good cleanser?')">
+            <div class="quick-action" onclick="selectQuickOption('What ingredients should I look for in a good cleanser for sensitive skin?')">
                 <div class="quick-action-icon">
                     <i class="fas fa-flask"></i>
                 </div>
@@ -20,7 +20,7 @@
                 </div>
             </div>
             
-            <div class="quick-action" onclick="selectQuickOption('How do I build a skincare routine for my skin type?')">
+            <div class="quick-action" onclick="selectQuickOption('How do I build a simple skincare routine for my skin type?')">
                 <div class="quick-action-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
@@ -30,7 +30,7 @@
                 </div>
             </div>
             
-            <div class="quick-action" onclick="selectQuickOption('I have acne-prone skin. What can I do to treat and prevent breakouts?')">
+            <div class="quick-action" onclick="selectQuickOption('What can I do to treat and prevent acne breakouts?')">
                 <div class="quick-action-icon">
                     <i class="fas fa-droplet"></i>
                 </div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             
-            <div class="quick-action" onclick="selectQuickOption('Can you recommend some Taysan Beauty products for my skin concerns?')">
+            <div class="quick-action" onclick="selectQuickOption('Can you recommend some Taysan Beauty products for my dry skin?')">
                 <div class="quick-action-icon">
                     <i class="fas fa-star"></i>
                 </div>
@@ -60,23 +60,13 @@
                 </div>
             </div>
             
-            <div class="quick-action" onclick="selectQuickOption('I have combination skin with an oily T-zone and dry cheeks. I am 26 years old and need a balanced routine that can handle both oily and dry areas.')">
+            <div class="quick-action" onclick="selectQuickOption('I have combination skin with an oily T-zone and dry cheeks. What kind of moisturizer should I use?')">
                 <div class="quick-action-icon">
                     <i class="fas fa-spa"></i>
                 </div>
                 <div class="quick-action-text">
                     <div class="quick-action-title">Combination Skin</div>
-                    <div class="quick-action-desc">Complete assessment for combination skin type</div>
-                </div>
-            </div>
-            
-            <div class="quick-action" onclick="selectQuickOption('I am new to skincare and want to build a complete routine. I am 22 years old with normal skin and want to maintain healthy skin and prevent future issues.')">
-                <div class="quick-action-icon">
-                    <i class="fas fa-balance-scale"></i>
-                </div>
-                <div class="quick-action-text">
-                    <div class="quick-action-title">Complete Routine</div>
-                    <div class="quick-action-desc">Complete assessment for building a skincare routine</div>
+                    <div class="quick-action-desc">Get advice for combination skin type</div>
                 </div>
             </div>
         </div>
@@ -87,6 +77,8 @@
 @section('scripts')
 <script>
 let conversationStarted = false;
+let messageCount = 0;
+let firstResponseReceived = false;
 
 function selectQuickOption(text) {
     document.getElementById('messageInput').value = text;
@@ -122,6 +114,14 @@ function sendMessage() {
     // Auto-resize textarea
     input.style.height = 'auto';
     
+    // Check if message is not skincare related
+    if (!isMessageSkinCareRelated(message)) {
+        hideTypingIndicator();
+        addMessage("I'm a skincare specialist and can only answer questions related to skin care, skincare products, and beauty routines. If you have any questions about your skin concerns or would like product recommendations, I'd be happy to help with those!", 'bot');
+        document.getElementById('sendButton').disabled = false;
+        return;
+    }
+    
     // Send to backend
     fetch('/chatbot/recommendations', {
         method: 'POST',
@@ -133,20 +133,42 @@ function sendMessage() {
             skin_info: message
         })
     })
-    .then(response => response.json())        .then(data => {
-            hideTypingIndicator();
+    .then(response => response.json())
+    .then(data => {
+        hideTypingIndicator();
+        
+        if (data.success) {
+            addMessage(data.recommendations, 'bot');
+            messageCount++;
             
-            if (data.success) {
-                addMessage(data.recommendations, 'bot');
+            // For first response: explain concerns and automatically show products
+            if (!firstResponseReceived) {
+                firstResponseReceived = true;
                 
-                // Only add product recommendations if we have products
+                // Add continuation message with integrated product button
+                setTimeout(() => {
+                    addContinuationMessage();
+                }, 800);
+                
+                // If we have products from backend, show them automatically after continuation message
+                if (data.products && data.products.length > 0) {
+                    setTimeout(() => {
+                        addProductRecommendations(data.products);
+                    }, 2500);
+                }
+            }
+            // If directly requesting products
+            else if (isRequestingProducts(message)) {
                 if (data.products && data.products.length > 0) {
                     addProductRecommendations(data.products);
+                } else {
+                    addProductSuggestionPrompt();
                 }
-            } else {
-                addMessage('I apologize, but I\'m experiencing technical difficulties right now. Please try again in a moment, or feel free to ask me any skincare questions!', 'bot');
             }
-        })
+        } else {
+            addMessage('I apologize, but I\'m experiencing technical difficulties right now. Please try again in a moment, or feel free to ask me any skincare questions!', 'bot');
+        }
+    })
     .catch(error => {
         hideTypingIndicator();
         addMessage('I\'m having trouble connecting right now. Please check your internet connection and try again.', 'bot');
@@ -157,15 +179,136 @@ function sendMessage() {
     });
 }
 
+function isMessageSkinCareRelated(message) {
+    const message_lower = message.toLowerCase();
+    const skinCareKeywords = [
+        'skin', 'acne', 'pimple', 'breakout', 'wrinkle', 'anti-aging', 'dry', 'oily', 
+        'moisturizer', 'serum', 'cleanser', 'toner', 'exfoliat', 'spf', 'sunscreen', 
+        'dark spot', 'pigment', 'sensitive', 'redness', 'routine', 'face', 'cream',
+        'lotion', 'skincare', 'beauty', 'ingredient', 'product', 'hyaluronic', 'vitamin c',
+        'retinol', 'salicylic', 'glycolic', 'acid', 'hydration', 'moistur', 'pore',
+        'blackhead', 'whitehead', 'mask', 'facial', 'treatment', 'night', 'day',
+        'eye', 'lip', 'oil', 'natural', 'organic'
+    ];
+    
+    for (const keyword of skinCareKeywords) {
+        if (message_lower.includes(keyword)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function isRequestingProducts(message) {
+    const message_lower = message.toLowerCase();
+    const productKeywords = [
+        'recommend', 'suggest', 'product', 'what should i use', 'what can i use',
+        'which product', 'show me', 'i need', 'buy', 'purchase', 'get'
+    ];
+    
+    for (const keyword of productKeywords) {
+        if (message_lower.includes(keyword)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function isSkinConcernMessage(message) {
+    const message_lower = message.toLowerCase();
+    const skinConcernKeywords = [
+        'acne', 'pimple', 'breakout', 'wrinkle', 'anti-aging', 'dry skin', 'oily skin', 
+        'dark spot', 'pigment', 'sensitive', 'redness', 'irritation', 'blackhead', 
+        'whitehead', 'aging', 'fine line', 'blemish', 'scar', 'hyperpigmentation', 
+        'dark circles', 'puffy', 'uneven skin tone', 'dull skin', 'skin problem'
+    ];
+    
+    for (const keyword of skinConcernKeywords) {
+        if (message_lower.includes(keyword)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function containsSkinTypeInfo(message) {
+    const message_lower = message.toLowerCase();
+    const skinTypeKeywords = [
+        'dry skin', 'oily skin', 'combination skin', 'normal skin', 'sensitive skin',
+        'my skin is dry', 'my skin is oily', 'my skin is sensitive', 'my skin is combination',
+        'skin type', 'skin concern', 'skin problem', 'skin issue', 'suffer from'
+    ];
+    
+    for (const keyword of skinTypeKeywords) {
+        if (message_lower.includes(keyword)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function addSkinTypeQuestion() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'message bot-message';
+    
+    questionDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-header">
+                <div class="message-avatar bot-avatar">
+                    <i class="fas fa-user-md doctor-icon"></i>
+                </div>
+                <div class="message-sender bot-sender">Doctor AI</div>
+            </div>
+            <div class="message-text">
+                <p>To provide you with the most personalized skincare advice, could you please share:</p>
+                <ol>
+                    <li>Your skin type (dry, oily, combination, normal, or sensitive)</li>
+                    <li>Any specific skin concerns you're experiencing (acne, aging, hyperpigmentation, etc.)</li>
+                </ol>
+                <p>This will help me tailor my recommendations specifically for your needs.</p>
+            </div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(questionDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function addContinuationMessage() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot-message';
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <div class="continuation-message glassmorphism-light">
+                <i class="fas fa-comment-dots"></i>
+                <span>Continue chatting for more personalized skincare advice and tips!</span>
+                <button class="inline-product-btn" onclick="selectQuickOption('Show me products for my skin type')">
+                    <i class="fas fa-magic"></i> View Products
+                </button>
+            </div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 function addMessage(content, sender) {
     const messagesContainer = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}-message`;
     
-    const senderName = sender === 'user' ? 'You' : 'Dr. AI';
+    const senderName = sender === 'user' ? 'You' : 'Doctor AI';
     const avatarClass = sender === 'user' ? 'user-avatar' : 'bot-avatar';
     const senderClass = sender === 'user' ? 'user-sender' : 'bot-sender';
-    const iconClass = sender === 'user' ? 'fa-user' : 'fa-user-md';
+    const iconClass = sender === 'user' ? 'fa-user' : 'fa-user-md doctor-icon';
     
     messageDiv.innerHTML = `
         <div class="message-content">
@@ -183,6 +326,34 @@ function addMessage(content, sender) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+function addProductSuggestionPrompt() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const productPromptDiv = document.createElement('div');
+    productPromptDiv.className = 'message bot-message';
+    
+    productPromptDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-header">
+                <div class="message-avatar bot-avatar">
+                    <i class="fas fa-user-md doctor-icon"></i>
+                </div>
+                <div class="message-sender bot-sender">Doctor AI</div>
+            </div>
+            <div class="message-text glassmorphism-light">
+                Based on your skin type and concerns I've analyzed, I can show you personalized Taysan Beauty products that would work best for you.
+            </div>
+            <div class="product-suggestions-prompt glassmorphism">
+                <button onclick="selectQuickOption('Show me products for my skin type')">
+                    <i class="fas fa-magic"></i> Get My Personalized Products
+                </button>
+            </div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(productPromptDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 function addProductRecommendations(products) {
     const messagesContainer = document.getElementById('chatMessages');
     const productDiv = document.createElement('div');
@@ -192,11 +363,14 @@ function addProductRecommendations(products) {
         <div class="message-content">
             <div class="message-header">
                 <div class="message-avatar bot-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <i class="fas fa-user-md doctor-icon"></i>
                 </div>
-                <div class="message-sender bot-sender">Dr. AI</div>
+                <div class="message-sender bot-sender">Doctor AI</div>
             </div>
-            <div class="message-text">Here are the specific products I recommend for you:</div>
+            <div class="message-text glassmorphism-light">
+                <p><strong>Perfect Products for Your Skin Type:</strong></p>
+                <p>Based on my analysis of your skin concerns, here are the Taysan Beauty products I recommend:</p>
+            </div>
             <div class="product-grid">
     `;
     
@@ -206,7 +380,7 @@ function addProductRecommendations(products) {
         const discountPercent = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0;
         
         productHtml += `
-            <div class="product-card">
+            <div class="product-card glassmorphism">
                 <div class="product-image-container">
                     <img src="${product.image || '/logo.png'}" alt="${product.name}" class="product-image">
                     ${product.is_on_sale ? `<div class="sale-badge">${discountPercent}% OFF</div>` : ''}
@@ -223,9 +397,9 @@ function addProductRecommendations(products) {
                         ${product.is_vegan ? '<span class="product-badge vegan">Vegan</span>' : ''}
                         ${product.is_cruelty_free ? '<span class="product-badge cruelty-free">Cruelty-Free</span>' : ''}
                     </div>
-                    <div class="recommendation-reason">
+                    <div class="recommendation-reason glassmorphism-light">
                         <i class="fas fa-lightbulb"></i>
-                        ${product.recommendation_reason}
+                        <span><strong>Why this works for you:</strong> ${product.recommendation_reason}</span>
                     </div>
                     ${product.description ? `<div class="product-description">${product.description.substring(0, 120)}${product.description.length > 120 ? '...' : ''}</div>` : ''}
                     <div class="product-actions">
@@ -258,163 +432,6 @@ function buyNow(productId, isOnSale) {
     window.location.href = `/checkout/product/${productId}`;
 }
 
-function addFollowUpQuestions() {
-    const messagesContainer = document.getElementById('chatMessages');
-    const followUpDiv = document.createElement('div');
-    followUpDiv.className = 'message bot-message';
-    
-    followUpDiv.innerHTML = `
-        <div class="message-content">
-            <div class="message-header">
-                <div class="message-avatar bot-avatar">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <div class="message-sender bot-sender">Dr. AI</div>
-            </div>
-            <div class="message-text">You can also answer these specific questions to help me understand your skin better:</div>
-            <div class="consultation-questions">
-                <div class="question-category">
-                    <h4><i class="fas fa-user"></i> About You</h4>
-                    <div class="question-options">
-                        <button class="question-btn" onclick="selectDetailedOption('I am in my teens (13-19) with hormonal acne and oily skin')">
-                            <span class="age-badge">13-19</span> Teenage skin with acne
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I am in my twenties (20-29) with combination skin and occasional breakouts')">
-                            <span class="age-badge">20-29</span> Young adult skin concerns
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I am in my thirties (30-39) with early aging signs and dry skin')">
-                            <span class="age-badge">30-39</span> Early aging prevention
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I am 40+ with mature skin, wrinkles, and firmness concerns')">
-                            <span class="age-badge">40+</span> Mature skin care
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="question-category">
-                    <h4><i class="fas fa-eye"></i> Primary Concerns</h4>
-                    <div class="question-options">
-                        <button class="question-btn" onclick="selectDetailedOption('My main concern is controlling oily skin and preventing acne breakouts')">
-                            <i class="fas fa-droplet"></i> Oil Control & Acne
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I need deep hydration for very dry and flaky skin')">
-                            <i class="fas fa-tint"></i> Severe Dryness
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I want to fade dark spots and even out my skin tone')">
-                            <i class="fas fa-sun"></i> Pigmentation Issues
-                        </button>
-                        <button class="question-btn" onclick="selectDetailedOption('I need gentle products for very sensitive and reactive skin')">
-                            <i class="fas fa-leaf"></i> Sensitive Skin
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    messagesContainer.appendChild(followUpDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function selectDetailedOption(text) {
-    document.getElementById('messageInput').value = text;
-    sendMessage();
-}
-
-// Function to ask follow-up questions based on user input
-function askFollowUpQuestions(userInput) {
-    const lowercaseInput = userInput.toLowerCase();
-    let followUpQuestions = [];
-    
-    if (lowercaseInput.includes('acne') || lowercaseInput.includes('pimple') || lowercaseInput.includes('breakout')) {
-        followUpQuestions = [
-            { icon: 'fas fa-calendar-alt', text: 'How long have you been experiencing acne?', category: 'Duration' },
-            { icon: 'fas fa-map-marker-alt', text: 'Which areas of your face are most affected?', category: 'Location' },
-            { icon: 'fas fa-pills', text: 'Have you tried any acne treatments before?', category: 'Treatment History' }
-        ];
-    } else if (lowercaseInput.includes('dark') || lowercaseInput.includes('spot') || lowercaseInput.includes('pigment')) {
-        followUpQuestions = [
-            { icon: 'fas fa-sun', text: 'Do you spend a lot of time in the sun?', category: 'Lifestyle' },
-            { icon: 'fas fa-history', text: 'When did you first notice these dark spots?', category: 'Timeline' },
-            { icon: 'fas fa-shield-alt', text: 'Do you regularly use sunscreen?', category: 'Sun Protection' }
-        ];
-    } else if (lowercaseInput.includes('wrinkle') || lowercaseInput.includes('aging') || lowercaseInput.includes('fine line')) {
-        followUpQuestions = [
-            { icon: 'fas fa-birthday-cake', text: 'What\'s your age range?', category: 'Age' },
-            { icon: 'fas fa-eye', text: 'Are the lines around your eyes or mouth?', category: 'Location' },
-            { icon: 'fas fa-clock', text: 'When do you notice the lines most?', category: 'Timing' }
-        ];
-    } else if (lowercaseInput.includes('dry') || lowercaseInput.includes('moistur')) {
-        followUpQuestions = [
-            { icon: 'fas fa-thermometer-half', text: 'Does your skin feel tight after washing?', category: 'Symptoms' },
-            { icon: 'fas fa-snowflake', text: 'Is the dryness worse in winter?', category: 'Seasonal' },
-            { icon: 'fas fa-tint', text: 'Do you drink enough water daily?', category: 'Hydration' }
-        ];
-    }
-    
-    if (followUpQuestions.length > 0) {
-        addBotMessage("To provide the best recommendation, I need to understand your specific situation better. Please help me with these details:");
-        addConsultationQuestions(followUpQuestions);
-    }
-}
-
-// Function to add consultation questions to chat
-function addConsultationQuestions(questions) {
-    const chatMessages = document.getElementById('chatMessages');
-    const questionsDiv = document.createElement('div');
-    questionsDiv.className = 'message bot-message';
-    questionsDiv.innerHTML = `
-        <div class="message-content">
-            <div class="consultation-questions">
-                <div class="question-category">
-                    <h4><i class="fas fa-user-md"></i> Please select or type your answer:</h4>
-                    <div class="question-options">
-                        ${questions.map(q => `
-                            <button class="question-btn" onclick="sendQuestionResponse('${q.text}')">
-                                <i class="${q.icon}"></i>
-                                <span>${q.text}</span>
-                                <small style="margin-left: auto; color: #9ca3af;">${q.category}</small>
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    chatMessages.appendChild(questionsDiv);
-    scrollToBottom();
-}
-
-// Function to handle question responses
-function sendQuestionResponse(questionText) {
-    sendMessage(questionText);
-}
-
-// Helper function to add bot message
-function addBotMessage(text) {
-    const messagesContainer = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message bot-message';
-    messageDiv.innerHTML = `
-        <div class="message-content">
-            <div class="message-header">
-                <div class="message-avatar bot-avatar">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <div class="message-sender bot-sender">Dr. AI</div>
-            </div>
-            <div class="message-text">${text}</div>
-        </div>
-    `;
-    messagesContainer.appendChild(messageDiv);
-    scrollToBottom();
-}
-
-function scrollToBottom() {
-    const messagesContainer = document.getElementById('chatMessages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
 function showTypingIndicator() {
     const messagesContainer = document.getElementById('chatMessages');
     const typingDiv = document.createElement('div');
@@ -425,11 +442,11 @@ function showTypingIndicator() {
         <div class="message-content">
             <div class="message-header">
                 <div class="message-avatar bot-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <i class="fas fa-user-md doctor-icon"></i>
                 </div>
-                <div class="message-sender bot-sender">Dr. AI</div>
+                <div class="message-sender bot-sender">Doctor AI</div>
             </div>
-            <div class="typing-indicator">
+            <div class="typing-indicator glassmorphism-light">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
