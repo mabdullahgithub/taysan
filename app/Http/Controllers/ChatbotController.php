@@ -185,8 +185,8 @@ class ChatbotController extends Controller
         
         try {
             if ($isRequestingProducts) {
-                // Enhanced product recommendation prompt
-                $prompt = "You are Dr. AI, a professional dermatologist and skincare consultant for Taysan Beauty. You specialize in analyzing skin concerns and recommending the most suitable products from our exclusive catalog.
+                // Enhanced product recommendation prompt with new styling guidance
+                $prompt = "You are Dr. AI, a professional skincare specialist for Taysan Beauty with expertise in dermatology. You help customers find the perfect skincare products for their specific needs.
 
                 CUSTOMER CONSULTATION:
                 {$skinInfo}
@@ -195,38 +195,45 @@ class ChatbotController extends Controller
                 {$productContext}
 
                 INSTRUCTIONS:
-                1. Analyze the customer's specific skin type, concerns, age, and current routine
+                1. Analyze the customer's skin type, concerns, age, and current routine
                 2. Select ONLY 2-3 products from the Taysan Beauty catalog that best match their needs
-                3. For each recommended product, explain:
-                   - Why this specific product is perfect for their skin type/concerns
-                   - How the ingredients address their specific issues
-                   - Expected benefits and results
-                4. Provide a brief skincare routine suggestion using these products
-                5. IMPORTANT: Only recommend products that are actually listed in the catalog above
-                6. Use the exact product names as they appear in the catalog
+                3. For each recommended product, provide a brief explanation (1-2 sentences) on why it's suitable
+                4. CRITICAL: Keep your response very short and concise (maximum 200 words)
+                5. Use simple, clear language that's easy to understand
+                6. Only recommend products that are actually listed in the catalog
+                7. Use the exact product names as they appear in the catalog
+                
+                IMPORTANT STYLE REQUIREMENTS:
+                - Be friendly but professional
+                - Avoid lengthy explanations
+                - Use short sentences and paragraphs
+                - Focus only on skin and health care topics
+                - After your answer, always suggest they try the recommended products
 
-                Respond as Dr. AI in a professional, caring tone. Keep the response under 350 words but make it comprehensive and personalized.";
+                Remember: Your goal is to provide quick, accurate product recommendations that solve the customer's skincare concerns.";
             } else {
-                // Enhanced conversational prompt
-                $prompt = "You are Dr. AI, a board-certified dermatologist and skincare expert with 15+ years of experience. You specialize in:
-                - Clinical dermatology and skin health
-                - Cosmetic ingredients and formulations
-                - Personalized skincare routines
-                - Natural and organic skincare solutions
-                - Age-appropriate skincare strategies
+                // Enhanced conversational prompt with new styling guidance
+                $prompt = "You are Dr. AI, a skincare specialist at Taysan Beauty. You provide expert advice on skin health, skincare ingredients, and routines.
 
-                PATIENT INQUIRY:
+                CUSTOMER INQUIRY:
                 {$skinInfo}
 
-                GUIDELINES:
-                1. Provide evidence-based, professional medical advice
-                2. Be conversational but maintain clinical expertise
-                3. Explain complex concepts in simple terms
-                4. Ask follow-up questions when needed for better assessment
-                5. If they need product recommendations, guide them to ask specifically
-                6. Focus on education and skin health improvement
+                INSTRUCTIONS:
+                1. ONLY answer questions related to skin care, skincare products, skin health, or beauty routines
+                2. If the question is not related to these topics, politely explain you can only help with skincare concerns
+                3. Keep your response extremely concise (maximum 150 words)
+                4. Use simple, everyday language - avoid technical terms when possible
+                5. Be friendly but professional
+                6. Focus on providing practical, actionable advice
+                7. If they ask about non-skincare health issues, suggest they consult a medical professional
+                
+                CRITICAL REQUIREMENTS:
+                - Never provide medical diagnoses or treatment advice for serious conditions
+                - Always clarify you are a skincare advisor, not a medical doctor
+                - Keep paragraphs to 2-3 sentences maximum
+                - After your answer, always ask if they'd like product suggestions for their concerns
 
-                Respond as Dr. AI with warmth and professionalism. Keep responses informative but conversational (under 300 words).";
+                Remember: Your goal is to provide quick, clear skincare advice and guide customers toward appropriate Taysan Beauty products when relevant.";
             }
             
             $response = Http::withHeaders([
@@ -237,14 +244,14 @@ class ChatbotController extends Controller
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are Dr. AI, a highly experienced dermatologist and skincare consultant. You provide expert-level advice with clinical precision while maintaining a warm, approachable demeanor. You have deep expertise in ingredient science, skin physiology, and product formulations. Always prioritize skin health and provide personalized recommendations based on individual needs.'
+                        'content' => 'You are Dr. AI, a friendly skincare specialist at Taysan Beauty. You provide short, clear advice on skincare concerns and product recommendations. You ONLY answer questions related to skin care, skin health, beauty routines, and skincare products. For any other topics, politely explain you can only help with skincare concerns. Your responses are concise, practical, and focused on guiding customers to the right skincare solutions.'
                     ],
                     [
                         'role' => 'user',
                         'content' => $prompt
                     ]
                 ],
-                'max_tokens' => $isRequestingProducts ? 500 : 400,
+                'max_tokens' => $isRequestingProducts ? 300 : 200, // Reduced token limit for shorter responses
                 'temperature' => 0.3, // Lower temperature for more consistent, accurate responses
                 'top_p' => 0.9,
                 'frequency_penalty' => 0.2,
@@ -252,7 +259,19 @@ class ChatbotController extends Controller
             ]);
             
             if ($response->successful()) {
-                return $response->json()['choices'][0]['message']['content'];
+                $aiResponse = $response->json()['choices'][0]['message']['content'];
+                
+                // Check if this is not a product recommendation and the question is not skin-related
+                if (!$isRequestingProducts && !$this->isSkinCareRelated($skinInfo)) {
+                    return "I'm a skincare specialist and can only answer questions related to skin care, skincare products, and beauty routines. If you have any questions about your skin concerns or would like product recommendations, I'd be happy to help with those!";
+                }
+                
+                // For product recommendations, always append product suggestion prompt
+                if (!$isRequestingProducts) {
+                    $aiResponse .= "\n\nWould you like me to suggest some Taysan Beauty products that might help with your skin concerns?";
+                }
+                
+                return $aiResponse;
             }
             
             // Handle specific API errors
@@ -270,43 +289,72 @@ class ChatbotController extends Controller
         }
     }
     
+    private function isSkinCareRelated($userInput) {
+        $input = strtolower(trim($userInput));
+        
+        $skinCareKeywords = [
+            'skin', 'acne', 'pimple', 'breakout', 'wrinkle', 'anti-aging', 'dry', 'oily', 
+            'moisturizer', 'serum', 'cleanser', 'toner', 'exfoliat', 'spf', 'sunscreen', 
+            'dark spot', 'pigment', 'sensitive', 'redness', 'routine', 'face', 'cream',
+            'lotion', 'skincare', 'beauty', 'ingredient', 'product', 'hyaluronic', 'vitamin c',
+            'retinol', 'salicylic', 'glycolic', 'acid', 'hydration', 'moistur', 'pore',
+            'blackhead', 'whitehead', 'mask', 'facial', 'treatment', 'night cream', 'day cream',
+            'eye cream', 'lip', 'oil', 'natural', 'organic', 'chemical', 'physical', 'sunburn',
+            'scar', 'mark', 'complexion', 'tone', 'texture', 'dermatitis', 'eczema', 'psoriasis',
+            'rosacea', 'soap', 'wash', 'cleanse', 'vitamin a', 'niacinamide', 'peptide',
+            'collagen', 'elastin', 'uv', 'sun damage', 'glow', 'radiant', 'dull', 'brightening',
+            'lightening', 'scrub', 'peel', 'allergen', 'irritation', 'patch test', 'dermis',
+            'epidermis', 'sebum', 'hydrate', 'dehydrate', 'makeup'
+        ];
+        
+        foreach ($skinCareKeywords as $keyword) {
+            if (strpos($input, $keyword) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     private function getFallbackResponse($skinInfo, $isRequestingProducts = false)
     {
         $skinInfo = strtolower($skinInfo);
         
         if ($isRequestingProducts) {
-            // Product recommendation fallbacks
+            // Product recommendation fallbacks - shorter and more concise
             if (strpos($skinInfo, 'oily') !== false || strpos($skinInfo, 'acne') !== false) {
-                return "Thank you for sharing your skin concerns! For oily and acne-prone skin, I recommend looking for products with salicylic acid, tea tree oil, or niacinamide. These ingredients help control excess oil production and reduce breakouts. Our cleansers and toners are specially formulated for this skin type. I'll show you some specific products that would work well for your needs.";
+                return "For oily and acne-prone skin, I recommend products with salicylic acid, tea tree oil, or niacinamide. These ingredients control excess oil and reduce breakouts. Our cleansers and toners are perfect for this skin type. Here are some specific products that would work well for you:";
             } elseif (strpos($skinInfo, 'dry') !== false || strpos($skinInfo, 'sensitive') !== false) {
-                return "Perfect! For dry and sensitive skin, you'll want products with gentle, hydrating ingredients like hyaluronic acid, ceramides, and natural oils. Avoid harsh chemicals and opt for fragrance-free formulations. Our moisturizers and serums are designed to provide deep hydration while being gentle on sensitive skin. Let me show you some excellent options from our collection.";
+                return "For dry and sensitive skin, look for gentle, hydrating ingredients like hyaluronic acid, ceramides, and natural oils. Our moisturizers and serums provide deep hydration while being gentle on sensitive skin. Here are some excellent options from our collection:";
             } elseif (strpos($skinInfo, 'aging') !== false || strpos($skinInfo, 'wrinkle') !== false) {
-                return "Excellent choice focusing on anti-aging! For mature skin concerns, look for products with retinoids, vitamin C, peptides, and antioxidants. These ingredients help boost collagen production, reduce fine lines, and improve skin texture. Our anti-aging collection includes serums and creams specifically formulated to address these concerns. Here are some powerful products I recommend for you.";
+                return "For anti-aging concerns, products with retinoids, vitamin C, peptides, and antioxidants are ideal. These boost collagen, reduce fine lines, and improve texture. Here are some effective anti-aging products I recommend:";
             } elseif (strpos($skinInfo, 'dark spot') !== false || strpos($skinInfo, 'pigment') !== false) {
-                return "Great question about dark spots! For hyperpigmentation and uneven skin tone, ingredients like vitamin C, kojic acid, arbutin, and alpha hydroxy acids are your best friends. These help fade existing spots and prevent new ones from forming. Our brightening products are formulated to give you a more even, radiant complexion. Let me show you some targeted solutions.";
+                return "For hyperpigmentation and uneven tone, look for vitamin C, kojic acid, arbutin, and alpha hydroxy acids. These fade existing spots and prevent new ones. Here are some targeted brightening solutions:";
             } else {
-                return "Thank you for reaching out! Based on your skin concerns, I recommend starting with a gentle cleanser, a good moisturizer, and sunscreen for daily protection. Our product collection includes carefully selected ingredients that work for various skin types. I'll show you some versatile products that would be perfect for building an effective skincare routine tailored to your needs.";
+                return "Based on your concerns, I recommend a gentle cleanser, moisturizer, and daily sunscreen. Here are some versatile products that would work well for your skincare needs:";
             }
         } else {
-            // Conversational fallbacks
+            // Conversational fallbacks - shorter with product suggestion prompt
+            $productPrompt = "\n\nWould you like me to suggest some products that might help with your skin concerns?";
+            
             if (strpos($skinInfo, 'hello') !== false || strpos($skinInfo, 'hi') !== false || strpos($skinInfo, 'hey') !== false) {
-                return "Hello! I'm Dr. AI, your personal skincare consultant. I'm here to help you with all your skincare questions and concerns. Whether you want to learn about ingredients, discuss skin conditions, or need advice on building a routine, I'm here to help! What would you like to know about skincare today?";
+                return "Hello! I'm Dr. AI, your skincare specialist. I can help with skincare questions, ingredients, and product recommendations. What skincare concerns can I help you with today?" . $productPrompt;
             } elseif (strpos($skinInfo, 'routine') !== false) {
-                return "Great question about skincare routines! A good basic routine typically includes: 1) Gentle cleanser (morning and evening), 2) Moisturizer suitable for your skin type, 3) Sunscreen (morning, SPF 30+), and 4) Treatment products as needed (like serums or spot treatments). The key is consistency and using products that work well for your specific skin type. What's your current routine like, or are you just starting out?";
+                return "A good skincare routine includes: 1) Gentle cleanser, 2) Moisturizer for your skin type, 3) SPF 30+ sunscreen, and 4) Targeted treatments as needed. Consistency is key! What's your current routine like?" . $productPrompt;
             } elseif (strpos($skinInfo, 'acne') !== false || strpos($skinInfo, 'pimple') !== false) {
-                return "I understand how frustrating acne can be! Acne typically develops when pores become clogged with oil, dead skin cells, and bacteria. Key treatment ingredients include salicylic acid (unclogs pores), benzoyl peroxide (kills bacteria), and niacinamide (reduces inflammation). Gentle cleansing, avoiding over-washing, and consistency with treatment are crucial. What type of acne are you dealing with - blackheads, whiteheads, or inflamed pimples?";
+                return "For acne, look for products with salicylic acid (unclogs pores), benzoyl peroxide (kills bacteria), or niacinamide (reduces inflammation). Gentle cleansing and consistency are essential. What type of acne are you experiencing?" . $productPrompt;
             } elseif (strpos($skinInfo, 'dry') !== false || strpos($skinInfo, 'moisture') !== false) {
-                return "Dry skin can be quite uncomfortable! It often occurs when your skin barrier is compromised or you're not producing enough natural oils. Look for ingredients like hyaluronic acid (holds moisture), ceramides (repair barrier), and natural oils. Avoid harsh cleansers and over-exfoliating. Humidifiers can also help, especially in dry climates. Is your skin dry all over or just in certain areas?";
+                return "For dry skin, use products with hyaluronic acid, ceramides, and natural oils. Avoid harsh cleansers and over-exfoliating. Is your skin dry all over or just in certain areas?" . $productPrompt;
             } elseif (strpos($skinInfo, 'sensitive') !== false) {
-                return "Sensitive skin requires extra care! It's often reactive to fragrances, harsh chemicals, or environmental factors. Key tips: use fragrance-free products, patch test new items, avoid over-exfoliating, and look for gentle, hypoallergenic formulas. Ingredients like aloe vera, chamomile, and ceramides can be soothing. What triggers seem to irritate your skin the most?";
+                return "For sensitive skin, use fragrance-free, gentle products. Patch test new items and avoid over-exfoliating. Ingredients like aloe vera, chamomile, and ceramides are soothing. What seems to trigger your skin sensitivity?" . $productPrompt;
             } elseif (strpos($skinInfo, 'sunscreen') !== false || strpos($skinInfo, 'spf') !== false) {
-                return "Sunscreen is absolutely essential for healthy skin! Use broad-spectrum SPF 30 or higher daily, even indoors (UV rays penetrate windows). Reapply every 2 hours when outside. Chemical sunscreens absorb UV rays, while mineral/physical sunscreens reflect them. For sensitive skin, zinc oxide and titanium dioxide are great options. Do you have trouble finding sunscreens that don't irritate your skin?";
+                return "Use broad-spectrum SPF 30+ daily, even indoors. Reapply every 2 hours when outside. For sensitive skin, try mineral sunscreens with zinc oxide or titanium dioxide. Do you prefer chemical or physical sunscreens?" . $productPrompt;
             } elseif (strpos($skinInfo, 'aging') !== false || strpos($skinInfo, 'wrinkle') !== false) {
-                return "Anti-aging is all about prevention and treatment! Key strategies include: daily sunscreen (prevents 80% of aging), retinoids (boost collagen), vitamin C (antioxidant protection), and proper hydration. Start slowly with active ingredients to avoid irritation. Remember, consistency is more important than using many products. What specific signs of aging are you most concerned about?";
+                return "For anti-aging: 1) Use daily sunscreen, 2) Add retinoids to boost collagen, 3) Use vitamin C for antioxidant protection, and 4) Keep skin hydrated. Start slowly with active ingredients. What specific aging concerns do you have?" . $productPrompt;
             } elseif (strpos($skinInfo, 'ingredient') !== false) {
-                return "I'd love to help you understand skincare ingredients! There are so many beneficial ones: hyaluronic acid (hydration), niacinamide (oil control), vitamin C (brightening), retinol (anti-aging), salicylic acid (acne), and ceramides (barrier repair). Each serves different purposes. What specific ingredient were you curious about, or would you like recommendations for your skin concerns?";
+                return "Key ingredients include: hyaluronic acid (hydration), niacinamide (oil control), vitamin C (brightening), retinol (anti-aging), and salicylic acid (acne). Which specific ingredients are you curious about?" . $productPrompt;
             } else {
-                return "I'm here to help with any skincare questions you have! Whether you're curious about ingredients, skin conditions, routines, or just want general advice, feel free to ask. I can discuss topics like acne treatment, anti-aging, sensitive skin care, product ingredients, and much more. What's on your mind regarding skincare today?";
+                return "I'm happy to help with any skincare questions! I can discuss ingredients, routines, specific concerns, or product recommendations. What would you like to know about your skin?" . $productPrompt;
             }
         }
     }
