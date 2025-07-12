@@ -10,6 +10,7 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
+        'order_number',
         'first_name',
         'last_name', 
         'email',
@@ -25,6 +26,32 @@ class Order extends Model
         'order_source',
         'deal_id'
     ];
+
+    /**
+     * Boot method to auto-generate order number
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($order) {
+            if (empty($order->order_number)) {
+                $order->order_number = self::generateOrderNumber();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique 8-digit order number
+     */
+    public static function generateOrderNumber()
+    {
+        do {
+            $orderNumber = str_pad(random_int(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+        } while (self::where('order_number', $orderNumber)->exists());
+        
+        return $orderNumber;
+    }
 
     public function orderItems()
     {
@@ -53,5 +80,21 @@ class Order extends Model
             'regular' => 'Regular Order',
             default => 'Regular Order'
         };
+    }
+
+    /**
+     * Check if this order contains a specific product
+     */
+    public function hasProduct($productId)
+    {
+        return $this->orderItems()->where('product_id', $productId)->exists();
+    }
+
+    /**
+     * Get order reference number
+     */
+    public function getOrderReferenceAttribute()
+    {
+        return $this->order_number ?: self::generateOrderNumber();
     }
 }

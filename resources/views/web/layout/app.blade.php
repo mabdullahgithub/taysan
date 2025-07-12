@@ -4,6 +4,7 @@
 @include('web.partials.head')
 <!-- Required CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="{{ asset('css/mobile-fixes.css') }}">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <body>
@@ -193,6 +194,31 @@ window.addEventListener('load', function() {
             pointer-events: none;
         }
 
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .bottom-nav-bar {
+                bottom: 8px;
+                width: calc(100% - 20px);
+                max-width: 360px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bottom-nav-bar {
+                bottom: 6px;
+                width: calc(100% - 16px);
+                max-width: 340px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .bottom-nav-bar {
+                bottom: 4px;
+                width: calc(100% - 12px);
+                max-width: 320px;
+            }
+        }
+
         .bottom-nav-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(200px) saturate(3) brightness(1.2);
@@ -351,12 +377,7 @@ window.addEventListener('load', function() {
         }
 
         /* Responsive Design */
-        @media (max-width: 480px) {
-            .bottom-nav-bar {
-                width: calc(100% - 16px);
-                bottom: 4px;
-            }
-            
+        @media (max-width: 768px) {
             .bottom-nav-container {
                 padding: 10px 15px;
                 border-radius: 20px;
@@ -372,9 +393,26 @@ window.addEventListener('load', function() {
             }
         }
 
-        @media (max-width: 375px) {
+        @media (max-width: 480px) {
             .bottom-nav-container {
                 padding: 8px 12px;
+                border-radius: 18px;
+            }
+            
+            .bottom-nav-item {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .nav-icon i {
+                font-size: 17px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .bottom-nav-container {
+                padding: 8px 10px;
+                border-radius: 16px;
             }
             
             .bottom-nav-item {
@@ -397,7 +435,39 @@ window.addEventListener('load', function() {
         /* Ensure proper spacing from content */
         @media (max-width: 1199px) {
             body {
-                padding-bottom: 90px;
+                padding-bottom: 90px !important;
+            }
+            
+            /* Ensure main content doesn't overlap with bottom nav */
+            .page-wrapper {
+                padding-bottom: 90px !important;
+            }
+            
+            /* Fix for specific content containers */
+            .main-content,
+            .content-wrapper,
+            .page-content {
+                padding-bottom: 30px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 95px !important;
+            }
+            
+            .page-wrapper {
+                padding-bottom: 95px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding-bottom: 100px !important;
+            }
+            
+            .page-wrapper {
+                padding-bottom: 100px !important;
             }
         }
 

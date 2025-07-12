@@ -570,6 +570,13 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.reviews.index') }}">
+                    <i class="fa fa-star d-xl-none"></i>
+                    <span>Reviews</span>
+                </a>
+            </li>
+
             <li class="nav-item {{ request()->routeIs('admin.queries.index') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('admin.queries.index') }}">
                     <i class="fa fa-envelope d-xl-none"></i>

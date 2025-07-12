@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\{
     ContactController,
     OrderController as WebOrderController,
     ProductController as WebProductController,
+    ReviewController as WebReviewController,
 };
 use App\Http\Controllers\Admin\{
     IndexController as AdminIndexController,
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\{
     DealOfTheDayController,
     ThankYouCardController,
     AnnouncementController,
+    ReviewController as AdminReviewController,
 };
 
 /*
@@ -44,6 +46,14 @@ Route::get('/checkout/product/{product}', [WebOrderController::class, 'checkoutP
 
 // New route to store the order
 Route::post('/orders', [WebOrderController::class, 'storeWebOrders'])->name('web.orders.store');
+
+// Review routes
+Route::get('/products/{product}/reviews', [WebReviewController::class, 'index'])->name('web.reviews.index');
+Route::post('/products/{product}/verify-order', [WebReviewController::class, 'verifyOrder'])->name('web.reviews.verify-order');
+Route::post('/products/{product}/reviews', [WebReviewController::class, 'store'])->name('web.reviews.store');
+Route::post('/reviews/{review}/helpful', [WebReviewController::class, 'toggleHelpful'])->name('web.reviews.helpful');
+Route::post('/reviews/{review}/like', [WebReviewController::class, 'toggleLike'])->name('web.reviews.like');
+Route::get('/products/{product}/review-form-data', [WebReviewController::class, 'getFormData'])->name('web.reviews.form-data');
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +107,18 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
     Route::post('/admin/announcements/{announcement}/toggle-status', [AnnouncementController::class, 'toggleStatus'])->name('admin.announcements.toggleStatus');
     Route::post('/admin/announcements/toggle-all-status', [AnnouncementController::class, 'toggleAllStatus'])->name('admin.announcements.toggleAllStatus');
+
+    // Reviews Management
+    Route::get('/admin/reviews', [AdminReviewController::class, 'index'])->name('admin.reviews.index');
+    Route::get('/admin/reviews/create', [AdminReviewController::class, 'create'])->name('admin.reviews.create');
+    Route::post('/admin/reviews', [AdminReviewController::class, 'store'])->name('admin.reviews.store');
+    Route::get('/admin/reviews/{review}', [AdminReviewController::class, 'show'])->name('admin.reviews.show');
+    Route::get('/admin/reviews/{review}/edit', [AdminReviewController::class, 'edit'])->name('admin.reviews.edit');
+    Route::put('/admin/reviews/{review}', [AdminReviewController::class, 'update'])->name('admin.reviews.update');
+    Route::delete('/admin/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+    Route::post('/admin/reviews/{review}/toggle-approval', [AdminReviewController::class, 'toggleApproval'])->name('admin.reviews.toggle-approval');
+    Route::post('/admin/reviews/bulk-approve', [AdminReviewController::class, 'bulkApprove'])->name('admin.reviews.bulk-approve');
+    Route::post('/admin/reviews/bulk-delete', [AdminReviewController::class, 'bulkDelete'])->name('admin.reviews.bulk-delete');
 
     // Banners
 

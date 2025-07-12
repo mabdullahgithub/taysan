@@ -52,6 +52,16 @@ class Product extends Model
         return $this->hasMany(DealOfTheDay::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('is_approved', true);
+    }
+
     public function getImageUrlAttribute()
     {
         if ($this->image && file_exists(public_path('storage/' . $this->image))) {
@@ -142,5 +152,67 @@ class Product extends Model
     {
         $avgSoldCount = static::avg('sold_count') ?? 0;
         return $this->sold_count > $avgSoldCount;
+    }
+
+    /**
+     * Get average rating for this product
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->approvedReviews()->avg('rating') ?: 0;
+    }
+
+    /**
+     * Get total reviews count
+     */
+    public function getReviewsCountAttribute()
+    {
+        return $this->approvedReviews()->count();
+    }
+
+    /**
+     * Get rating distribution (1-5 stars)
+     */
+    public function getRatingDistributionAttribute()
+    {
+        $distribution = [];
+        $totalReviews = $this->reviews_count;
+        
+        for ($i = 1; $i <= 5; $i++) {
+            $count = $this->approvedReviews()->where('rating', $i)->count();
+            $percentage = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+            
+            $distribution[$i] = [
+                'count' => $count,
+                'percentage' => $percentage
+            ];
+        }
+        
+        return $distribution;
+    }
+
+    /**
+     * Get formatted average rating (e.g., "4.5")
+     */
+    public function getFormattedRatingAttribute()
+    {
+        return number_format($this->average_rating, 1);
+    }
+
+    /**
+     * Get star rating display array
+     */
+    public function getStarRatingAttribute()
+    {
+        $rating = $this->average_rating;
+        $fullStars = floor($rating);
+        $hasHalfStar = ($rating - $fullStars) >= 0.5;
+        $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+        
+        return [
+            'full' => $fullStars,
+            'half' => $hasHalfStar ? 1 : 0,
+            'empty' => $emptyStars
+        ];
     }
 }

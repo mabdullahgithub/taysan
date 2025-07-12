@@ -1157,13 +1157,32 @@
                             <!-- Rating -->
                             <div class="product-rating">
                                 <div class="stars">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
+                                    @php
+                                        $avgRating = $reviewsData['average_rating'] ?? 0;
+                                        $fullStars = floor($avgRating);
+                                        $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
+                                        $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                                    @endphp
+                                    
+                                    @for($i = 0; $i < $fullStars; $i++)
+                                        <i class="fas fa-star"></i>
+                                    @endfor
+                                    
+                                    @if($hasHalfStar)
+                                        <i class="fas fa-star-half-alt"></i>
+                                    @endif
+                                    
+                                    @for($i = 0; $i < $emptyStars; $i++)
+                                        <i class="far fa-star"></i>
+                                    @endfor
                                 </div>
-                                <span class="rating-text">(0 reviews)</span>
+                                <span class="rating-text">
+                                    @if($reviewsData['total_reviews'] > 0)
+                                        {{ $reviewsData['average_rating'] }} ({{ $reviewsData['total_reviews'] }} review{{ $reviewsData['total_reviews'] != 1 ? 's' : '' }})
+                                    @else
+                                        (0 reviews)
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1439,6 +1458,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Reviews Section -->
+            @include('web.product.partials.reviews-section')
 
             <!-- Related Products Carousel -->
             @if($relatedProducts->count() > 0)

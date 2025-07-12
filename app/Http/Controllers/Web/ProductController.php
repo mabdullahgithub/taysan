@@ -50,6 +50,19 @@ class ProductController extends BaseController
         // Get banners for the page
         $banners = $this->withBannersAndShipping();
 
-        return view('web.product.show', compact('product', 'deal', 'relatedProducts', 'fromDeal') + $banners);
+        // Get reviews data
+        $reviews = $product->approvedReviews()
+            ->latest('reviewed_at')
+            ->take(5)
+            ->get();
+        
+        $reviewsData = [
+            'recent_reviews' => $reviews,
+            'total_reviews' => $product->reviews_count,
+            'average_rating' => $product->formatted_rating,
+            'rating_distribution' => $product->rating_distribution
+        ];
+
+        return view('web.product.show', compact('product', 'deal', 'relatedProducts', 'fromDeal', 'reviewsData') + $banners);
     }
 }

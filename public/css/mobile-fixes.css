@@ -1,0 +1,85 @@
+/* Mobile Bottom Navigation Fixes */
+
+/* Global bottom padding for mobile devices */
+@media (max-width: 1199px) {
+    body {
+        padding-bottom: 90px !important;
+    }
+    
+    /* Main containers */
+    .page-wrapper,
+    .main-content,
+    .content-wrapper,
+    .container,
+    .container-fluid {
+        padding-bottom: 20px !important;
+    }
+    
+    /* Product pages specific */
+    .product-section,
+    .product-details,
+    .reviews-section {
+        margin-bottom: 20px !important;
+    }
+    
+    /* Shop pages */
+    .shop-section,
+    .product-grid,
+    .category-section {
+        margin-bottom: 20px !important;
+    }
+    
+    /* Footer adjustments */
+    .site-footer,
+    .footer-section {
+        margin-bottom: 20px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 95px !important;
+    }
+    
+    .page-wrapper {
+        padding-bottom: 25px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-bottom: 100px !important;
+    }
+    
+    .page-wrapper {
+        padding-bottom: 30px !important;
+    }
+}
+
+/* Ensure Load More button visibility */
+.load-more-container {
+    margin-bottom: 20px !important;
+}
+
+/* Fix for overlapping modals on mobile */
+@media (max-width: 768px) {
+    .modal,
+    .review-modal {
+        padding-bottom: 100px !important;
+    }
+}
+
+/* Floating cart adjustments */
+@media (max-width: 1199px) {
+    .floating-cart {
+        bottom: 110px !important;
+    }
+}
+
+/* Quick view modal adjustments */
+@media (max-width: 768px) {
+    .quickview-modal,
+    .popup-quickview {
+        margin-bottom: 100px !important;
+    }
+}
