@@ -545,6 +545,7 @@
         
         /* AI Doctor image on top and centered for mobile */
         .platform-visual {
+
             order: -1;
             width: 100%;
             display: flex !important;
@@ -772,7 +773,7 @@
                 <h3 style="margin-top: 30px;">Personalized Product Matching</h3>
                 <p>Based on your skin analysis and concerns, receive tailored product recommendations from our curated collection of natural, handcrafted skincare solutions.</p>
             </div>
-            
+
             <div class="platform-visual fade-in-up">
                 <div class="ai-icon-container">
                     <i class="fas fa-user-md"></i>

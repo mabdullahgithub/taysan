@@ -203,6 +203,7 @@ class OrderController extends BaseController
 
             // Create the order using the final calculated total for consistency
             $orderData = [
+                'user_id' => auth()->check() ? auth()->id() : null, // Set user_id if logged in, null for guests
                 'first_name' => $validated['firstName'],
                 'last_name' => $validated['lastName'],
                 'email' => $validated['email'],

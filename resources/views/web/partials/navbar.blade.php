@@ -2,7 +2,7 @@
 <header class="ts-header">
     <!-- Announcement Bar -->
     <div class="ts-announce">
-        <div class="container-fluid">
+        <div style="" class="container-fluid">
             <div class="marquee-content">
                 @php
                     $marqueeText = \App\Models\Setting::get('marquee_text', 'Welcome to our store!');
@@ -115,11 +115,11 @@
                 @else
                     <!-- Auth Buttons for Guests -->
                     <div class="ts-auth-buttons">
-                        <a href="{{ route('web.user.login.form') }}" class="ts-btn ts-btn--ghost">
-                            <i class="fas fa-sign-in-alt d-md-none"></i>
-                            <span class="d-none d-md-inline">Sign In</span>
+                        <a href="{{ route('web.user.login.form') }}" class="ts-btn ts-btn--ghost ts-btn--mobile-small">
+                            <i class="fas fa-sign-in-alt d-none d-md-inline"></i>
+                            <span>Sign In</span>
                         </a>
-                        <a href="{{ route('web.user.register.form') }}" class="ts-btn ts-btn--primary">
+                        <a href="{{ route('web.user.register.form') }}" class="ts-btn ts-btn--primary d-none d-sm-inline-flex">
                             <i class="fas fa-user-plus"></i>
                             <span class="d-none d-sm-inline">Become Member</span>
                         </a>
@@ -635,7 +635,7 @@ a:hover {
 
 @media (max-width: 576px) {
     .ts-navbar__wrapper {
-        padding: 10px 0;
+        /* padding: 10px 0; */
     }
 
     .ts-logo__img {
@@ -651,6 +651,18 @@ a:hover {
         width: 40px;
         height: 40px;
         justify-content: center;
+    }
+
+    /* Special styling for mobile Sign In button */
+    .ts-btn--mobile-small {
+        width: auto !important;
+        height: auto !important;
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+
+    .ts-btn--mobile-small span {
+        display: inline !important;
     }
 
     .ts-user-dropdown {

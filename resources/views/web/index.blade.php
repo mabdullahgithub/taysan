@@ -75,6 +75,7 @@
 
 .banner-content {
     position: relative;
+    margin-top: 70px; /* Adjust for fixed navbar */
     height: 100%;
     display: flex;
     align-items: center;
@@ -418,6 +419,7 @@
     
     .banner-content {
         padding: 0 3%;
+        margin-top: 70px; /* Adjust for fixed navbar */
     }
     
     .banner-title {

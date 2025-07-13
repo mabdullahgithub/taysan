@@ -28,6 +28,34 @@ class IndexController extends Controller
         $totalProducts = Product::where('status', true)->count();
         $pendingOrders = Order::where('status', 'pending')->count();
         
+        // Member statistics
+        $totalMembers = User::count();
+        $membersWithOrders = User::whereHas('orders')->count();
+        $memberOrdersCount = Order::whereNotNull('user_id')->count();
+        $guestOrdersCount = Order::whereNull('user_id')->count();
+        $memberTotalSpending = Order::whereNotNull('user_id')
+            ->whereNotIn('status', ['cancelled'])
+            ->sum('total');
+        $guestTotalSpending = Order::whereNull('user_id')
+            ->whereNotIn('status', ['cancelled'])
+            ->sum('total');
+        
+        // Top spending members
+        $topSpendingMembers = User::withSum(['orders' => function($query) {
+                $query->whereNotIn('status', ['cancelled']);
+            }], 'total')
+            ->withCount('orders')
+            ->having('orders_sum_total', '>', 0)
+            ->orderBy('orders_sum_total', 'desc')
+            ->limit(5)
+            ->get();
+            
+        // Recent member registrations
+        $recentMembers = User::withCount('orders')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+        
         // Monthly revenue comparison
         $monthlyRevenue = Order::where('created_at', '>=', $currentMonth)
             ->whereNotIn('status', ['cancelled'])
@@ -80,7 +108,15 @@ class IndexController extends Controller
             'recentOrders',
             'revenueChartData',
             'lowStockProducts',
-            'topSellingProducts'
+            'topSellingProducts',
+            'totalMembers',
+            'membersWithOrders',
+            'memberOrdersCount',
+            'guestOrdersCount',
+            'memberTotalSpending',
+            'guestTotalSpending',
+            'topSpendingMembers',
+            'recentMembers'
         ));
     }
     

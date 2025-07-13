@@ -7,14 +7,7 @@
     }
     
     /* Main containers */
-    .page-wrapper,
-    .main-content,
-    .content-wrapper,
-    .container,
-    .container-fluid {
-        padding-bottom: 20px !important;
-    }
-    
+     */
     /* Product pages specific */
     .product-section,
     .product-details,

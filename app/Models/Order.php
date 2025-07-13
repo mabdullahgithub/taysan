@@ -106,4 +106,39 @@ class Order extends Model
     {
         return $this->order_number ?: self::generateOrderNumber();
     }
+
+    /**
+     * Check if this order is from a registered member
+     */
+    public function isFromMember()
+    {
+        return !is_null($this->user_id);
+    }
+
+    /**
+     * Check if this order is from a guest user
+     */
+    public function isFromGuest()
+    {
+        return is_null($this->user_id);
+    }
+
+    /**
+     * Get customer type label
+     */
+    public function getCustomerTypeAttribute()
+    {
+        return $this->isFromMember() ? 'Member' : 'Guest';
+    }
+
+    /**
+     * Get customer name (from user if member, or from order data if guest)
+     */
+    public function getCustomerNameAttribute()
+    {
+        if ($this->isFromMember() && $this->user) {
+            return $this->user->name;
+        }
+        return $this->getFullNameAttribute();
+    }
 }

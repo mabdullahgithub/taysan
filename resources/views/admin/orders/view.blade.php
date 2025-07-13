@@ -267,6 +267,7 @@
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
+                        <th>Type</th>
                         <th>Source</th>
                         <th>Total</th>
                         <th>Date</th>
@@ -282,6 +283,19 @@
                         <td>
                             <div class="customer-info">{{ $order->full_name }}</div>
                             <div class="customer-contact">{{ $order->email }}</div>
+                        </td>
+                        <td>
+                            @if($order->isFromMember())
+                                <span class="badge" style="background: linear-gradient(135deg, #48BB78, #68D391); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-user-check"></i>
+                                    Member
+                                </span>
+                            @else
+                                <span class="badge" style="background: linear-gradient(135deg, #4299E1, #63B3ED); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                    <i class="fas fa-user"></i>
+                                    Guest
+                                </span>
+                            @endif
                         </td>
                         <td>
                             @if($order->order_source === 'deal')

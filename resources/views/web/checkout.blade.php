@@ -366,23 +366,42 @@
                     <!-- Customer Information -->
                     <div class="form-section">
                         <h3><i class="fas fa-user"></i> Customer Information</h3>
+                        @auth
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Welcome back, {{ auth()->user()->name }}!</strong> Your information has been pre-filled.
+                            </div>
+                        @else
+                            <div class="alert alert-light mb-3">
+                                <i class="fas fa-user-plus"></i>
+                                Have an account? <a href="{{ route('web.user.login.form') }}" class="text-primary">Sign in</a> to pre-fill your information.
+                            </div>
+                        @endauth
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="firstName">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" class="form-control" required value="{{ old('firstName') }}">
+                                <input type="text" id="firstName" name="firstName" class="form-control" required 
+                                       value="{{ old('firstName', auth()->check() ? explode(' ', auth()->user()->name, 2)[0] : '') }}">
                             </div>
                             <div class="form-group">
                                 <label for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" class="form-control" required value="{{ old('lastName') }}">
+                                <input type="text" id="lastName" name="lastName" class="form-control" required 
+                                       value="{{ old('lastName', auth()->check() && str_contains(auth()->user()->name, ' ') ? explode(' ', auth()->user()->name, 2)[1] : '') }}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="email">Email Address *</label>
-                            <input type="email" id="email" name="email" class="form-control" required value="{{ old('email') }}">
+                            <input type="email" id="email" name="email" class="form-control" required 
+                                   value="{{ old('email', auth()->user()->email ?? '') }}"
+                                   {{ auth()->check() ? 'readonly' : '' }}>
+                            @auth
+                                <small class="text-muted">Email cannot be changed as you're logged in</small>
+                            @endauth
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone Number *</label>
-                            <input type="tel" id="phone" name="phone" class="form-control" required value="{{ old('phone') }}">
+                            <input type="tel" id="phone" name="phone" class="form-control" required 
+                                   value="{{ old('phone', auth()->user()->phone ?? '') }}">
                         </div>
                     </div>
 
@@ -391,29 +410,32 @@
                         <h3><i class="fas fa-truck"></i> Shipping Information</h3>
                         <div class="form-group">
                             <label for="address">Address (Optional)</label>
-                            <input type="text" id="address" name="address" class="form-control" placeholder="Street address, apartment, suite, etc." value="{{ old('address') }}">
+                            <input type="text" id="address" name="address" class="form-control" placeholder="Street address, apartment, suite, etc." 
+                                   value="{{ old('address', auth()->user()->address ?? '') }}">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="city">City *</label>
-                                <input type="text" id="city" name="city" class="form-control" required value="{{ old('city') }}">
+                                <input type="text" id="city" name="city" class="form-control" required 
+                                       value="{{ old('city', auth()->user()->city ?? '') }}">
                             </div>
                             <div class="form-group">
                                 <label for="postalCode">Postal Code *</label>
-                                <input type="text" id="postalCode" name="postalCode" class="form-control" required value="{{ old('postalCode') }}">
+                                <input type="text" id="postalCode" name="postalCode" class="form-control" required 
+                                       value="{{ old('postalCode', auth()->user()->postal_code ?? '') }}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="country">Country *</label>
                             <select id="country" name="country" class="form-control" required>
                                 <option value="">Select Country</option>
-                                <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
-                                <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India</option>
-                                <option value="Bangladesh" {{ old('country') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
-                                <option value="United States" {{ old('country') == 'United States' ? 'selected' : '' }}>United States</option>
-                                <option value="United Kingdom" {{ old('country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
-                                <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada</option>
-                                <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia</option>
+                                <option value="Pakistan" {{ old('country', auth()->user()->country ?? '') == 'Pakistan' ? 'selected' : '' }}>Pakistan</option>
+                                <option value="India" {{ old('country', auth()->user()->country ?? '') == 'India' ? 'selected' : '' }}>India</option>
+                                <option value="Bangladesh" {{ old('country', auth()->user()->country ?? '') == 'Bangladesh' ? 'selected' : '' }}>Bangladesh</option>
+                                <option value="United States" {{ old('country', auth()->user()->country ?? '') == 'United States' ? 'selected' : '' }}>United States</option>
+                                <option value="United Kingdom" {{ old('country', auth()->user()->country ?? '') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
+                                <option value="Canada" {{ old('country', auth()->user()->country ?? '') == 'Canada' ? 'selected' : '' }}>Canada</option>
+                                <option value="Australia" {{ old('country', auth()->user()->country ?? '') == 'Australia' ? 'selected' : '' }}>Australia</option>
                             </select>
                         </div>
                     </div>

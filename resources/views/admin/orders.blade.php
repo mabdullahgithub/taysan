@@ -39,6 +39,7 @@
                                     <tr>
                                         <th style="padding:inherit;">Order ID</th>
                                         <th style="padding:inherit;">Customer</th>
+                                        <th style="padding:inherit;">Type</th>
                                         <th style="padding:inherit;">Contact</th>
                                         <th style="padding:inherit;">Location</th>
                                         <th style="padding:inherit;">Items</th>
@@ -52,7 +53,20 @@
                                     @foreach($orders as $order)
                                     <tr>
                                         <td>#{{ $order->id }}</td>
-                                        <td>{{ $order->first_name }} {{ $order->last_name }}</td>
+                                        <td>{{ $order->customer_name }}</td>
+                                        <td>
+                                            @if($order->isFromMember())
+                                                <span class="badge" style="background: linear-gradient(135deg, #22C55E, #16A34A); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                    <i class="fas fa-user-check"></i>
+                                                    Member
+                                                </span>
+                                            @else
+                                                <span class="badge" style="background: linear-gradient(135deg, #6B7280, #9CA3AF); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                    <i class="fas fa-user"></i>
+                                                    Guest
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <div>{{ $order->email }}</div>
                                             <small class="text-muted">{{ $order->phone }}</small>
@@ -67,7 +81,8 @@
                                                 $itemCount = collect($items)->sum('quantity');
                                             @endphp
                                             <span class="badge badge-soft-info">{{ $itemCount }} items</span>
-                                        </td>                        <td>
+                                        </td>
+                                        <td>
                             @if($order->order_source === 'deal')
                                 <span class="badge" style="background: linear-gradient(135deg, #ED8936, #F6AD55); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
                                     <i class="fas fa-fire"></i>
@@ -123,6 +138,10 @@
                             <tr>
                                 <td width="35%"><strong>Name:</strong></td>
                                 <td id="customer-name"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Type:</strong></td>
+                                <td id="customer-type"></td>
                             </tr>
                             <tr>
                                 <td><strong>Email:</strong></td>
@@ -373,6 +392,14 @@ $(document).ready(function() {
         
         // Update Customer Information
         $('#customer-name').text(`${orderData.first_name} ${orderData.last_name}`);
+        
+        // Set customer type with proper styling
+        const isFromMember = orderData.user_id !== null;
+        const customerTypeHtml = isFromMember 
+            ? '<span class="badge" style="background: linear-gradient(135deg, #22C55E, #16A34A); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-user-check"></i> Member</span>'
+            : '<span class="badge" style="background: linear-gradient(135deg, #6B7280, #9CA3AF); color: white; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-user"></i> Guest</span>';
+        
+        $('#customer-type').html(customerTypeHtml);
         $('#customer-email').text(orderData.email);
         $('#customer-phone').text(orderData.phone);
         
@@ -409,6 +436,7 @@ $(document).ready(function() {
     // Modal reset handler
     $('#viewOrderModal').on('hidden.bs.modal', function() {
         $('#customer-name').text('');
+        $('#customer-type').html('');
         $('#customer-email').text('');
         $('#customer-phone').text('');
         $('#shipping-city').text('');

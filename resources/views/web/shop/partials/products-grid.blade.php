@@ -64,15 +64,22 @@
                         </span>
                     </div>
 
-                    <button class="ts-add-to-cart-btn"
-                            data-id="{{ $product->id }}"
-                            data-name="{{ $product->name }}"
-                            data-price="{{ $product->price }}"
-                            data-image="{{ asset('storage/' . $product->image) }}"
-                            style="width: 100% !important; padding: 0.75rem !important; background: #8D68AD !important; color: #fff !important; border: none !important; border-radius: 6px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; cursor: pointer !important; transition: all 0.3s ease !important; margin-top: auto !important;">
-                        <i class="fas fa-shopping-cart"></i>
-                        Add to Cart
-                    </button>
+                    <div class="product-card-actions" style="display: flex !important; gap: 0.5rem !important; margin-top: auto !important;">
+                        <a href="{{ route('web.product.show', $product) }}" class="ts-view-product-btn" 
+                           style="flex: 1 !important; padding: 0.75rem !important; background: transparent !important; color: #8D68AD !important; border: 2px solid #8D68AD !important; border-radius: 6px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; cursor: pointer !important; transition: all 0.3s ease !important; text-decoration: none !important;">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
+                        <button class="ts-add-to-cart-btn"
+                                data-id="{{ $product->id }}"
+                                data-name="{{ $product->name }}"
+                                data-price="{{ $product->price }}"
+                                data-image="{{ asset('storage/' . $product->image) }}"
+                                style="flex: 1 !important; padding: 0.75rem !important; background: #8D68AD !important; color: #fff !important; border: none !important; border-radius: 6px !important; font-weight: 500 !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; cursor: pointer !important; transition: all 0.3s ease !important;">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
                 </div>
             </div>
         @endforeach
@@ -98,6 +105,22 @@ document.querySelectorAll('.ts-product-card').forEach(card => {
     });
 });
 
+// View button hover effects
+document.querySelectorAll('.ts-view-product-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        btn.style.background = '#8D68AD';
+        btn.style.color = '#fff';
+        btn.style.transform = 'translateY(-2px)';
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        btn.style.background = 'transparent';
+        btn.style.color = '#8D68AD';
+        btn.style.transform = 'none';
+    });
+});
+
+// Add to cart button hover effects
 document.querySelectorAll('.ts-add-to-cart-btn').forEach(btn => {
     btn.addEventListener('mouseenter', () => {
         btn.style.background = '#735891';
