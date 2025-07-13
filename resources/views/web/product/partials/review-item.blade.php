@@ -402,7 +402,7 @@ function shareReview(reviewId) {
     } else {
         // Fallback to copying to clipboard
         navigator.clipboard.writeText(`${shareText} ${shareUrl}`).then(() => {
-            showToast('Review link copied to clipboard!', 'success');
+            console.log('Review link copied to clipboard!');
         }).catch(() => {
             // Ultimate fallback
             prompt('Copy this link to share the review:', shareUrl);
@@ -438,19 +438,18 @@ async function toggleLike(reviewId, button) {
             
             // Show feedback
             if (result.liked) {
-                showToast('❤️ You liked this review!', 'success');
+                console.log('❤️ You liked this review!');
             } else {
-                showToast('Like removed', 'info');
+                console.log('Like removed');
             }
         } else {
             // Restore original state
             button.innerHTML = originalHTML;
-            showToast(result.message || 'Unable to process like. Please try again.', 'error');
+            console.error('Unable to process like:', result.message || 'Unable to process like. Please try again.');
         }
     } catch (error) {
         console.error('Error toggling like:', error);
         button.innerHTML = originalHTML;
-        showToast('Error processing like. Please try again.', 'error');
     } finally {
         button.disabled = false;
     }

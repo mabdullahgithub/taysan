@@ -92,7 +92,7 @@
     </div>
 
     <!-- Load More Button -->
-    @if($reviewsData['total_reviews'] > 5)
+    @if($reviewsData['total_reviews'] > count($reviewsData['recent_reviews']))
     <div class="load-more-container">
         <button class="btn-load-more" onclick="loadMoreReviews()">
             <i class="fas fa-plus"></i>
@@ -1200,9 +1200,32 @@ input:disabled + .slider {
 // Reviews functionality
 let currentPage = 1;
 let currentSort = 'newest';
+let isLoading = false; // Prevent multiple simultaneous requests
 
 // Character counter and input validation
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== Reviews section initialized ===');
+    console.log('Initial total reviews:', {{ $reviewsData['total_reviews'] ?? 0 }});
+    console.log('Initial loaded reviews:', {{ count($reviewsData['recent_reviews'] ?? []) }});
+    
+    // Initialize current page based on initial data
+    currentPage = 1;
+    
+    // Check if load more button should be visible
+    const totalReviews = {{ $reviewsData['total_reviews'] ?? 0 }};
+    const loadedReviews = {{ count($reviewsData['recent_reviews'] ?? []) }};
+    const loadMoreContainer = document.querySelector('.load-more-container');
+    
+    if (loadMoreContainer) {
+        if (totalReviews > loadedReviews) {
+            loadMoreContainer.style.display = 'block';
+            console.log('Load more button should be visible');
+        } else {
+            loadMoreContainer.style.display = 'none';
+            console.log('Load more button hidden - no more reviews');
+        }
+    }
+    
     const textarea = document.getElementById('reviewComment');
     const charCount = document.getElementById('charCount');
     
@@ -1319,9 +1342,9 @@ async function verifyOrder(event) {
                             errorMessage += '• ' + error + '\n';
                         });
                     });
-                    showToast(errorMessage, 'error');
+                    console.error('Validation errors:', errorMessage);
                 } else {
-                    showToast(errorData.message || 'Please check your order ID format.', 'error');
+                    console.error('Validation error:', errorData.message || 'Please check your order ID format.');
                 }
                 return;
             } else if (response.status === 419) {
@@ -1363,17 +1386,17 @@ async function verifyOrder(event) {
             document.getElementById('orderVerificationStep').style.display = 'none';
             document.getElementById('reviewFormStep').style.display = 'block';
         } else {
-            showToast(result.message || 'Order verification failed. Please check your order ID and make sure it\'s a valid 8-digit number from your order confirmation.', 'error');
+            console.error('Order verification failed:', result.message || 'Order verification failed. Please check your order ID and make sure it\'s a valid 8-digit number from your order confirmation.');
         }
     } catch (error) {
         console.error('Error verifying order:', error);
         
         if (error.message.includes('CSRF')) {
-            showToast('Security token error. Please refresh the page and try again.', 'error');
+            console.error('Security token error. Please refresh the page and try again.');
         } else if (error.message.includes('419')) {
-            showToast('Session expired. Please refresh the page and try again.', 'error');
+            console.error('Session expired. Please refresh the page and try again.');
         } else {
-            showToast('An error occurred while verifying your order. Please try again.', 'error');
+            console.error('An error occurred while verifying your order. Please try again.');
         }
     } finally {
         // Re-enable button
@@ -1400,42 +1423,68 @@ async function loadReviews() {
     try {
         const params = new URLSearchParams({
             sort: currentSort,
-            page: currentPage
+            page: 1 // Always start from page 1 when sorting
         });
         
-        const response = await fetch(`/products/{{ $product->id }}/reviews?${params}`);
+        const response = await fetch(`/products/{{ $product->id }}/reviews?${params}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.reviews) {
             updateReviewsList(data.reviews.data);
             updateRatingSummary(data);
             
-            // Update load more button
+            // Reset current page to 1 since we're reloading
+            currentPage = 1;
+            
+            // Update load more button visibility
             const loadMoreBtn = document.querySelector('.btn-load-more');
-            if (loadMoreBtn) {
-                if (data.reviews.next_page_url && data.reviews.current_page < data.reviews.last_page) {
+            const loadMoreContainer = document.querySelector('.load-more-container');
+            
+            if (loadMoreBtn && loadMoreContainer) {
+                const hasMorePages = data.reviews.current_page < data.reviews.last_page;
+                if (hasMorePages) {
+                    loadMoreContainer.style.display = 'block';
                     loadMoreBtn.style.display = 'flex';
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Load More Reviews';
                 } else {
-                    loadMoreBtn.style.display = 'none';
+                    loadMoreContainer.style.display = 'none';
                 }
             }
         }
     } catch (error) {
         console.error('Error loading reviews:', error);
-        showToast('Error loading reviews. Please try again.', 'error');
     }
 }
 
 // Load more reviews
 async function loadMoreReviews() {
     console.log('=== loadMoreReviews called ===');
+    
+    if (isLoading) {
+        console.log('Already loading, ignoring request');
+        return;
+    }
+    
     const loadMoreBtn = document.querySelector('.btn-load-more');
     if (!loadMoreBtn) {
         console.error('Load more button not found');
         return;
     }
     
-    // Show loading state
+    // Set loading state
+    isLoading = true;
     const originalText = loadMoreBtn.innerHTML;
     loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     loadMoreBtn.disabled = true;
@@ -1453,7 +1502,13 @@ async function loadMoreReviews() {
         const url = `/products/{{ $product->id }}/reviews?${params}`;
         console.log('Fetching URL:', url);
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
         
         console.log('Response status:', response.status);
         
@@ -1472,7 +1527,7 @@ async function loadMoreReviews() {
             currentPage = nextPage;
             
             // Check if there are more pages
-            const hasMorePages = data.reviews.next_page_url && data.reviews.current_page < data.reviews.last_page;
+            const hasMorePages = data.reviews.current_page < data.reviews.last_page;
             console.log('Has more pages:', hasMorePages, 'Current page:', data.reviews.current_page, 'Last page:', data.reviews.last_page);
             
             if (!hasMorePages) {
@@ -1490,11 +1545,13 @@ async function loadMoreReviews() {
         }
     } catch (error) {
         console.error('Error loading more reviews:', error);
-        showToast('Error loading more reviews. Please try again.', 'error');
         
         // Restore button state (don't increment currentPage since request failed)
         loadMoreBtn.innerHTML = originalText;
         loadMoreBtn.disabled = false;
+    } finally {
+        // Always reset loading state
+        isLoading = false;
     }
 }
 
@@ -1527,7 +1584,6 @@ function appendReviews(reviews) {
     
     if (!reviewsList) {
         console.error('Reviews list container not found');
-        showToast('Error: Reviews container not found', 'error');
         return;
     }
     
@@ -1553,11 +1609,10 @@ function appendReviews(reviews) {
         console.log('Successfully appended reviews to DOM');
         
         // Show success message
-        showToast(`Loaded ${reviews.length} more review${reviews.length !== 1 ? 's' : ''}`, 'success');
+        console.log(`Loaded ${reviews.length} more review${reviews.length !== 1 ? 's' : ''}`);
         
     } catch (error) {
         console.error('Error appending reviews:', error);
-        showToast('Error displaying new reviews', 'error');
     }
 }
 
@@ -1568,16 +1623,18 @@ function generateReviewHTML(review) {
         return '';
     }
     
-    // Safely handle missing data
+    // Safely handle missing data with proper defaults
+    const reviewId = review.id || 0;
     const rating = Math.max(1, Math.min(5, parseInt(review.rating) || 0));
-    const name = review.masked_name || review.name || 'Anonymous';
-    const title = review.title || 'Review';
-    const comment = review.comment || '';
-    const date = review.formatted_date || 'Recently';
-    const location = review.location || '';
-    const helpfulVotes = review.helpful_votes_count || 0;
-    const likesCount = review.likes_count || 0;
-    const initials = review.initials || (name.substring(0, 2).toUpperCase()) || 'AN';
+    const name = (review.masked_name || review.name || 'Anonymous').toString();
+    const title = (review.title || 'Review').toString();
+    const comment = (review.comment || '').toString();
+    const date = (review.formatted_date || 'Recently').toString();
+    const location = (review.location || '').toString();
+    const helpfulVotes = parseInt(review.helpful_votes_count) || 0;
+    const likesCount = parseInt(review.likes_count) || 0;
+    const initials = (review.initials || name.substring(0, 2).toUpperCase() || 'AN').toString();
+    const isVerified = review.is_verified_buyer === true || review.is_verified_buyer === 1;
     
     // Generate stars HTML
     const stars = Array.from({length: 5}, (_, i) => {
@@ -1585,14 +1642,14 @@ function generateReviewHTML(review) {
         return `<i class="fa${isFilled ? 's' : 'r'} fa-star ${isFilled ? 'filled' : 'empty'}"></i>`;
     }).join('');
     
-    const verifiedBadge = review.is_verified_buyer ? 
+    const verifiedBadge = isVerified ? 
         '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified Buyer</span>' : '';
     
     const locationHtml = location ? 
         `<span class="review-location"><i class="fas fa-map-marker-alt"></i> ${location}</span>` : '';
     
     return `
-        <div class="review-item" data-review-id="${review.id}">
+        <div class="review-item" data-review-id="${reviewId}">
             <div class="review-header">
                 <div class="reviewer-info">
                     <div class="reviewer-avatar">
@@ -1618,12 +1675,12 @@ function generateReviewHTML(review) {
                 <p class="review-text">${comment}</p>
             </div>
             <div class="review-actions">
-                <button class="btn-helpful" onclick="toggleHelpful(${review.id}, this)">
+                <button class="btn-helpful" onclick="toggleHelpful(${reviewId}, this)">
                     <i class="far fa-thumbs-up"></i>
                     Helpful (${helpfulVotes})
                 </button>
                 <span class="review-actions-separator">•</span>
-                <button class="btn-like" onclick="toggleLike(${review.id}, this)">
+                <button class="btn-like" onclick="toggleLike(${reviewId}, this)">
                     <i class="far fa-heart"></i>
                     Like (${likesCount})
                 </button>
@@ -1652,7 +1709,6 @@ async function toggleHelpful(reviewId, button) {
         }
     } catch (error) {
         console.error('Error toggling helpful vote:', error);
-        showToast('Error recording your vote. Please try again.', 'error');
     }
 }
 
@@ -1671,52 +1727,6 @@ function updateRatingSummary(data) {
         if (progressFill) progressFill.style.width = `${distribution.percentage}%`;
         if (count) count.textContent = distribution.count;
     });
-}
-
-// Toast notification function
-function showToast(message, type = 'info') {
-    // Create toast if it doesn't exist
-    let toast = document.querySelector('.review-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.className = 'review-toast';
-        document.body.appendChild(toast);
-        
-        // Add toast styles
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            z-index: 10000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            max-width: 400px;
-            word-wrap: break-word;
-        `;
-    }
-    
-    // Set type-specific styles
-    const colors = {
-        success: '#28a745',
-        error: '#dc3545',
-        warning: '#ffc107',
-        info: '#17a2b8'
-    };
-    
-    toast.style.background = colors[type] || colors.info;
-    toast.textContent = message;
-    
-    // Show toast
-    toast.style.transform = 'translateX(0)';
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-        toast.style.transform = 'translateX(100%)';
-    }, 5000);
 }
 
 // Display order items for review

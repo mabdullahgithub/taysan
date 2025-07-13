@@ -196,7 +196,8 @@ class Product extends Model
      */
     public function getFormattedRatingAttribute()
     {
-        return number_format($this->average_rating, 1);
+        $avg = $this->average_rating;
+        return $avg > 0 ? number_format($avg, 1) : '0.0';
     }
 
     /**

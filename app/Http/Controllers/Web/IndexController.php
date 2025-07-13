@@ -44,6 +44,15 @@ class IndexController extends BaseController
                             ->orderBy('sort_order')
                             ->take(3)
                             ->get();
+        
+
+        // Get random 5-star reviews for the moving reviews section
+        $fiveStarReviews = \App\Models\Review::with('product')
+                                          ->where('is_approved', true)
+                                          ->where('rating', 5)
+                                          ->inRandomOrder()
+                                          ->limit(50)
+                                          ->get();
 
         // Get active announcements
         $announcements = \App\Models\Announcement::active()
@@ -62,6 +71,7 @@ class IndexController extends BaseController
                                     ->limit($productCount)
                                     ->get();
         }
+
         
         return view('web.index', $this->withBanners([
             'products' => $products,
@@ -69,7 +79,8 @@ class IndexController extends BaseController
             'categories' => $categories,
             'deals' => $deals,
             'announcements' => $announcements,
-            'randomProducts' => $randomProducts
+            'randomProducts' => $randomProducts,
+            'fiveStarReviews' => $fiveStarReviews
         ]));
     }
 }

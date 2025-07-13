@@ -3410,4 +3410,202 @@
             }
         </script>
     @endif
+
+    <!-- Moving Reviews Section -->
+    @if($fiveStarReviews->count() > 0)
+    <section class="moving-reviews-section">
+        <div class="moving-reviews-wrapper">
+            <div class="moving-reviews-track">
+                @foreach($fiveStarReviews as $review)
+                <div class="review-item">
+                    <div class="review-stars">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star"></i>
+                        @endfor
+                    </div>
+                    <div class="review-text">
+                        "{{ Str::limit($review->comment ?: $review->title, 80) }}"
+                    </div>
+                    <div class="review-author">
+                        - {{ $review->masked_name }}
+                        @if($review->product)
+                            <span class="review-product">for {{ $review->product->name }}</span>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                <!-- Duplicate for seamless infinite loop -->
+                @foreach($fiveStarReviews as $review)
+                <div class="review-item">
+                    <div class="review-stars">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star"></i>
+                        @endfor
+                    </div>
+                    <div class="review-text">
+                        "{{ Str::limit($review->comment ?: $review->title, 80) }}"
+                    </div>
+                    <div class="review-author">
+                        - {{ $review->masked_name }}
+                        @if($review->product)
+                            <span class="review-product">for {{ $review->product->name }}</span>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <style>
+    /* Moving Reviews Section - Minimal styling with proper spacing */
+    .moving-reviews-section {
+        overflow: hidden;
+        position: relative;
+        margin: 30px 0 20px 0;
+        padding: 15px 0;
+    }
+
+    .moving-reviews-wrapper {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        overflow: hidden;
+    }
+
+    .moving-reviews-track {
+        display: flex;
+        gap: 3rem;
+        animation: moveReviewsInfinite 120s linear infinite;
+        white-space: nowrap;
+        align-items: center;
+        height: 100%;
+        width: max-content;
+    }
+
+    @keyframes moveReviewsInfinite {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    .review-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        background: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f0f0f0;
+    }
+
+    .review-stars {
+        display: flex;
+        gap: 1px;
+        flex-shrink: 0;
+    }
+
+    .review-stars .fas.fa-star {
+        color: #ffc107;
+        font-size: 10px;
+    }
+
+    .review-text {
+        font-size: 11px;
+        color: #666;
+        font-style: italic;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .review-author {
+        font-size: 10px;
+        color: #8D68AD;
+        font-weight: 500;
+        flex-shrink: 0;
+    }
+
+    .review-product {
+        color: #999;
+        font-weight: 400;
+        font-size: 9px;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .moving-reviews-section {
+            margin: 20px 0 15px 0;
+            padding: 10px 0;
+        }
+        
+        .moving-reviews-wrapper {
+            height: 45px;
+        }
+        
+        .review-item {
+            padding: 6px 10px;
+            gap: 0.4rem;
+        }
+        
+        .review-stars .fas.fa-star {
+            font-size: 9px;
+        }
+        
+        .review-text {
+            font-size: 10px;
+            max-width: 140px;
+        }
+        
+        .review-author {
+            font-size: 9px;
+        }
+        
+        .review-product {
+            font-size: 8px;
+        }
+        
+        .moving-reviews-track {
+            gap: 2rem;
+            animation-duration: 100s;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .moving-reviews-wrapper {
+            height: 40px;
+        }
+        
+        .review-item {
+            padding: 5px 8px;
+            gap: 0.3rem;
+        }
+        
+        .review-text {
+            font-size: 9px;
+            max-width: 120px;
+        }
+        
+        .review-author {
+            font-size: 8px;
+        }
+        
+        .review-product {
+            font-size: 7px;
+        }
+        
+        .moving-reviews-track {
+            gap: 1.5rem;
+            animation-duration: 80s;
+        }
+    }
+    </style>
 @endsection

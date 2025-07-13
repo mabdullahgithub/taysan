@@ -17,6 +17,12 @@ class ReviewController extends Controller
      */
     public function index(Product $product, Request $request)
     {
+        Log::info('Reviews index called', [
+            'product_id' => $product->id,
+            'sort' => $request->get('sort', 'newest'),
+            'page' => $request->get('page', 1)
+        ]);
+
         $sortBy = $request->get('sort', 'newest'); // newest, oldest, highest, lowest, helpful, likes
         
         $query = $product->approvedReviews();
@@ -43,7 +49,7 @@ class ReviewController extends Controller
                 break;
         }
         
-        $reviews = $query->paginate(10);
+        $reviews = $query->paginate(5); // Show 5 reviews per page for better load-more experience
         
         // Get rating summary
         $ratingDistribution = $product->rating_distribution;
