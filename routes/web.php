@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\{
     OrderController as WebOrderController,
     ProductController as WebProductController,
     ReviewController as WebReviewController,
+    UserController as WebUserController,
 };
 use App\Http\Controllers\Admin\{
     IndexController as AdminIndexController,
@@ -20,6 +21,7 @@ use App\Http\Controllers\Admin\{
     ThankYouCardController,
     AnnouncementController,
     ReviewController as AdminReviewController,
+    UserController as AdminUserController,
 };
 
 /*
@@ -57,11 +59,44 @@ Route::get('/products/{product}/review-form-data', [WebReviewController::class, 
 
 /*
 |--------------------------------------------------------------------------
+| User Authentication & Profile Routes
+|--------------------------------------------------------------------------
+*/
+
+// Guest routes
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [WebUserController::class, 'showRegistrationForm'])->name('web.user.register.form');
+    Route::post('/register', [WebUserController::class, 'register'])->name('web.user.register');
+    Route::get('/login', [WebUserController::class, 'showLoginForm'])->name('web.user.login.form');
+    Route::post('/login', [WebUserController::class, 'login'])->name('web.user.login');
+    
+    // Password Reset Routes
+    Route::get('/forgot-password', [WebUserController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [WebUserController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [WebUserController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [WebUserController::class, 'resetPassword'])->name('password.update');
+});
+
+// Authenticated user routes  
+Route::middleware('auth:web')->group(function () {
+    Route::post('/user/logout', [WebUserController::class, 'logout'])->name('web.user.logout');
+    Route::get('/profile', [WebUserController::class, 'profile'])->name('web.user.profile');
+    Route::get('/profile/edit', [WebUserController::class, 'editProfile'])->name('web.user.edit-profile');
+    Route::put('/profile', [WebUserController::class, 'updateProfile'])->name('web.user.update-profile');
+    Route::get('/profile/change-password', [WebUserController::class, 'showChangePasswordForm'])->name('web.user.change-password');
+    Route::put('/profile/change-password', [WebUserController::class, 'updatePassword'])->name('web.user.update-password');
+    Route::get('/my-orders', [WebUserController::class, 'orders'])->name('web.user.orders');
+    Route::get('/my-reviews', [WebUserController::class, 'reviews'])->name('web.user.reviews');
+    Route::delete('/profile/delete', [WebUserController::class, 'deleteAccount'])->name('web.user.delete-account');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['admin'])->group(function () {
     // Dashboard
     Route::get('/home', [AdminIndexController::class, 'index'])->name('admin.dashboard');
 
@@ -120,9 +155,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/reviews/bulk-approve', [AdminReviewController::class, 'bulkApprove'])->name('admin.reviews.bulk-approve');
     Route::post('/admin/reviews/bulk-delete', [AdminReviewController::class, 'bulkDelete'])->name('admin.reviews.bulk-delete');
 
-    // Banners
+    // Users Management
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}', [AdminUserController::class, 'show'])->name('admin.users.show');
+    Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/admin/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+    Route::post('/admin/users/bulk-action', [AdminUserController::class, 'bulkAction'])->name('admin.users.bulk-action');
 
-
+    // Settings & Configuration
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/banners', [SettingsController::class, 'updateBanners'])->name('settings.update.banners');
     Route::put('/settings/general', [SettingsController::class, 'updateSettings'])->name('settings.update.general');
@@ -132,14 +176,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/settings/categories/{category}', [SettingsController::class, 'updateCategory'])->name('settings.categories.update');
     Route::delete('/settings/categories/{category}', [SettingsController::class, 'destroyCategory'])->name('settings.categories.destroy');
     
+    // Queries Management
     Route::get('/queries', [\App\Http\Controllers\QueryController::class, 'index'])->name('admin.queries.index');
+    
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 });
 
-Route::get('/login', function () {
+Route::get('/admin/login', function () {
     return view('Auth.login');
 })->name('login');
 
-
-Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login');

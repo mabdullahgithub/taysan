@@ -21,6 +21,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'city',
+        'country',
+        'postal_code',
+        'date_of_birth',
+        'gender',
+        'role',
+        'is_active',
+        'avatar',
+        'email_verified_at',
     ];
 
     /**
@@ -41,5 +52,101 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'date_of_birth' => 'date',
+        'is_active' => 'boolean',
     ];
+
+    /**
+     * User roles
+     */
+    const ROLE_ADMIN = 'admin';
+    const ROLE_USER = 'user';
+
+    /**
+     * Get user's orders
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get user's reviews
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin()
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActive()
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * Get user's full address
+     */
+    public function getFullAddressAttribute()
+    {
+        $parts = array_filter([
+            $this->address,
+            $this->city,
+            $this->postal_code,
+            $this->country
+        ]);
+        
+        return implode(', ', $parts);
+    }
+
+    /**
+     * Get user's initials for avatar
+     */
+    public function getInitialsAttribute()
+    {
+        $names = explode(' ', $this->name);
+        $initials = '';
+        
+        foreach ($names as $name) {
+            if (!empty($name)) {
+                $initials .= strtoupper($name[0]);
+            }
+        }
+        
+        return $initials;
+    }
+
+    /**
+     * Scope for active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope for admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', self::ROLE_ADMIN);
+    }
+
+    /**
+     * Scope for regular users
+     */
+    public function scopeUsers($query)
+    {
+        return $query->where('role', self::ROLE_USER);
+    }
 }

@@ -41,29 +41,96 @@
                     <!-- Close Button for Mobile -->
                     <button class="ts-menu-close d-lg-none">
                         <i class="fas fa-times"></i>
-                    </button>
+                    </button>                <!-- Navigation Links -->
+                <ul class="ts-menu">
+                    <li class="ts-menu__item {{ Request::is('/') ? 'active' : '' }}">
+                        <a href="{{ route('web.view.index') }}" class="ts-menu__link">Home</a>
+                    </li>
+                    <li class="ts-menu__item {{ Request::is('shop*') ? 'active' : '' }}">
+                        <a href="{{ route('web.view.shop') }}" class="ts-menu__link">Shop</a>
+                    </li>
+                    <li class="ts-menu__item {{ Request::is('about') ? 'active' : '' }}">
+                        <a href="{{ route('web.view.about') }}" class="ts-menu__link">About</a>
+                    </li>
+                    <li class="ts-menu__item {{ Request::is('contact') ? 'active' : '' }}">
+                        <a href="{{ route('web.view.contact') }}" class="ts-menu__link">Contact</a>
+                    </li>
+                </ul>
+            </div>
 
-                    <!-- Navigation Links -->
-                    <ul class="ts-menu">
-                        <li class="ts-menu__item {{ Request::is('/') ? 'active' : '' }}">
-                            <a href="{{ route('web.view.index') }}" class="ts-menu__link">Home</a>
-                        </li>
-                        <li class="ts-menu__item {{ Request::is('shop*') ? 'active' : '' }}">
-                            <a href="{{ route('web.view.shop') }}" class="ts-menu__link">Shop</a>
-                        </li>
-                        <li class="ts-menu__item {{ Request::is('about') ? 'active' : '' }}">
-                            <a href="{{ route('web.view.about') }}" class="ts-menu__link">About</a>
-                        </li>
-                        <li class="ts-menu__item {{ Request::is('contact') ? 'active' : '' }}">
-                            <a href="{{ route('web.view.contact') }}" class="ts-menu__link">Contact</a>
-                        </li>
-                    </ul>
-                </div>
+            <!-- User Actions & Cart -->
+            <div class="ts-navbar__actions">
+                @auth
+                    <!-- User Menu for Authenticated Users -->
+                    <div class="ts-user-menu">
+                        <button class="ts-user-toggle" type="button">
+                            @if(auth()->user()->avatar)
+                                <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="ts-user-avatar">
+                            @else
+                                <div class="ts-user-initial">{{ auth()->user()->initials }}</div>
+                            @endif
+                            <span class="ts-user-name d-none d-md-inline">{{ auth()->user()->name }}</span>
+                            <i class="fas fa-chevron-down ts-user-chevron"></i>
+                        </button>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="ts-user-dropdown">
+                            <div class="ts-user-info">
+                                <div class="ts-user-avatar-large">
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}">
+                                    @else
+                                        <div class="ts-user-initial-large">{{ auth()->user()->initials }}</div>
+                                    @endif
+                                </div>
+                                <div class="ts-user-details">
+                                    <h6>{{ auth()->user()->name }}</h6>
+                                    <p>{{ auth()->user()->email }}</p>
+                                </div>
+                            </div>
+                            <div class="ts-user-links">
+                                <a href="{{ route('web.user.profile') }}" class="ts-user-link">
+                                    <i class="fas fa-user"></i>
+                                    <span>My Profile</span>
+                                </a>
+                                <a href="{{ route('web.user.orders') }}" class="ts-user-link">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <span>My Orders</span>
+                                </a>
+                                <a href="{{ route('web.user.reviews') }}" class="ts-user-link">
+                                    <i class="fas fa-star"></i>
+                                    <span>My Reviews</span>
+                                </a>
+                                <div class="ts-user-divider"></div>
+                                <form action="{{ route('web.user.logout') }}" method="POST" class="ts-logout-form">
+                                    @csrf
+                                    <button type="submit" class="ts-user-link ts-logout-btn">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Auth Buttons for Guests -->
+                    <div class="ts-auth-buttons">
+                        <a href="{{ route('web.user.login.form') }}" class="ts-btn ts-btn--ghost">
+                            <i class="fas fa-sign-in-alt d-md-none"></i>
+                            <span class="d-none d-md-inline">Sign In</span>
+                        </a>
+                        <a href="{{ route('web.user.register.form') }}" class="ts-btn ts-btn--primary">
+                            <i class="fas fa-user-plus"></i>
+                            <span class="d-none d-sm-inline">Become Member</span>
+                        </a>
+                    </div>
+                @endauth
 
                 <!-- Cart Icon -->
                 <div class="ts-navbar__cart">
                    
                 </div>
+            </div>
             </div>
         </div>
     </nav>
@@ -201,6 +268,240 @@
     width: 80%;
 }
 
+/* Navbar Actions */
+.ts-navbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Auth Buttons */
+.ts-auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ts-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--ts-transition);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.ts-btn--ghost {
+    background: transparent;
+    color: var(--ts-dark);
+    border: 1px solid transparent;
+}
+
+.ts-btn--ghost:hover {
+    background: rgba(153, 119, 181, 0.1);
+    color: var(--ts-primary);
+    text-decoration: none;
+    border-color: var(--ts-primary);
+}
+
+.ts-btn--primary {
+    background: var(--ts-primary);
+    color: var(--ts-light);
+    border: 1px solid var(--ts-primary);
+}
+
+.ts-btn--primary:hover {
+    background: #8365A0;
+    color: var(--ts-light);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(153, 119, 181, 0.3);
+}
+
+/* User Menu */
+.ts-user-menu {
+    position: relative;
+}
+
+.ts-user-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: var(--ts-transition);
+    color: var(--ts-dark);
+}
+
+.ts-user-toggle:hover {
+    background: rgba(153, 119, 181, 0.1);
+    color: var(--ts-primary);
+}
+
+.ts-user-avatar,
+.ts-user-initial {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.ts-user-initial {
+    background: var(--ts-primary);
+    color: var(--ts-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ts-user-name {
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ts-user-chevron {
+    font-size: 12px;
+    transition: var(--ts-transition);
+}
+
+.ts-user-menu.active .ts-user-chevron {
+    transform: rotate(180deg);
+}
+
+/* User Dropdown */
+.ts-user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--ts-light);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--ts-transition);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ts-user-menu.active .ts-user-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.ts-user-info {
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ts-user-avatar-large,
+.ts-user-initial-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.ts-user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ts-user-initial-large {
+    background: var(--ts-primary);
+    color: var(--ts-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.ts-user-details h6 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ts-dark);
+}
+
+.ts-user-details p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ts-gray);
+}
+
+.ts-user-links {
+    padding: 10px 0;
+}
+
+.ts-user-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: var(--ts-dark);
+    text-decoration: none;
+    transition: var(--ts-transition);
+    font-size: 14px;
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.ts-user-link:hover {
+    background: rgba(153, 119, 181, 0.1);
+    color: var(--ts-primary);
+    text-decoration: none;
+}
+
+.ts-user-link i {
+    width: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.ts-user-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.05);
+    margin: 10px 0;
+}
+
+.ts-logout-form {
+    margin: 0;
+    width: 100%;
+}
+
+.ts-logout-btn {
+    color: #dc3545;
+}
+
+.ts-logout-btn:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
 /* Additional styles to override any default link behavior */
 a {
     color: inherit;
@@ -305,8 +606,60 @@ a:hover {
         height: 40px;
     }
 
+    .ts-navbar__actions {
+        gap: 8px;
+    }
+
+    .ts-auth-buttons {
+        gap: 6px;
+    }
+
+    .ts-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .ts-user-name {
+        display: none !important;
+    }
+
+    .ts-user-dropdown {
+        right: -10px;
+        min-width: 260px;
+    }
+
     body {
-        padding-top: 80px; /* Adjusted for mobile header height */
+        padding-top: 80px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ts-navbar__wrapper {
+        padding: 10px 0;
+    }
+
+    .ts-logo__img {
+        height: 35px;
+    }
+
+    .ts-btn span {
+        display: none;
+    }
+
+    .ts-btn {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+    }
+
+    .ts-user-dropdown {
+        right: -20px;
+        min-width: 240px;
+    }
+
+    body {
+        padding-top: 70px;
     }
 }
 
@@ -334,6 +687,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.querySelector('.ts-menu-toggle');
     const mobileMenu = document.querySelector('.ts-navbar__menu');
     const menuClose = document.querySelector('.ts-menu-close');
+    const userMenu = document.querySelector('.ts-user-menu');
+    const userToggle = document.querySelector('.ts-user-toggle');
     
     // Scroll handling
     let lastScroll = 0;
@@ -356,6 +711,10 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             mobileMenu.classList.add('active');
             document.body.style.overflow = 'hidden';
+            // Close user menu if open
+            if (userMenu) {
+                userMenu.classList.remove('active');
+            }
         });
     }
 
@@ -366,20 +725,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Close menu when clicking outside
+    // User menu handling
+    if (userToggle && userMenu) {
+        userToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.classList.toggle('active');
+            // Close mobile menu if open
+            if (mobileMenu) {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Close menus when clicking outside
     document.addEventListener('click', (e) => {
-        if (mobileMenu && !mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+        // Close mobile menu
+        if (mobileMenu && !mobileMenu.contains(e.target) && !menuToggle?.contains(e.target)) {
             mobileMenu.classList.remove('active');
             document.body.style.overflow = '';
+        }
+        
+        // Close user menu
+        if (userMenu && !userMenu.contains(e.target)) {
+            userMenu.classList.remove('active');
         }
     });
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 991 && mobileMenu) {
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
+        if (window.innerWidth > 991) {
+            if (mobileMenu) {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            if (userMenu) {
+                userMenu.classList.remove('active');
+            }
         }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
 });
 </script>

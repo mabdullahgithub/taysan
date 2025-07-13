@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Us - Taysan & Co</title>
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables */
+        :root {
+            --ts-primary: #8D68AD;
+            --ts-primary-light: #A587C1;
+            --ts-primary-dark: #735891;
+            --ts-white: #ffffff;
+            --ts-black: #333333;
+            --ts-gray: #666666;
+            --ts-light-gray: #f5f5f5;
+            --ts-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --ts-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--ts-primary) 0%, var(--ts-primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.05) 100%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Main Container */
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem;
+        }
+
+        .auth-card {
+            background: var(--ts-white);
+            border-radius: 20px;
+            box-shadow: var(--ts-shadow);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        /* Left Panel */
+        .auth-left {
+            background: linear-gradient(135deg, var(--ts-primary-light) 0%, var(--ts-primary) 50%, var(--ts-primary-dark) 100%);
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--ts-white);
+            position: relative;
+            min-height: 600px;
+        }
+
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="50" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="30" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .ts-logo {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 30px;
+            text-decoration: none;
+        }
+
+        .ts-logo__img {
+            height: 60px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .welcome-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-text h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-text p {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 350px;
+        }
+
+        /* Right Panel */
+        .auth-right {
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        /* Multi-Step Progress */
+        .step-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .step-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e8ecf0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-indicator.active {
+            background: var(--ts-primary);
+            transform: scale(1.2);
+        }
+
+        .step-indicator.completed {
+            background: #51cf66;
+        }
+
+        .step-connector {
+            width: 30px;
+            height: 2px;
+            background: #e8ecf0;
+            transition: all 0.3s ease;
+        }
+
+        .step-connector.completed {
+            background: #51cf66;
+        }
+
+        .auth-form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-form-header h1 {
+            color: var(--ts-black);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .auth-form-header p {
+            color: var(--ts-gray);
+            font-size: 1rem;
+        }
+
+        .step-title {
+            color: var(--ts-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Form Styles */
+        .form-step {
+            display: none;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s ease;
+        }
+
+        .form-step.active {
+            display: block !important;
+            opacity: 1 !important;
+            transform: translateX(0) !important;
+        }
+
+        /* Ensure first step is visible by default */
+        .form-step[data-step="1"] {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            height: 45px;
+            border: 2px solid #e8ecf0;
+            border-radius: 10px;
+            padding: 0 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-control-sm {
+            height: 40px;
+            padding: 0 12px;
+            font-size: 0.85rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--ts-primary);
+            box-shadow: 0 0 0 3px rgba(141, 104, 173, 0.1);
+            background: var(--ts-white);
+        }
+
+        .form-control::placeholder {
+            color: #a8b2b8;
+        }
+
+        .form-control select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* Custom Checkbox Styles */
+        .custom-control {
+            position: relative;
+            display: block;
+            min-height: 1.5rem;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .custom-control-input {
+            position: absolute;
+            left: 0;
+            z-index: -1;
+            width: 1rem;
+            height: 1.25rem;
+            opacity: 0;
+        }
+
+        .custom-control-label {
+            position: relative;
+            margin-bottom: 0;
+            color: var(--ts-gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .custom-control-label::before {
+            position: absolute;
+            top: 0.25rem;
+            left: -1.5rem;
+            display: block;
+            width: 1rem;
+            height: 1rem;
+            background-color: #fff;
+            border: 2px solid #e8ecf0;
+            border-radius: 0.25rem;
+            content: "";
+            transition: all 0.3s ease;
+        }
+
+        .custom-control-input:checked ~ .custom-control-label::before {
+            color: #fff;
+            border-color: var(--ts-primary);
+            background-color: var(--ts-primary);
+        }
+
+        .custom-control-input:checked ~ .custom-control-label::after {
+            position: absolute;
+            top: 0.25rem;
+            left: -1.5rem;
+            display: block;
+            width: 1rem;
+            height: 1rem;
+            content: "";
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M5 13l4 4L19 7'%3e%3c/path%3e%3c/svg%3e");
+            background-size: 0.75rem;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .custom-control-label a {
+            color: var(--ts-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .custom-control-label a:hover {
+            color: var(--ts-primary-dark);
+            text-decoration: underline;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--ts-gray);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--ts-primary);
+        }
+
+        /* Password Strength Styles */
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-meter {
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-bar.weak {
+            background-color: #dc3545;
+            width: 25%;
+        }
+
+        .strength-bar.fair {
+            background-color: #fd7e14;
+            width: 50%;
+        }
+
+        .strength-bar.good {
+            background-color: #ffc107;
+            width: 75%;
+        }
+
+        .strength-bar.strong {
+            background-color: #28a745;
+            width: 100%;
+        }
+
+        .strength-text {
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .strength-text.weak {
+            color: #dc3545;
+        }
+
+        .strength-text.fair {
+            color: #fd7e14;
+        }
+
+        .strength-text.good {
+            color: #ffc107;
+        }
+
+        .strength-text.strong {
+            color: #28a745;
+        }
+
+        .password-requirements {
+            margin-top: 8px;
+        }
+
+        .requirement {
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            transition: color 0.3s ease;
+        }
+
+        .requirement.met i {
+            color: #28a745 !important;
+        }
+
+        .requirement.met i:before {
+            content: "\f00c";
+        }
+
+        .password-toggle:hover {
+            color: var(--ts-primary);
+        }
+
+        /* Button Styles */
+        .btn-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-primary, .btn-secondary {
+            flex: 1;
+            height: 42px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--ts-primary) 0%, var(--ts-primary-dark) 100%);
+            color: var(--ts-white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ts-shadow-hover);
+        }
+
+        .btn-primary:disabled {
+            background: #cccccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+            opacity: 0.5 !important;
+            pointer-events: auto; /* Allow clicks for feedback */
+        }
+
+        /* Shake animation for invalid form submission */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: var(--ts-gray);
+            border: 2px solid #e8ecf0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            color: var(--ts-black);
+        }
+
+        .btn-primary.loading {
+            pointer-events: none;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e8ecf0;
+        }
+
+        .auth-links a {
+            color: var(--ts-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .auth-links a:hover {
+            color: var(--ts-primary-dark);
+            text-decoration: none;
+        }
+
+        /* Alert Styles */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991.98px) {
+            .auth-left {
+                min-height: 300px;
+                padding: 30px 20px;
+            }
+
+            .auth-right {
+                padding: 30px 20px;
+            }
+
+            .welcome-text h2 {
+                font-size: 1.6rem;
+                margin-bottom: 15px;
+            }
+
+            .welcome-text p {
+                font-size: 0.9rem;
+                max-width: 100%;
+                line-height: 1.5;
+            }
+
+            .auth-form-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .auth-container {
+                margin: 1rem;
+            }
+
+            .auth-card {
+                border-radius: 15px;
+            }
+
+            .auth-left,
+            .auth-right {
+                padding: 20px 15px;
+            }
+
+            .welcome-text h2 {
+                font-size: 1.4rem;
+            }
+
+            .auth-form-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .form-control,
+            .btn-primary,
+            .btn-secondary {
+                height: 50px;
+            }
+
+            .btn-navigation {
+                flex-direction: column;
+            }
+
+            .step-progress {
+                gap: 5px;
+            }
+
+            .step-connector {
+                width: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+
+    <!-- Main Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="row no-gutters h-100">
+                <!-- Left Panel -->
+                <div class="col-lg-6">
+                    <div class="auth-left">
+                        <!-- Logo -->
+                        <a href="{{ route('web.view.index') }}" class="ts-logo">
+                            <img src="{{ asset('logo.png') }}" alt="Taysan & Co" class="ts-logo__img">
+                        </a>
+
+                        <!-- Welcome Text -->
+                        <div class="welcome-text">
+                            <h2>Join Our Beauty Community!</h2>
+                            <p>Create your account and unlock exclusive access to premium beauty products, personalized recommendations, and member-only benefits.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="col-lg-6">
+                    <div class="auth-right">
+                        <!-- Step Progress -->
+                        <div class="step-progress">
+                            <div class="step-indicator active" data-step="1"></div>
+                            <div class="step-connector"></div>
+                            <div class="step-indicator" data-step="2"></div>
+                        </div>
+
+                        <div class="auth-form-header">
+                            <h1>Create Account</h1>
+                            <p>Join thousands of beauty enthusiasts</p>
+                        </div>
+
+                        <form action="{{ route('web.user.register') }}" method="POST" id="registerForm">
+                            @csrf
+                            
+                            <!-- Error Messages -->
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0 list-unstyled">
+                                        @foreach ($errors->all() as $error)
+                                            <li><i class="fas fa-exclamation-circle me-2"></i>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <!-- Success Messages -->
+                            @if (session('success'))
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                                </div>
+                            @endif
+
+                            <!-- Step 1: Basic Information -->
+                            <div class="form-step active" data-step="1">
+                                <div class="step-title">
+                                    <i class="fas fa-user me-2"></i>Basic Information
+                                </div>
+                                
+                                <div class="form-group">
+                                    <input 
+                                        class="form-control form-control-sm @error('name') is-invalid @enderror" 
+                                        placeholder="Full Name" 
+                                        type="text" 
+                                        name="name" 
+                                        id="name"
+                                        value="{{ old('name') }}" 
+                                        required>
+                                    @error('name')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <input 
+                                        class="form-control form-control-sm @error('email') is-invalid @enderror" 
+                                        placeholder="Email Address (Gmail recommended)" 
+                                        type="email" 
+                                        name="email" 
+                                        id="email"
+                                        value="{{ old('email') }}" 
+                                        required>
+                                    @error('email')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="password-field">
+                                        <input 
+                                            class="form-control form-control-sm @error('password') is-invalid @enderror" 
+                                            placeholder="Password (8+ characters)" 
+                                            type="password" 
+                                            name="password" 
+                                            id="password" 
+                                            required
+                                            oninput="checkPasswordStrength()">
+                                        <span class="password-toggle small" onclick="togglePassword('password')">
+                                            <i class="fas fa-eye" id="password-icon"></i>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Password Strength Indicator -->
+                                    <div class="password-strength mt-2" id="passwordStrength" style="display: none;">
+                                        <div class="strength-meter">
+                                            <div class="strength-bar" id="strengthBar"></div>
+                                        </div>
+                                        <div class="strength-text small mt-1" id="strengthText"></div>
+                                        <div class="password-requirements small mt-1">
+                                            <div class="requirement" id="req-length">
+                                                <i class="fas fa-times text-danger"></i> At least 8 characters
+                                            </div>
+                                            <div class="requirement" id="req-uppercase">
+                                                <i class="fas fa-times text-danger"></i> One uppercase letter
+                                            </div>
+                                            <div class="requirement" id="req-lowercase">
+                                                <i class="fas fa-times text-danger"></i> One lowercase letter
+                                            </div>
+                                            <div class="requirement" id="req-number">
+                                                <i class="fas fa-times text-danger"></i> One number
+                                            </div>
+                                            <div class="requirement" id="req-special">
+                                                <i class="fas fa-times text-danger"></i> One special character
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    @error('password')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <input 
+                                        class="form-control form-control-sm" 
+                                        placeholder="Confirm Password" 
+                                        type="password" 
+                                        name="password_confirmation" 
+                                        id="password_confirmation" 
+                                        required>
+                                    <div class="invalid-feedback small" id="password-match-error" style="display: none;">
+                                        Passwords do not match
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Personal Details -->
+                            <div class="form-step" data-step="2">
+                                <div class="step-title">
+                                    <i class="fas fa-id-card me-2"></i>Personal Details
+                                </div>
+                                
+                                <div class="form-group">
+                                    <input 
+                                        class="form-control form-control-sm @error('phone') is-invalid @enderror" 
+                                        placeholder="Phone Number" 
+                                        type="tel" 
+                                        name="phone" 
+                                        id="phone"
+                                        value="{{ old('phone') }}" 
+                                        required>
+                                    @error('phone')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <select 
+                                        class="form-control form-control-sm @error('gender') is-invalid @enderror" 
+                                        name="gender" 
+                                        id="gender" 
+                                        required>
+                                        <option value="">Select Gender</option>
+                                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                                    </select>
+                                    @error('gender')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <input 
+                                        class="form-control form-control-sm @error('date_of_birth') is-invalid @enderror" 
+                                        placeholder="Date of Birth" 
+                                        type="date" 
+                                        name="date_of_birth" 
+                                        id="date_of_birth"
+                                        value="{{ old('date_of_birth') }}" 
+                                        max="{{ date('Y-m-d', strtotime('-13 years')) }}"
+                                        required>
+                                    @error('date_of_birth')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input 
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            name="terms" 
+                                            id="terms" 
+                                            value="1" 
+                                            required 
+                                            {{ old('terms') ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="terms">
+                                            I agree to the <a href="#" target="_blank">Terms & Conditions</a>
+                                        </label>
+                                    </div>
+                                    @error('terms')
+                                        <div class="invalid-feedback small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="btn-navigation">
+                                <button type="button" class="btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous
+                                </button>
+                                <button type="button" class="btn-primary" id="nextBtn">
+                                    Next<i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                                <button type="submit" class="btn-primary" id="submitBtn" style="display: none;">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+
+                            <!-- Auth Links -->
+                            <div class="auth-links">
+                                <p class="mb-0">
+                                    Already have an account? <a href="{{ route('web.user.login.form') }}">Sign in</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Ensure form is visible on page load
+        window.addEventListener('load', function() {
+            // Force show the first step
+            const firstStep = document.querySelector('.form-step[data-step="1"]');
+            if (firstStep) {
+                firstStep.style.display = 'block';
+                firstStep.style.opacity = '1';
+                firstStep.style.transform = 'translateX(0)';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Starting form initialization');
+            
+            // Detect current step from DOM instead of hardcoding to 1
+            const activeStep = document.querySelector('.form-step.active[data-step]');
+            let currentStep = activeStep ? parseInt(activeStep.getAttribute('data-step')) : 1;
+            const totalSteps = 2;
+            console.log('Form initialized with', totalSteps, 'steps, current step:', currentStep);
+            
+            const steps = document.querySelectorAll('.form-step');
+            const indicators = document.querySelectorAll('.step-indicator');
+            const connectors = document.querySelectorAll('.step-connector');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            console.log('Found elements:', {
+                steps: steps.length,
+                indicators: indicators.length,
+                nextBtn: !!nextBtn,
+                prevBtn: !!prevBtn,
+                submitBtn: !!submitBtn
+            });
+
+            // Check if essential elements exist
+            if (!nextBtn) {
+                console.error('Next button not found!');
+                return;
+            }
+            
+            if (steps.length === 0) {
+                console.error('No form steps found!');
+                return;
+            }
+
+            console.log('All essential elements found, proceeding with initialization');
+
+            // Force show current step immediately (based on DOM state)
+            console.log('About to call showStep with currentStep:', currentStep);
+            showStep(currentStep);
+            console.log('showStep call completed');
+
+            // Password toggle functionality
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (passwordInput && icon) {
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            passwordInput.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    }
+                });
+            });
+
+            // Step navigation
+            function showStep(step) {
+                console.log('Showing step:', step); // Debug log
+                
+                // Hide all steps
+                steps.forEach(s => {
+                    s.style.display = 'none';
+                    s.classList.remove('active');
+                });
+                
+                // Show current step
+                const currentStepElement = document.querySelector(`[data-step="${step}"]`);
+                if (currentStepElement) {
+                    currentStepElement.style.display = 'block';
+                    currentStepElement.style.opacity = '1';
+                    currentStepElement.style.transform = 'translateX(0)';
+                    currentStepElement.classList.add('active');
+                }
+                
+                // Update indicators
+                indicators.forEach((indicator, index) => {
+                    const stepNumber = index + 1;
+                    indicator.classList.remove('active', 'completed');
+                    
+                    if (stepNumber < step) {
+                        indicator.classList.add('completed');
+                    } else if (stepNumber === step) {
+                        indicator.classList.add('active');
+                    }
+                });
+                
+                // Update connectors
+                connectors.forEach((connector, index) => {
+                    connector.classList.remove('completed');
+                    if (index + 1 < step) {
+                        connector.classList.add('completed');
+                    }
+                });
+                
+                // Update button visibility and text
+                if (prevBtn) prevBtn.style.display = step === 1 ? 'none' : 'block';
+                
+                // Update next button based on step
+                if (nextBtn) {
+                    console.log('Updating next button for step:', step, 'totalSteps:', totalSteps);
+                    if (step === totalSteps) {
+                        // On last step, change to "Create Account" button
+                        console.log('Setting button to "Create Account"');
+                        nextBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+                        nextBtn.setAttribute('data-action', 'submit');
+                    } else {
+                        // On other steps, show "Next" button
+                        console.log('Setting button to "Next"');
+                        nextBtn.innerHTML = 'Next<i class="fas fa-arrow-right ms-2"></i>';
+                        nextBtn.setAttribute('data-action', 'next');
+                    }
+                    console.log('Button innerHTML is now:', nextBtn.innerHTML);
+                }
+                
+                // Hide the separate submit button since we're using the next button
+                if (submitBtn) submitBtn.style.display = 'none';
+                
+                // Update next button state for new step
+                setTimeout(updateNextButtonState, 100); // Small delay to ensure DOM is updated
+            }            // Validate current step
+            function validateStep(step) {
+                console.log('Validating step:', step); // Debug log
+                const currentStepElement = document.querySelector(`[data-step="${step}"]`);
+                if (!currentStepElement) {
+                    console.log('Step element not found for step:', step);
+                    return false;
+                }
+                
+                let isValid = true;
+
+                // Step 1: Basic Information - validate name, email, password, confirm password
+                if (step === 1) {
+                    console.log('Validating Step 1: Basic Information');
+                    const name = document.getElementById('name');
+                    const email = document.getElementById('email');
+                    const password = document.getElementById('password');
+                    const passwordConfirmation = document.getElementById('password_confirmation');
+                    const passwordMatchError = document.getElementById('password-match-error');
+                    
+                    if (!name || !email || !password || !passwordConfirmation) {
+                        console.log('Missing required form elements for step 1');
+                        return false;
+                    }
+                    
+                    // Validate name
+                    if (!name.value.trim()) {
+                        name.style.borderColor = '#ff6b6b';
+                        name.focus(); // Focus on invalid field
+                        isValid = false;
+                        console.log('Name validation failed');
+                    } else {
+                        name.style.borderColor = '#51cf66';
+                    }
+                    
+                    // Validate email
+                    if (!email.value.trim() || !email.value.includes('@')) {
+                        email.style.borderColor = '#ff6b6b';
+                        if (isValid) email.focus(); // Focus on first invalid field
+                        isValid = false;
+                        console.log('Email validation failed');
+                    } else {
+                        email.style.borderColor = '#51cf66';
+                    }
+                    
+                    // Validate password
+                    if (!password.value.trim() || password.value.length < 8) {
+                        password.style.borderColor = '#ff6b6b';
+                        if (isValid) password.focus(); // Focus on first invalid field
+                        isValid = false;
+                        console.log('Password validation failed');
+                    } else {
+                        password.style.borderColor = '#51cf66';
+                    }
+                    
+                    // Validate password confirmation
+                    if (!passwordConfirmation.value.trim()) {
+                        passwordConfirmation.style.borderColor = '#ff6b6b';
+                        if (isValid) passwordConfirmation.focus(); // Focus on first invalid field
+                        isValid = false;
+                        console.log('Password confirmation validation failed');
+                    } else if (password.value !== passwordConfirmation.value) {
+                        passwordConfirmation.style.borderColor = '#ff6b6b';
+                        if (passwordMatchError) passwordMatchError.style.display = 'block';
+                        if (isValid) passwordConfirmation.focus(); // Focus on first invalid field
+                        isValid = false;
+                        console.log('Password match validation failed');
+                    } else {
+                        passwordConfirmation.style.borderColor = '#51cf66';
+                        if (passwordMatchError) passwordMatchError.style.display = 'none';
+                    }
+                }
+                
+                // Step 2: Contact Information - validate phone and city
+                else if (step === 2) {
+                    const phone = document.getElementById('phone');
+                    const city = document.getElementById('city');
+                    
+                    // Phone is optional but if provided should be valid
+                    if (phone.value.trim() && phone.value.trim().length < 7) {
+                        phone.style.borderColor = '#ff6b6b';
+                        isValid = false;
+                    } else {
+                        phone.style.borderColor = phone.value.trim() ? '#51cf66' : '#e8ecf0';
+                    }
+                    
+                    // City is optional but if provided should be valid
+                    if (city.value.trim() && city.value.trim().length < 2) {
+                        city.style.borderColor = '#ff6b6b';
+                        isValid = false;
+                    } else {
+                        city.style.borderColor = city.value.trim() ? '#51cf66' : '#e8ecf0';
+                    }
+                }
+                
+                // Step 3 and beyond: Optional fields validation
+                else {
+                    const currentInputs = currentStepElement.querySelectorAll('input');
+                    currentInputs.forEach(input => {
+                        if (input.hasAttribute('required')) {
+                            if (!input.value.trim()) {
+                                input.style.borderColor = '#ff6b6b';
+                                isValid = false;
+                            } else {
+                                input.style.borderColor = '#51cf66';
+                            }
+                        } else {
+                            // Optional fields - just reset to normal color if not empty
+                            input.style.borderColor = input.value.trim() ? '#51cf66' : '#e8ecf0';
+                        }
+                    });
+                }
+                
+                console.log('Step', step, 'validation result:', isValid); // Debug log
+                return isValid;
+            }
+
+            // Password toggle functionality
+            function togglePassword(fieldId) {
+                const field = document.getElementById(fieldId);
+                const icon = document.getElementById(fieldId + '-icon') || document.querySelector(`[onclick="togglePassword('${fieldId}')"] i`);
+                
+                if (field && icon) {
+                    if (field.type === 'password') {
+                        field.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        field.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                }
+            }
+
+            // Make togglePassword globally available
+            window.togglePassword = togglePassword;
+
+            // Password strength checking function
+            function checkPasswordStrength() {
+                const password = document.getElementById('password').value;
+                const strengthIndicator = document.getElementById('passwordStrength');
+                const strengthBar = document.getElementById('strengthBar');
+                const strengthText = document.getElementById('strengthText');
+                
+                // Show/hide strength indicator
+                if (password.length > 0) {
+                    strengthIndicator.style.display = 'block';
+                } else {
+                    strengthIndicator.style.display = 'none';
+                    return;
+                }
+
+                // Check requirements
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[^A-Za-z0-9]/.test(password)
+                };
+
+                // Update requirement indicators
+                Object.keys(requirements).forEach(req => {
+                    const element = document.getElementById(`req-${req}`);
+                    if (requirements[req]) {
+                        element.classList.add('met');
+                        element.innerHTML = '<i class="fas fa-check text-success"></i> ' + element.textContent.split(' ').slice(1).join(' ');
+                    } else {
+                        element.classList.remove('met');
+                        element.innerHTML = '<i class="fas fa-times text-danger"></i> ' + element.textContent.split(' ').slice(1).join(' ');
+                    }
+                });
+
+                // Calculate strength
+                const metRequirements = Object.values(requirements).filter(Boolean).length;
+                let strength = 'weak';
+                let strengthScore = 0;
+
+                if (metRequirements >= 5) {
+                    strength = 'strong';
+                    strengthScore = 4;
+                } else if (metRequirements >= 4) {
+                    strength = 'good';
+                    strengthScore = 3;
+                } else if (metRequirements >= 3) {
+                    strength = 'fair';
+                    strengthScore = 2;
+                } else if (metRequirements >= 1) {
+                    strength = 'weak';
+                    strengthScore = 1;
+                }
+
+                // Update visual indicators
+                strengthBar.className = `strength-bar ${strength}`;
+                strengthText.className = `strength-text small mt-1 ${strength}`;
+                
+                const strengthMessages = {
+                    weak: 'Weak password',
+                    fair: 'Fair password', 
+                    good: 'Good password',
+                    strong: 'Strong password'
+                };
+                
+                strengthText.textContent = strengthMessages[strength];
+            }
+
+            // Make checkPasswordStrength globally available
+            window.checkPasswordStrength = checkPasswordStrength;
+
+            // Function to update next button state
+            function updateNextButtonState() {
+                const nextBtn = document.getElementById('nextBtn');
+                if (!nextBtn) return;
+                
+                // Only validate if the button is visible (not on last step)
+                if (nextBtn.style.display === 'none') return;
+                
+                const isValid = validateStep(currentStep);
+                
+                // Don't disable the button, just change visual appearance
+                // This allows clicks for feedback
+                if (isValid) {
+                    nextBtn.style.opacity = '1';
+                    nextBtn.style.cursor = 'pointer';
+                    nextBtn.classList.remove('invalid-state');
+                    nextBtn.classList.add('valid-state');
+                } else {
+                    nextBtn.style.opacity = '0.7';
+                    nextBtn.style.cursor = 'pointer'; // Still allow clicks
+                    nextBtn.classList.add('invalid-state');
+                    nextBtn.classList.remove('valid-state');
+                }
+            }
+
+            // Add input event listeners to all form fields for real-time validation
+            function addRealTimeValidation() {
+                // Name field validation
+                const nameField = document.getElementById('name');
+                if (nameField) {
+                    nameField.addEventListener('input', function() {
+                        if (this.value.trim().length > 0) {
+                            this.style.borderColor = '#51cf66';
+                        } else {
+                            this.style.borderColor = '#e8ecf0';
+                        }
+                        updateNextButtonState();
+                    });
+                }
+                
+                // Email field validation
+                const emailField = document.getElementById('email');
+                if (emailField) {
+                    emailField.addEventListener('input', function() {
+                        if (this.value.trim().length > 0 && this.value.includes('@')) {
+                            this.style.borderColor = '#51cf66';
+                        } else if (this.value.trim().length > 0) {
+                            this.style.borderColor = '#ff6b6b';
+                        } else {
+                            this.style.borderColor = '#e8ecf0';
+                        }
+                        updateNextButtonState();
+                    });
+                }
+                
+                // Add general listeners for other fields
+                const allInputs = document.querySelectorAll('input');
+                allInputs.forEach(input => {
+                    if (input.id !== 'name' && input.id !== 'email' && input.id !== 'password' && input.id !== 'password_confirmation') {
+                        input.addEventListener('input', updateNextButtonState);
+                        input.addEventListener('blur', updateNextButtonState);
+                    }
+                });
+            }
+
+            // Initialize real-time validation
+            addRealTimeValidation();
+            
+            // Set initial button state - allow clicking but show visual feedback
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.disabled = false; // Always allow clicks
+                nextBtn.style.opacity = '0.7';
+                nextBtn.style.cursor = 'pointer';
+                
+                // Test if button is clickable at all
+                console.log('Next button found and configured');
+                nextBtn.addEventListener('mouseenter', function() {
+                    console.log('Mouse entered next button');
+                });
+            } else {
+                console.error('Next button not found during initialization!');
+            }
+            
+            // Update button state after a short delay to ensure DOM is ready
+            setTimeout(updateNextButtonState, 200);
+
+            // Real-time password confirmation validation
+            const passwordField = document.getElementById('password');
+            const passwordConfirmField = document.getElementById('password_confirmation');
+            const passwordMatchError = document.getElementById('password-match-error');
+            
+            if (passwordField && passwordConfirmField && passwordMatchError) {
+                function checkPasswordMatch() {
+                    if (passwordConfirmField.value.trim() === '') {
+                        passwordMatchError.style.display = 'none';
+                        passwordConfirmField.style.borderColor = '#e8ecf0';
+                        updateNextButtonState();
+                        return;
+                    }
+                    
+                    if (passwordField.value !== passwordConfirmField.value) {
+                        passwordMatchError.style.display = 'block';
+                        passwordConfirmField.style.borderColor = '#ff6b6b';
+                    } else {
+                        passwordMatchError.style.display = 'none';
+                        passwordConfirmField.style.borderColor = '#51cf66';
+                    }
+                    updateNextButtonState();
+                }
+                
+                passwordField.addEventListener('input', function() {
+                    // Validate password length
+                    if (this.value.length >= 8) {
+                        this.style.borderColor = '#51cf66';
+                    } else {
+                        this.style.borderColor = this.value.length > 0 ? '#ff6b6b' : '#e8ecf0';
+                    }
+                    checkPasswordMatch();
+                });
+                
+                passwordConfirmField.addEventListener('input', checkPasswordMatch);
+            }
+
+            // Simple test click handler first
+            if (nextBtn) {
+                // Remove any existing listeners and add a simple one
+                nextBtn.onclick = function() {
+                    alert('Next button clicked! Current step: ' + currentStep);
+                    console.log('Simple click handler executed');
+                };
+                console.log('Simple click handler attached to next button');
+            }
+
+            // Original Next button click handler (will override the simple one)
+            if (nextBtn) {
+                console.log('Attaching click handler to next button');
+                nextBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default form submission
+                    alert('Button clicked! Current step: ' + currentStep); // Simple test
+                    console.log('=== NEXT BUTTON CLICKED ===');
+                    console.log('Current step:', currentStep);
+                    console.log('Total steps:', totalSteps);
+                    console.log('Event target:', e.target);
+                    
+                    const isValid = validateStep(currentStep);
+                    console.log('Step validation result:', isValid);
+                    
+                    if (isValid) {
+                        if (currentStep < totalSteps) {
+                            console.log('Moving to next step:', currentStep + 1);
+                            currentStep++;
+                            showStep(currentStep);
+                        } else if (currentStep === totalSteps) {
+                            // On the last step, submit the form
+                            console.log('Submitting form from step:', currentStep);
+                            const form = document.getElementById('registerForm');
+                            if (form) {
+                                form.submit();
+                            }
+                        }
+                    } else {
+                        console.log('Validation failed for step:', currentStep);
+                        
+                        // Show error message
+                        showValidationError(currentStep);
+                        
+                        // Add a shake animation to indicate error
+                        this.style.animation = 'shake 0.5s';
+                        setTimeout(() => {
+                            this.style.animation = '';
+                        }, 500);
+                        
+                        // Force validation to show visual feedback
+                        validateStep(currentStep);
+                    }
+                });
+            }
+
+            // Show validation error message
+            function showValidationError(step) {
+                let message = '';
+                if (step === 1) {
+                    message = 'Please fill in all required fields: Name, Email, Password (8+ characters), and confirm your password.';
+                } else if (step === 2) {
+                    message = 'Please check your contact information.';
+                } else {
+                    message = 'Please check the current step fields.';
+                }
+                
+                // Create or update error message
+                let errorDiv = document.getElementById('step-error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'step-error-message';
+                    errorDiv.style.cssText = `
+                        background: #ff6b6b;
+                        color: white;
+                        padding: 10px 15px;
+                        border-radius: 8px;
+                        margin-top: 15px;
+                        font-size: 0.85rem;
+                        display: none;
+                    `;
+                    const btnNav = document.querySelector('.btn-navigation');
+                    if (btnNav) {
+                        btnNav.parentNode.insertBefore(errorDiv, btnNav);
+                    }
+                }
+                
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+
+            // Previous button click
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    console.log('Previous button clicked, current step:', currentStep);
+                    if (currentStep > 1) {
+                        currentStep--;
+                        console.log('Moving to previous step:', currentStep);
+                        showStep(currentStep);
+                    }
+                });
+            }
+
+            // Form submission with loading state
+            const form = document.getElementById('registerForm');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    if (validateStep(currentStep) && submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('loading');
+                    }
+                });
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentStep < totalSteps && validateStep(currentStep)) {
+                        if (nextBtn) nextBtn.click();
+                    } else if (currentStep === totalSteps) {
+                        if (submitBtn) submitBtn.click();
+                    }
+                }
+            });
+        });
+        
+        // SIMPLE WORKING SCRIPT
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== SIMPLE WORKING SCRIPT LOADED ===');
+            
+            let currentStep = 1;
+            const totalSteps = 2;
+            
+            // Detect actual current step from DOM
+            const activeStep = document.querySelector('.form-step.active');
+            if (activeStep) {
+                currentStep = parseInt(activeStep.getAttribute('data-step')) || 1;
+            }
+            
+            console.log('Starting with step:', currentStep);
+            
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const form = document.getElementById('registerForm');
+            
+            if (!nextBtn) {
+                console.error('Next button not found!');
+                return;
+            }
+            
+            // Update button text based on current step
+            updateButtonText();
+            
+            // Add click handler
+            nextBtn.onclick = function(e) {
+                e.preventDefault();
+                console.log('Button clicked! Current step:', currentStep);
+                
+                if (currentStep < totalSteps) {
+                    // Move to next step
+                    currentStep++;
+                    showStep(currentStep);
+                    updateButtonText();
+                } else {
+                    // Submit form
+                    console.log('Submitting form...');
+                    if (form) {
+                        form.submit();
+                    }
+                }
+            };
+            
+            // Previous button handler
+            if (prevBtn) {
+                prevBtn.onclick = function(e) {
+                    e.preventDefault();
+                    if (currentStep > 1) {
+                        currentStep--;
+                        showStep(currentStep);
+                        updateButtonText();
+                    }
+                };
+            }
+            
+            function updateButtonText() {
+                if (currentStep === totalSteps) {
+                    nextBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+                } else {
+                    nextBtn.innerHTML = 'Next<i class="fas fa-arrow-right ms-2"></i>';
+                }
+                console.log('Button text updated for step', currentStep, ':', nextBtn.innerHTML);
+            }
+            
+            function showStep(step) {
+                console.log('Showing step:', step);
+                
+                // Hide all steps
+                document.querySelectorAll('.form-step').forEach(function(stepEl) {
+                    stepEl.style.display = 'none';
+                    stepEl.classList.remove('active');
+                });
+                
+                // Show target step
+                const targetStep = document.querySelector('[data-step="' + step + '"]');
+                if (targetStep) {
+                    targetStep.style.display = 'block';
+                    targetStep.classList.add('active');
+                }
+                
+                // Update indicators
+                document.querySelectorAll('.step-indicator').forEach(function(indicator, index) {
+                    indicator.classList.remove('active', 'completed');
+                    const stepNum = index + 1;
+                    if (stepNum < step) {
+                        indicator.classList.add('completed');
+                    } else if (stepNum === step) {
+                        indicator.classList.add('active');
+                    }
+                });
+                
+                // Update button visibility
+                if (prevBtn) {
+                    prevBtn.style.display = step === 1 ? 'none' : 'block';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
