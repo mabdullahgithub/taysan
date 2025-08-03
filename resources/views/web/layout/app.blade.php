@@ -39,13 +39,23 @@
 <div id="preloader">
     <div class="loader-wrapper">
         <div class="loader-content">
-            <img src="{{asset('logo.png')}}" alt="Taysan Logo" class="loader-logo">
+            <img src="{{asset('logo.png')}}" alt="Glowzel Logo" class="loader-logo">
             <div class="loader-line"></div>
         </div>
     </div>
 </div>
 
 <style>
+/* Global fixes for responsive design */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 #preloader {
     position: fixed;
     top: 0;
@@ -65,7 +75,7 @@
 }
 
 .loader-logo {
-    width: 120px;
+    width: 150px;
     height: auto;
     margin-bottom: 20px;
     animation: fadeIn 1s ease-in;

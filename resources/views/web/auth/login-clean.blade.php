@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Taysan & Co</title>
+    <title>Sign In - Glowzel</title>
     
     <!-- CSS Libraries -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
@@ -366,7 +366,7 @@
                     <div class="auth-left">
                         <!-- Logo -->
                         <a href="{{ route('web.view.index') }}" class="ts-logo">
-                            <img src="{{ asset('logo.png') }}" alt="Taysan & Co" class="ts-logo__img">
+                            <img src="{{ asset('logo.png') }}" alt="Glowzel" class="ts-logo__img">
                         </a>
 
                         <!-- Welcome Text -->

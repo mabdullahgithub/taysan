@@ -70,15 +70,28 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [WebUserController::class, 'showLoginForm'])->name('web.user.login.form');
     Route::post('/login', [WebUserController::class, 'login'])->name('web.user.login');
     
-    // Password Reset Routes
+    // Password Reset Routes (OTP-based)
     Route::get('/forgot-password', [WebUserController::class, 'showForgotPasswordForm'])->name('password.request');
-    Route::post('/forgot-password', [WebUserController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [WebUserController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [WebUserController::class, 'resetPassword'])->name('password.update');
+    Route::post('/forgot-password', [WebUserController::class, 'sendResetOtp'])->name('password.email');
+    Route::get('/verify-otp', [WebUserController::class, 'showOtpForm'])->name('password.otp.form');
+    Route::post('/verify-otp', [WebUserController::class, 'verifyOtp'])->name('password.otp.verify');
+    Route::get('/new-password', [WebUserController::class, 'showNewPasswordForm'])->name('password.new.form');
+    Route::post('/new-password', [WebUserController::class, 'resetPasswordWithOtp'])->name('password.new.update');
+    Route::post('/resend-otp', [WebUserController::class, 'resendOtp'])->name('password.otp.resend');
 });
 
+// Email Verification Routes
+Route::middleware('throttle:6,1')->group(function () {
+    Route::get('/email/verify', [WebUserController::class, 'showVerificationNotice'])->name('verification.notice');
+    Route::post('/email/verification-notification', [WebUserController::class, 'resendVerificationEmail'])->name('verification.send');
+});
+
+Route::get('/email/verify/{id}/{hash}', [WebUserController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 // Authenticated user routes  
-Route::middleware('auth:web')->group(function () {
+Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::post('/user/logout', [WebUserController::class, 'logout'])->name('web.user.logout');
     Route::get('/profile', [WebUserController::class, 'profile'])->name('web.user.profile');
     Route::get('/profile/edit', [WebUserController::class, 'editProfile'])->name('web.user.edit-profile');

@@ -524,9 +524,9 @@
                         <i class="fab fa-whatsapp"></i>
                         WhatsApp: +92 311 5904288
                     </a>
-                    <a href="mailto:info@taysan.co" class="contact-btn email">
+                    <a href="mailto:info@glowzel.co" class="contact-btn email">
                         <i class="fas fa-envelope"></i>
-                        Email: info@taysan.co
+                        Email: info@glowzel.co
                     </a>
                 </div>
             </div>

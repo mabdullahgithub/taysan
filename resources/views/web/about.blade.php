@@ -848,7 +848,7 @@
                 $founderName = \App\Models\Setting::get('footer_founder_name', 'Muhammad Abdullah');
             @endphp
             <p class="story-text">
-                Founded by <strong style="color: var(--primary);">{{ $founderName }}</strong>, Taysan Beauty began with a simple yet powerful vision: 
+                Founded by <strong style="color: var(--primary);">{{ $founderName }}</strong>, Glowzel Beauty began with a simple yet powerful vision: 
                 to make professional skincare guidance accessible to everyone in Pakistan. Recognizing the challenges people face in 
                 getting expert dermatological advice—long waiting times, expensive consultations, and limited availability—we set out 
                 to revolutionize the industry.

@@ -32,7 +32,7 @@
                             $logo = \App\Models\Setting::get('logo');
                             $logoUrl = $logo ? asset('storage/' . $logo) : asset('logo.png');
                         @endphp
-                        <img src="{{ $logoUrl }}" alt="Taysan Beauty" class="ts-logo__img">
+                        <img src="{{ $logoUrl }}" alt="Glowzel Beauty" class="ts-logo__img">
                     </a>
                 </div>
 
@@ -88,6 +88,39 @@
                                     <p>{{ auth()->user()->email }}</p>
                                 </div>
                             </div>
+
+                            @if(auth()->user() && !auth()->user()->hasVerifiedEmail())
+                                <!-- Email Verification Notice -->
+                                <div class="ts-verification-notice">
+                                    <div class="ts-verification-content">
+                                        <div class="ts-verification-icon">
+                                            <i class="fas fa-envelope-open-text"></i>
+                                        </div>
+                                        <div class="ts-verification-text">
+                                            <strong>Verify Your Email</strong>
+                                            <p>Please check your email and click the verification link.</p>
+                                            <div class="ts-verification-timer" id="verificationTimer">
+                                                <span class="timer-text">Link expires in: </span>
+                                                <span class="timer-countdown" id="countdown">--:--</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ts-verification-actions">
+                                        <form method="POST" action="{{ route('verification.send') }}" class="ts-resend-form" style="display: none;" id="resendForm">
+                                            @csrf
+                                            <button type="submit" class="ts-resend-btn">
+                                                <i class="fas fa-paper-plane"></i>
+                                                Resend Email
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('verification.notice') }}" class="ts-verification-link">
+                                            <i class="fas fa-external-link-alt"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                            
                             <div class="ts-user-links">
                                 <a href="{{ route('web.user.profile') }}" class="ts-user-link">
                                     <i class="fas fa-user"></i>
@@ -155,6 +188,11 @@
     right: 0;
     z-index: 1040;
     will-change: transform;
+    transition: transform 0.3s ease;
+}
+
+.ts-header.hidden {
+    transform: translateY(-100%);
 }
 
 /* Announcement Bar */
@@ -210,18 +248,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 0;
+    height: 100px;
     position: relative;
 }
 
 /* Logo Styling */
 .ts-logo {
     display: inline-block;
-    padding: 5px 0;
+    padding: 0;
 }
 
 .ts-logo__img {
-    height: 50px;
+    height: 100px;
     width: auto;
     transition: var(--ts-transition);
 }
@@ -502,6 +540,124 @@
     color: #dc3545;
 }
 
+/* Email Verification Notice */
+.ts-verification-notice {
+    margin: 0 0 10px 0;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #fff5f5, #fef2f2);
+    border: 1px solid #fed7d7;
+    border-radius: 10px;
+    border-top: 3px solid #f56565;
+}
+
+.ts-verification-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.ts-verification-icon {
+    color: #f56565;
+    font-size: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.ts-verification-text {
+    flex: 1;
+}
+
+.ts-verification-text strong {
+    display: block;
+    color: #742a2a;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.ts-verification-text p {
+    color: #a0574e;
+    font-size: 12px;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.ts-verification-timer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+}
+
+.timer-text {
+    color: #a0574e;
+    font-weight: 500;
+}
+
+.timer-countdown {
+    color: #f56565;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+.ts-verification-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.ts-resend-form {
+    margin: 0;
+}
+
+.ts-resend-btn {
+    background: #f56565;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--ts-transition);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ts-resend-btn:hover {
+    background: #e53e3e;
+    transform: translateY(-1px);
+}
+
+.ts-resend-btn:disabled {
+    background: #cbd5e0;
+    color: #718096;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ts-verification-link {
+    color: #f56565;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    transition: var(--ts-transition);
+}
+
+.ts-verification-link:hover {
+    background: rgba(245, 101, 101, 0.1);
+    color: #e53e3e;
+    text-decoration: none;
+}
+
 /* Additional styles to override any default link behavior */
 a {
     color: inherit;
@@ -602,8 +758,12 @@ a:hover {
         cursor: pointer;
     }
 
+    .ts-navbar__wrapper {
+        height: 80px;
+    }
+
     .ts-logo__img {
-        height: 40px;
+        height: 70px;
     }
 
     .ts-navbar__actions {
@@ -629,17 +789,17 @@ a:hover {
     }
 
     body {
-        padding-top: 80px;
+        padding-top: 120px;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 991px) {
     .ts-navbar__wrapper {
-        /* padding: 10px 0; */
+        height: 70px;
     }
 
     .ts-logo__img {
-        height: 35px;
+        height: 60px;
     }
 
     .ts-btn span {
@@ -671,7 +831,7 @@ a:hover {
     }
 
     body {
-        padding-top: 70px;
+        padding-top: 90px;
     }
 }
 
@@ -704,17 +864,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Scroll handling
     let lastScroll = 0;
+    let isScrolling = false;
+    
     window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        
-        // Add scrolled class for background change
-        if (currentScroll > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+        if (!isScrolling) {
+            window.requestAnimationFrame(() => {
+                const currentScroll = window.pageYOffset;
+                const header = document.querySelector('.ts-header');
+                
+                // Add scrolled class for background change
+                if (currentScroll > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+                
+                // Hide/show header based on scroll direction (only on mobile)
+                if (window.innerWidth <= 991) {
+                    if (currentScroll > lastScroll && currentScroll > 100) {
+                        // Scrolling down - hide header
+                        header.classList.add('hidden');
+                    } else if (currentScroll < lastScroll) {
+                        // Scrolling up - show header
+                        header.classList.remove('hidden');
+                    }
+                }
+                
+                lastScroll = currentScroll;
+                isScrolling = false;
+            });
         }
-        
-        lastScroll = currentScroll;
+        isScrolling = true;
     });
 
     // Mobile menu handling
@@ -766,7 +946,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle window resize
     window.addEventListener('resize', () => {
+        const header = document.querySelector('.ts-header');
+        
         if (window.innerWidth > 991) {
+            // Desktop: always show header
+            header.classList.remove('hidden');
             if (mobileMenu) {
                 mobileMenu.classList.remove('active');
                 document.body.style.overflow = '';
@@ -789,5 +973,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Email verification countdown timer
+    @auth
+        @if(!auth()->user()->hasVerifiedEmail())
+            const verificationTimer = document.getElementById('verificationTimer');
+            const countdown = document.getElementById('countdown');
+            const resendForm = document.getElementById('resendForm');
+            
+            if (verificationTimer && countdown) {
+                // Get the creation time from session storage or estimate it
+                const registrationTime = sessionStorage.getItem('registrationTime') || new Date().getTime();
+                const expirationTime = parseInt(registrationTime) + (60 * 60 * 1000); // 60 minutes
+                
+                function updateTimer() {
+                    const now = new Date().getTime();
+                    const timeLeft = expirationTime - now;
+                    
+                    if (timeLeft > 0) {
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        
+                        countdown.textContent = 
+                            String(minutes).padStart(2, '0') + ':' + 
+                            String(seconds).padStart(2, '0');
+                    } else {
+                        countdown.textContent = 'Expired';
+                        countdown.style.color = '#e53e3e';
+                        // Show resend form
+                        if (resendForm) {
+                            resendForm.style.display = 'block';
+                            verificationTimer.style.display = 'none';
+                        }
+                    }
+                }
+                
+                // Update immediately and then every second
+                updateTimer();
+                setInterval(updateTimer, 1000);
+                
+                // Store registration time if this is a new registration
+                @if(session('success') && str_contains(session('success'), 'Welcome to Glowzel'))
+                    sessionStorage.setItem('registrationTime', new Date().getTime());
+                @endif
+            }
+        @endif
+    @endauth
 });
 </script>

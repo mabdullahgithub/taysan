@@ -349,7 +349,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="checkout-image-wrapper">
-                        <img src="{{ asset('logo.png') }}" alt="Taysan Beauty" class="checkout-banner-image">
+                        <img src="{{ asset('logo.png') }}" alt="Glowzel Beauty" class="checkout-banner-image">
                     </div>
                 </div>
             </div>

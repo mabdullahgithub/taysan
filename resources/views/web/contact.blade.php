@@ -457,8 +457,8 @@
                                 </div>
                                 <div class="office-info-text">
                                     <h2>Email Us</h2>
-                                    <p>info@taysan.com</p>
-                                    {{-- <p>support@taysan.com</p> --}}
+                                    <p>info@glowzel.com</p>
+                                    {{-- <p>support@glowzel.com</p> --}}
                                 </div>
                             </div>
                         </div>

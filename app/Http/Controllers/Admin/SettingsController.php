@@ -30,11 +30,11 @@ class SettingsController extends Controller
         
         // Get current settings
         $settings = [
-            'site_title' => Setting::get('site_title', 'Taysan Beauty - Natural Handcrafted Soaps & Skincare'),
+            'site_title' => Setting::get('site_title', 'Glowzel Beauty - Natural Handcrafted Soaps & Skincare'),
             'site_description' => Setting::get('site_description', 'Your trusted destination for natural beauty products. We specialize in handcrafted soaps and organic skincare made with love and pure ingredients.'),
-            'site_keywords' => Setting::get('site_keywords', 'natural soap, handcrafted skincare, organic beauty products, Taysan Beauty'),
-            'site_author' => Setting::get('site_author', 'Taysan Beauty'),
-            'marquee_text' => Setting::get('marquee_text', 'Welcome to Taysan Beauty - Natural Handcrafted Soaps & Skincare Products'),
+            'site_keywords' => Setting::get('site_keywords', 'natural soap, handcrafted skincare, organic beauty products, Glowzel Beauty'),
+            'site_author' => Setting::get('site_author', 'Glowzel Beauty'),
+            'marquee_text' => Setting::get('marquee_text', 'Welcome to Glowzel Beauty - Natural Handcrafted Soaps & Skincare Products'),
             'logo' => Setting::get('logo', ''),
             'ceo_image' => Setting::get('ceo_image', ''),
             'shipping_charges' => Setting::get('shipping_charges', '150.00'),
@@ -45,11 +45,11 @@ class SettingsController extends Controller
             'footer_address' => Setting::get('footer_address', 'Lahore, Pakistan'),
             'footer_phone' => Setting::get('footer_phone', '+92 311 5904288'),
             'footer_whatsapp' => Setting::get('footer_whatsapp', 'https://wa.me/923115904288'),
-            'footer_email' => Setting::get('footer_email', 'info@taysan.co'),
+            'footer_email' => Setting::get('footer_email', 'info@glowzel.co'),
             'footer_facebook' => Setting::get('footer_facebook', '#'),
             'footer_instagram' => Setting::get('footer_instagram', '#'),
             'footer_twitter' => Setting::get('footer_twitter', '#'),
-            'footer_copyright' => Setting::get('footer_copyright', 'Copyright © 2025 by Taysan Beauty. All Rights Reserved. | Founded by Muhammad Abdullah'),
+            'footer_copyright' => Setting::get('footer_copyright', 'Copyright © 2025 by Glowzel Beauty. All Rights Reserved. | Founded by Muhammad Abdullah'),
             'discover_more_section_enabled' => Setting::get('discover_more_section_enabled', '1'),
             'discover_more_products_count' => Setting::get('discover_more_products_count', '10'),
         ];

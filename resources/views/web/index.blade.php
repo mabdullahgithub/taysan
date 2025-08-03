@@ -18,7 +18,7 @@
             <div class="banner-content">
                 <div class="banner-text">
                     <div class="banner-subtitle">Premium Natural Beauty</div>
-                    <h1 class="banner-title">Taysan Beauty</h1>
+                    <h1 class="banner-title">Glowzel Beauty</h1>
                     <p class="cursive-text">handcrafted with love</p>
                     <p class="banner-description">Discover our luxurious collection of handmade soaps and natural skincare products, crafted with pure ingredients to nourish and pamper your skin.</p>
                     <div class="banner-actions">

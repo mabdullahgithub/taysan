@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Us - Taysan & Co</title>
+    <title>Join Us - Glowzel</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -594,7 +594,7 @@
 
                         <!-- Logo -->
                         <a href="{{ route('web.view.index') }}" class="ts-logo">
-                            <img src="{{ asset('logo.png') }}" alt="Taysan & Co" class="ts-logo__img">
+                            <img src="{{ asset('logo.png') }}" alt="Glowzel" class="ts-logo__img">
                         </a>
 
                         <!-- Welcome Text -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Us - Taysan & Co</title>
+    <title>Join Us - Glowzel</title>
     
     <!-- CSS Libraries -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
@@ -124,7 +124,7 @@
         }
 
         .ts-logo__img {
-            height: 60px;
+            height: 80px;
             width: auto;
             filter: brightness(0) invert(1);
         }
@@ -641,7 +641,7 @@
                     <div class="auth-left">
                         <!-- Logo -->
                         <a href="{{ route('web.view.index') }}" class="ts-logo">
-                            <img src="{{ asset('logo.png') }}" alt="Taysan & Co" class="ts-logo__img">
+                            <img src="{{ asset('logo.png') }}" alt="Glowzel" class="ts-logo__img">
                         </a>
 
                         <!-- Welcome Text -->
@@ -1102,6 +1102,91 @@
             
             console.log('Registration form initialized successfully!');
         });
+
+        // Password strength checking function
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthIndicator = document.getElementById('passwordStrength');
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (password.length === 0) {
+                strengthIndicator.style.display = 'none';
+                return;
+            }
+            
+            strengthIndicator.style.display = 'block';
+            
+            // Check requirements
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            // Update requirement indicators
+            updateRequirement('req-length', requirements.length);
+            updateRequirement('req-uppercase', requirements.uppercase);
+            updateRequirement('req-lowercase', requirements.lowercase);
+            updateRequirement('req-number', requirements.number);
+            updateRequirement('req-special', requirements.special);
+            
+            // Calculate strength score
+            const score = Object.values(requirements).filter(Boolean).length;
+            
+            // Update strength bar and text
+            strengthBar.className = 'strength-bar';
+            strengthText.className = 'strength-text small mt-1';
+            
+            if (score < 2) {
+                strengthBar.classList.add('weak');
+                strengthText.classList.add('weak');
+                strengthText.textContent = 'Weak password';
+            } else if (score < 4) {
+                strengthBar.classList.add('fair');
+                strengthText.classList.add('fair');
+                strengthText.textContent = 'Fair password';
+            } else if (score < 5) {
+                strengthBar.classList.add('good');
+                strengthText.classList.add('good');
+                strengthText.textContent = 'Good password';
+            } else {
+                strengthBar.classList.add('strong');
+                strengthText.classList.add('strong');
+                strengthText.textContent = 'Strong password';
+            }
+        }
+        
+        function updateRequirement(id, met) {
+            const req = document.getElementById(id);
+            const icon = req.querySelector('i');
+            
+            if (met) {
+                req.classList.add('met');
+                icon.className = 'fas fa-check text-success';
+            } else {
+                req.classList.remove('met');
+                icon.className = 'fas fa-times text-danger';
+            }
+        }
+        
+        // Password toggle function
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '-icon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 </html>

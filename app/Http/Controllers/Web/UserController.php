@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\PasswordResetOtp;
+use App\Notifications\PasswordResetOtpNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -65,7 +68,7 @@ class UserController extends Controller
             'gender' => $request->gender,
             'role' => User::ROLE_USER,
             'is_active' => true,
-            'email_verified_at' => now(), // Auto-verify for now, implement email verification later
+            // Remove auto email verification
         ]);
 
         // Log the registration
@@ -77,13 +80,14 @@ class UserController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        Auth::login($user, true); // Remember the user
+        // Log the user in immediately
+        Auth::guard('web')->login($user);
 
-        // Send welcome email (you can implement this later)
-        // $this->sendWelcomeEmail($user);
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
 
         return redirect()->route('web.view.index')
-                         ->with('success', 'Welcome to Taysan & Co! Your account has been created successfully.');
+                         ->with('success', 'Welcome to Glowzel Beauty! Please check your email to verify your account.');
     }
 
     /**
@@ -161,6 +165,14 @@ class UserController extends Controller
                 return back()->withErrors([
                     'email' => 'Your account has been deactivated. Please contact support.',
                 ]);
+            }
+
+            // Check if email is verified
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return redirect()->route('verification.notice')
+                               ->with('email', $user->email)
+                               ->with('error', 'Please verify your email address before logging in.');
             }
 
             // Regenerate session ID for security
@@ -345,53 +357,254 @@ class UserController extends Controller
     }
 
     /**
-     * Send password reset link
+     * Send OTP for password reset
      */
-    public function sendResetLink(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
-    }
-
-    /**
-     * Show password reset form
-     */
-    public function showResetForm($token)
-    {
-        return view('web.auth.reset-password', ['token' => $token]);
-    }
-
-    /**
-     * Handle password reset
-     */
-    public function resetPassword(Request $request)
+    public function sendResetOtp(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'email' => 'required|email|exists:users,email'
+        ], [
+            'email.exists' => 'We couldn\'t find an account with that email address.'
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
+        try {
+            // Find the user
+            $user = User::where('email', $request->email)->first();
+            
+            // Generate OTP
+            $otp = PasswordResetOtp::generateOtp(
+                $request->email,
+                $request->ip(),
+                $request->userAgent()
+            );
+            
+            // Send OTP email
+            Notification::route('mail', $request->email)
+                ->notify(new PasswordResetOtpNotification($otp, $user->name, $request->email));
+            
+            // Log the OTP request
+            Log::info('Password reset OTP requested', [
+                'email' => $request->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+            
+            return redirect()->route('password.otp.form')
+                ->with('email', $request->email)
+                ->with('success', 'We\'ve sent a 6-digit verification code to your email address.');
+                
+        } catch (\Exception $e) {
+            Log::error('Failed to send password reset OTP', [
+                'email' => $request->email,
+                'error' => $e->getMessage()
+            ]);
+            
+            return back()->withErrors(['email' => 'Failed to send verification code. Please try again.']);
+        }
+    }
 
-                $user->save();
+    /**
+     * Show OTP verification form
+     */
+    public function showOtpForm()
+    {
+        if (!session('email')) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Please start the password reset process again.']);
+        }
+        
+        return view('web.auth.verify-otp');
+    }
+
+    /**
+     * Verify OTP and show new password form
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6'
+        ]);
+
+        if (!PasswordResetOtp::isValidOtp($request->email, $request->otp)) {
+            return back()->withErrors(['otp' => 'Invalid or expired verification code.']);
+        }
+
+        // Store verified email and OTP in session for new password form
+        session(['verified_email' => $request->email, 'verified_otp' => $request->otp]);
+        
+        return redirect()->route('password.new.form')
+            ->with('success', 'Code verified! Please enter your new password.');
+    }
+
+    /**
+     * Show new password form
+     */
+    public function showNewPasswordForm()
+    {
+        if (!session('verified_email') || !session('verified_otp')) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Please start the password reset process again.']);
+        }
+        
+        return view('web.auth.new-password');
+    }
+
+    /**
+     * Update password with new password (from OTP reset)
+     */
+    public function resetPasswordWithOtp(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+        ]);
+
+        $email = session('verified_email');
+        $otp = session('verified_otp');
+
+        if (!$email || !$otp) {
+            return redirect()->route('password.request')
+                ->withErrors(['password' => 'Session expired. Please start the password reset process again.']);
+        }
+
+        // Verify OTP one more time and mark as used
+        if (!PasswordResetOtp::verifyOtp($email, $otp)) {
+            return redirect()->route('password.request')
+                ->withErrors(['password' => 'Invalid or expired verification code.']);
+        }
+
+        // Update user password
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return redirect()->route('password.request')
+                ->withErrors(['password' => 'User not found.']);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60)
+        ]);
+
+        // Clear session data
+        session()->forget(['verified_email', 'verified_otp', 'email']);
+
+        // Log successful password reset
+        Log::info('Password reset completed', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip' => $request->ip()
+        ]);
+
+        return redirect()->route('web.view.index')
+            ->with('success', 'Your password has been successfully updated! You can now login with your new password.');
+    }
+
+    /**
+     * Resend OTP
+     */
+    public function resendOtp(Request $request)
+    {
+        $email = $request->email ?? session('email');
+        
+        if (!$email) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Please start the password reset process again.']);
+        }
+
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        try {
+            $user = User::where('email', $email)->first();
+            
+            // Generate new OTP
+            $otp = PasswordResetOtp::generateOtp(
+                $email,
+                $request->ip(),
+                $request->userAgent()
+            );
+            
+            // Send OTP email
+            Notification::route('mail', $email)
+                ->notify(new PasswordResetOtpNotification($otp, $user->name, $email));
+            
+            return back()->with('success', 'A new verification code has been sent to your email.');
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to resend password reset OTP', [
+                'email' => $email,
+                'error' => $e->getMessage()
+            ]);
+            
+            return back()->withErrors(['email' => 'Failed to send verification code. Please try again.']);
+        }
+    }
+
+    /**
+     * Show email verification notice
+     */
+    public function showVerificationNotice()
+    {
+        return view('web.auth.verify-email');
+    }
+
+    /**
+     * Handle email verification
+     */
+    public function verifyEmail(Request $request)
+    {
+        $user = User::find($request->route('id'));
+
+        if (!$user) {
+            return redirect()->route('web.user.login.form')
+                           ->withErrors(['email' => 'Invalid verification link.']);
+        }
+
+        if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return redirect()->route('web.user.login.form')
+                           ->withErrors(['email' => 'Invalid verification link.']);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('web.view.index')
+                           ->with('info', 'Your email is already verified.');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            // Log the user in automatically after verification
+            Auth::login($user, true);
+            
+            return redirect()->route('web.view.index')
+                           ->with('success', 'Email verified successfully! Welcome to Glowzel.');
+        }
+
+        return redirect()->route('verification.notice')
+                       ->withErrors(['email' => 'Unable to verify email. Please try again.']);
+    }
+
+    /**
+     * Resend email verification notification
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        if ($request->user() && $request->user()->hasVerifiedEmail()) {
+            return redirect()->route('web.view.index');
+        }
+
+        if ($request->user()) {
+            $request->user()->sendEmailVerificationNotification();
+        } else {
+            // If user is not logged in, we need to find them by email
+            $request->validate(['email' => 'required|email|exists:users']);
+            $user = User::where('email', $request->email)->first();
+            if ($user && !$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
             }
-        );
+        }
 
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('web.user.login.form')->with('status', __($status))
-                    : back()->withErrors(['email' => [__($status)]]);
+        return back()->with('status', 'Verification link sent!');
     }
 }

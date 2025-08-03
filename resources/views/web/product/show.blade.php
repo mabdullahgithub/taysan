@@ -1,5 +1,5 @@
 @extends('web.layout.app')
-@section('title', $product->name . ' - Taysan Beauty')
+@section('title', $product->name . ' - Glowzel Beauty')
 @section('content')
     @include('web.partials.cart_related')
     <!-- Quick View Modal -->
@@ -22,16 +22,28 @@
             --danger-color: #dc3545;
         }
 
+        /* Prevent horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         /* Product Detail Styles */
         .product-detail {
             background: #ffffff;
             padding: 120px 0 80px;
+            overflow-x: hidden;
         }
 
         .product-detail-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            overflow-x: hidden;
         }
 
         /* Breadcrumb */
@@ -728,6 +740,30 @@
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
+            .product-detail {
+                padding: 100px 0 60px;
+                overflow-x: hidden;
+            }
+
+            .product-detail-container {
+                padding: 0 15px;
+                overflow-x: hidden;
+            }
+
+            .product-main {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .product-gallery {
+                position: static;
+                top: auto;
+            }
+
+            .main-image {
+                height: 350px;
+            }
+
             .product-title {
                 font-size: 1.8rem;
             }
@@ -800,6 +836,14 @@
         }
 
         @media (max-width: 480px) {
+            .product-detail {
+                padding: 90px 0 50px;
+            }
+
+            .product-detail-container {
+                padding: 0 10px;
+            }
+
             .product-title {
                 font-size: 1.6rem;
             }

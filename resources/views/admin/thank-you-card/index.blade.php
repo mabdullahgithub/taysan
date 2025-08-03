@@ -402,8 +402,8 @@
                                id="signature" 
                                name="signature" 
                                class="form-control" 
-                               placeholder="e.g., Taysan Team, John Doe, etc."
-                               value="{{ old('signature', 'Taysan Team') }}">
+                               placeholder="e.g., Glowzel Team, John Doe, etc."
+                               value="{{ old('signature', 'Glowzel Team') }}">
                     </div>
 
                     <button type="submit" class="generate-btn">
@@ -423,12 +423,12 @@
                 </h3>
             </div>
             <div class="preview-content" id="preview-content">
-                <div class="preview-logo">TAYSAN</div>
+                <div class="preview-logo">GLOWZEL</div>
                 <div class="preview-message" id="preview-message">
                     Thank you for choosing us! Your trust and support mean the world to us. We are committed to providing you with the best service and look forward to serving you again.
                 </div>
                 <div class="preview-name" id="preview-name">Dear Valued Customer</div>
-                <div class="preview-signature" id="preview-signature">— Taysan Team</div>
+                <div class="preview-signature" id="preview-signature">— Glowzel Team</div>
             </div>
         </div>
     </div>
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update preview signature
     signatureInput.addEventListener('input', function() {
         const signature = this.value.trim();
-        previewSignature.textContent = signature ? `— ${signature}` : '— Taysan Team';
+        previewSignature.textContent = signature ? `— ${signature}` : '— Glowzel Team';
     });
 
     // Update preview style

@@ -1,7 +1,7 @@
-# User Module Implementation - Taysan E-commerce System
+# User Module Implementation - Glowzel E-commerce System
 
 ## Overview
-A comprehensive user management system has been added to the Taysan Laravel e-commerce application, providing both admin management capabilities and frontend user authentication/profile management.
+A comprehensive user management system has been added to the Glowzel Laravel e-commerce application, providing both admin management capabilities and frontend user authentication/profile management.
 
 ## Features Implemented
 
@@ -194,4 +194,4 @@ resources/views/
 - Optimized database queries with proper relationships
 - Lazy loading for large datasets
 
-This user module provides a complete foundation for user management in the Taysan e-commerce system, with room for future enhancements such as email verification, social login, and advanced user analytics.
+This user module provides a complete foundation for user management in the Glowzel e-commerce system, with room for future enhancements such as email verification, social login, and advanced user analytics.

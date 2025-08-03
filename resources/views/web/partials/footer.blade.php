@@ -7,11 +7,11 @@
     $address = \App\Models\Setting::get('footer_address', 'Lahore, Pakistan');
     $phone = \App\Models\Setting::get('footer_phone', '+92 311 5904288');
     $whatsapp = \App\Models\Setting::get('footer_whatsapp', 'https://wa.me/923115904288');
-    $email = \App\Models\Setting::get('footer_email', 'info@taysan.co');
+    $email = \App\Models\Setting::get('footer_email', 'info@glowzel.co');
     $facebook = \App\Models\Setting::get('footer_facebook', '#');
     $instagram = \App\Models\Setting::get('footer_instagram', '#');
     $twitter = \App\Models\Setting::get('footer_twitter', '#');
-    $copyright = \App\Models\Setting::get('footer_copyright', 'Copyright © 2025 by Taysan Beauty. All Rights Reserved. | Founded by Muhammad Abdullah');
+    $copyright = \App\Models\Setting::get('footer_copyright', 'Copyright © 2025 by Glowzel Beauty. All Rights Reserved. | Founded by Muhammad Abdullah');
 @endphp
 
 <footer style="background-color: #f8f9fa !important; padding: 60px 0 0 !important; margin-top: 60px !important; border-top: 1px solid #eee !important; width: 100% !important; position: relative !important; left: 0 !important; right: 0 !important;">
@@ -20,7 +20,7 @@
             <!-- Company Info -->
             <div class="col-lg-4 col-md-12" style="padding: 0 15px !important;">
                 <div style="max-width: 400px !important;">
-                    <img src="{{ $logoUrl }}" alt="logo" style="height: 40px !important; width: auto !important; margin-bottom: 20px !important; display: block !important;">
+                    <img src="{{ $logoUrl }}" alt="logo" style="height: 60px !important; width: auto !important; margin-bottom: 20px !important; display: block !important;">
                     <p style="color: #666 !important; line-height: 1.5 !important; margin-bottom: 20px !important; font-size: 12px !important;">
                         {{ $companyDescription }}
                     </p>

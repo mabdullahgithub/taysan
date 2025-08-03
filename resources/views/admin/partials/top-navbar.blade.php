@@ -30,7 +30,7 @@
     }
 
     .navbar-logo {
-        height: 55px;
+        height: 70px;
         width: auto;
         margin-left: 50px;
         object-fit: contain;
@@ -501,7 +501,7 @@
 
 <nav class="navbar navbar-expand-xl navbar-light fixed-top hk-navbar hk-navbar-alt">
     <a class="navbar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
-        <img src="{{ asset('logo.png') }}" alt="taysan" class="navbar-logo">
+        <img src="{{ asset('logo.png') }}" alt="glowzel" class="navbar-logo">
     </a>
 
     <div class="collapse navbar-collapse" id="navbarCollapseAlt">

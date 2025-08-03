@@ -617,7 +617,7 @@
     <div class="print-container">
         <!-- Company Header -->
         <div class="print-header">
-            <div class="company-name">TAYSAN</div>
+            <div class="company-name">GLOWZEL</div>
             <div class="company-tagline">Premium Fashion & Lifestyle</div>
         </div>
 

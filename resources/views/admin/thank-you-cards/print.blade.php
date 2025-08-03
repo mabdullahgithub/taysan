@@ -456,7 +456,7 @@
             <!-- Card Header -->
             <div class="card-header">
                 <!-- Company Logo -->
-                <img src="{{ asset('logo.png') }}" alt="Taysan Logo" class="company-logo">
+                <img src="{{ asset('logo.png') }}" alt="Glowzel Logo" class="company-logo">
 
                 <div style="text-align: center;">
                     @if(isset($cardData['image_path']) && $cardData['image_path'])
@@ -508,7 +508,7 @@
                         @endif
                     </div>
                     <div class="card-signature">
-                        With love, Taysan Team ❤️
+                        With love, Glowzel Team ❤️
                     </div>
                 </div>
             </div>

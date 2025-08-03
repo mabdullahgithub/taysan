@@ -490,7 +490,7 @@
 
         <div class="card-content">
             <!-- Company logo as image -->
-            <img src="{{ asset('logo.png') }}" alt="Taysan Logo" class="company-logo-img">
+            <img src="{{ asset('logo.png') }}" alt="Glowzel Logo" class="company-logo-img">
             
             @if(isset($cardData['image_path']) && $cardData['image_path'])
                 <!-- Show uploaded image in center -->

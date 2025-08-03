@@ -2,15 +2,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="{{ \App\Models\Setting::get('site_author', 'Taysan Beauty') }}">
+    <meta name="author" content="{{ \App\Models\Setting::get('site_author', 'Glowzel Beauty') }}">
     <meta name="description" content="{{ \App\Models\Setting::get('site_description', 'Your trusted destination for natural beauty products. We specialize in handcrafted soaps and organic skincare made with love and pure ingredients.') }}">
-    <meta name="keywords" content="{{ \App\Models\Setting::get('site_keywords', 'natural soap, handcrafted skincare, organic beauty products, Taysan Beauty') }}">
+    <meta name="keywords" content="{{ \App\Models\Setting::get('site_keywords', 'natural soap, handcrafted skincare, organic beauty products, Glowzel Beauty') }}">
     @php
         $logo = \App\Models\Setting::get('logo');
         $logoUrl = $logo ? asset('storage/' . $logo) : asset('logo.png');
     @endphp
     <link rel="shortcut icon" type="image/png" href="{{ $logoUrl }}">
-    <title>{{ \App\Models\Setting::get('site_title', 'Taysan Beauty - Natural Handcrafted Soaps & Skincare') }}</title>
+    <title>{{ \App\Models\Setting::get('site_title', 'Glowzel Beauty - Natural Handcrafted Soaps & Skincare') }}</title>
     <link href="{{ asset('assets/css/themify-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/flaticon.css') }}" rel="stylesheet">

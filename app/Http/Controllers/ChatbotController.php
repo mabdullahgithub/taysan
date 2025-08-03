@@ -89,7 +89,7 @@ class ChatbotController extends Controller
             'recommend', 'suggest', 'product', 'what should i use', 'what can i use',
             'which product', 'show me', 'i need', 'i want to buy', 'help me choose',
             'best product', 'suitable product', 'what product', 'give me',
-            'recommend me', 'suggest me', 'show products', 'taysan products'
+            'recommend me', 'suggest me', 'show products', 'glowzel products'
         ];
         
         foreach ($productRequestKeywords as $keyword) {
@@ -105,7 +105,7 @@ class ChatbotController extends Controller
     
     private function buildProductContext($products)
     {
-        $context = "TAYSAN BEAUTY PRODUCT CATALOG:\n\n";
+        $context = "GLOWZEL BEAUTY PRODUCT CATALOG:\n\n";
         
         foreach ($products as $product) {
             $context .= "=== PRODUCT: {$product->name} ===\n";
@@ -185,17 +185,17 @@ class ChatbotController extends Controller
         try {
             if ($isRequestingProducts) {
                 // Enhanced product recommendation prompt with new styling guidance
-                $prompt = "You are Dr. AI, a professional skincare specialist for Taysan Beauty with expertise in dermatology. You help customers find the perfect skincare products for their specific needs.
+                $prompt = "You are Dr. AI, a professional skincare specialist for Glowzel Beauty with expertise in dermatology. You help customers find the perfect skincare products for their specific needs.
 
                 CUSTOMER CONSULTATION:
                 {$skinInfo}
 
-                AVAILABLE TAYSAN BEAUTY PRODUCTS:
+                AVAILABLE GLOWZEL BEAUTY PRODUCTS:
                 {$productContext}
 
                 INSTRUCTIONS:
                 1. Analyze the customer's skin type, concerns, age, and current routine
-                2. Select ONLY 2-3 products from the Taysan Beauty catalog that best match their needs
+                2. Select ONLY 2-3 products from the Glowzel Beauty catalog that best match their needs
                 3. For each recommended product, provide a brief explanation (1-2 sentences) on why it's suitable
                 4. CRITICAL: Keep your response very short and concise (maximum 200 words)
                 5. Use simple, clear language that's easy to understand
@@ -212,7 +212,7 @@ class ChatbotController extends Controller
                 Remember: Your goal is to provide quick, accurate product recommendations that solve the customer's skincare concerns.";
             } else {
                 // Enhanced conversational prompt with new styling guidance
-                $prompt = "You are Dr. AI, a skincare specialist at Taysan Beauty. You provide expert advice on skin health, skincare ingredients, and routines.
+                $prompt = "You are Dr. AI, a skincare specialist at Glowzel Beauty. You provide expert advice on skin health, skincare ingredients, and routines.
 
                 CUSTOMER INQUIRY:
                 {$skinInfo}
@@ -232,7 +232,7 @@ class ChatbotController extends Controller
                 - Keep paragraphs to 2-3 sentences maximum
                 - After your answer, always ask if they'd like product suggestions for their concerns
 
-                Remember: Your goal is to provide quick, clear skincare advice and guide customers toward appropriate Taysan Beauty products when relevant.";
+                Remember: Your goal is to provide quick, clear skincare advice and guide customers toward appropriate Glowzel Beauty products when relevant.";
             }
             
             $response = Http::withHeaders([
@@ -243,7 +243,7 @@ class ChatbotController extends Controller
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are Dr. AI, a friendly skincare specialist at Taysan Beauty. You provide short, clear advice on skincare concerns and product recommendations. You ONLY answer questions related to skin care, skin health, beauty routines, and skincare products. For any other topics, politely explain you can only help with skincare concerns. Your responses are concise, practical, and focused on guiding customers to the right skincare solutions.'
+                        'content' => 'You are Dr. AI, a friendly skincare specialist at Glowzel Beauty. You provide short, clear advice on skincare concerns and product recommendations. You ONLY answer questions related to skin care, skin health, beauty routines, and skincare products. For any other topics, politely explain you can only help with skincare concerns. Your responses are concise, practical, and focused on guiding customers to the right skincare solutions.'
                     ],
                     [
                         'role' => 'user',

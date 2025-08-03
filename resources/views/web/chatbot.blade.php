@@ -7,7 +7,7 @@
             <i class="fas fa-user-md doctor-icon"></i>
         </div>
         <h1 class="welcome-title">Welcome to Doctor AI</h1>
-        <p class="welcome-subtitle">Your personal skincare consultant powered by AI. Ask me anything about skincare, ingredients, routines, or skin concerns. I can also recommend Taysan Beauty products for your specific needs!</p>
+        <p class="welcome-subtitle">Your personal skincare consultant powered by AI. Ask me anything about skincare, ingredients, routines, or skin concerns. I can also recommend Glowzel Beauty products for your specific needs!</p>
         
         <div class="quick-actions">
             <div class="quick-action" onclick="selectQuickOption('What ingredients should I look for in a good cleanser for sensitive skin?')">
@@ -50,13 +50,13 @@
                 </div>
             </div>
             
-            <div class="quick-action" onclick="selectQuickOption('Can you recommend some Taysan Beauty products for my dry skin?')">
+            <div class="quick-action" onclick="selectQuickOption('Can you recommend some Glowzel Beauty products for my dry skin?')">>
                 <div class="quick-action-icon">
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="quick-action-text">
                     <div class="quick-action-title">Product Recommendations</div>
-                    <div class="quick-action-desc">Get personalized Taysan Beauty recommendations</div>
+                    <div class="quick-action-desc">Get personalized Glowzel Beauty recommendations</div>
                 </div>
             </div>
             
@@ -340,7 +340,7 @@ function addProductSuggestionPrompt() {
                 <div class="message-sender bot-sender">Doctor AI</div>
             </div>
             <div class="message-text glassmorphism-light">
-                Based on your skin type and concerns I've analyzed, I can show you personalized Taysan Beauty products that would work best for you.
+                Based on your skin type and concerns I've analyzed, I can show you personalized Glowzel Beauty products that would work best for you.
             </div>
             <div class="product-suggestions-prompt glassmorphism">
                 <button onclick="selectQuickOption('Show me products for my skin type')">
@@ -369,7 +369,7 @@ function addProductRecommendations(products) {
             </div>
             <div class="message-text glassmorphism-light">
                 <p><strong>Perfect Products for Your Skin Type:</strong></p>
-                <p>Based on my analysis of your skin concerns, here are the Taysan Beauty products I recommend:</p>
+                <p>Based on my analysis of your skin concerns, here are the Glowzel Beauty products I recommend:</p>
             </div>
             <div class="product-grid">
     `;
